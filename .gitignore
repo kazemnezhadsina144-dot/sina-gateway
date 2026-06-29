@@ -1,0 +1,13 @@
+.env
+node_modules/
+data/leads.json
+.DS_Store
+
+# local secrets / runtime
+.env
+.env.*
+!.env.example
+node_modules/
+data/leads.json
+*.log
+.DS_Store

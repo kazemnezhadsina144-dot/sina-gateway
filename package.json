@@ -1,0 +1,20 @@
+{
+  "name": "sina-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node scripts/test-adapters.js",
+    "check": "node --check src/server.js && node --check src/gateway.js && node --check src/notifications.js && node --check public/app.js && node --check scripts/verify-supabase.js && node --check scripts/validate-env.js && node --check scripts/smoke-test.js && node --check scripts/audit-routes.js && node --check scripts/test-notifications.js",
+    "audit:routes": "node scripts/audit-routes.js",
+    "test:notifications": "node scripts/test-notifications.js",
+    "validate:env": "node scripts/validate-env.js",
+    "verify:supabase": "node scripts/verify-supabase.js",
+    "smoke": "node scripts/smoke-test.js",
+    "cleanup:local": "node scripts/cleanup-local-leads.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

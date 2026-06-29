@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sina Gateway</title>
+    <meta
+      name="description"
+      content="Sina's public opportunity gateway: mirror, route, capture, tag."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:title" content="Sina Gateway" />
+    <meta property="og:description" content="Mirror, route, capture, tag." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og.svg" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Sina Gateway</p>
+          <h1 id="page-title">Tell me what you are bringing. I will route it.</h1>
+          <p id="mirror-copy" class="lede">
+            A short agentic intake for clients, investors, collaborators, construction leads, and friends.
+          </p>
+        </div>
+        <div class="signal-panel" aria-label="Current route preview">
+          <span class="signal-label">Current route</span>
+          <strong id="route-preview">Awaiting signal</strong>
+          <p id="route-promise">Answer the first step and the gateway will reshape around you.</p>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Gateway wizard">
+        <form id="gateway-form" class="wizard">
+          <p class="mode-banner" id="mode-banner" hidden></p>
+          <div class="progress" aria-hidden="true">
+            <span class="progress-fill" id="progress-fill"></span>
+          </div>
+
+          <div class="step-meta">
+            <span id="step-count">Step 1 of 5</span>
+            <span id="priority-preview">Priority: pending</span>
+          </div>
+
+          <fieldset class="step is-active" data-step="0">
+            <legend>Who are you?</legend>
+            <div class="option-grid">
+              <label><input type="radio" name="identity" value="client" required /> <span>Client</span></label>
+              <label><input type="radio" name="identity" value="investor" /> <span>Investor</span></label>
+              <label><input type="radio" name="identity" value="builder" /> <span>Builder / collaborator</span></label>
+              <label><input type="radio" name="identity" value="construction" /> <span>Construction</span></label>
+              <label><input type="radio" name="identity" value="friend" /> <span>Friend / network</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-step="1">
+            <legend>What do you want?</legend>
+            <div class="option-grid">
+              <label><input type="radio" name="intent" value="hire" required /> <span>Hire</span></label>
+              <label><input type="radio" name="intent" value="invest" /> <span>Invest</span></label>
+              <label><input type="radio" name="intent" value="partner" /> <span>Partner</span></label>
+              <label><input type="radio" name="intent" value="refer" /> <span>Refer</span></label>
+              <label><input type="radio" name="intent" value="learn" /> <span>Learn</span></label>
+              <label><input type="radio" name="intent" value="trust" /> <span>Trust / risk</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-step="2">
+            <legend>What could we create?</legend>
+            <div class="option-grid">
+              <label><input type="radio" name="value" value="deal" required /> <span>Deal</span></label>
+              <label><input type="radio" name="value" value="project" /> <span>Project</span></label>
+              <label><input type="radio" name="value" value="lead" /> <span>Lead</span></label>
+              <label><input type="radio" name="value" value="capital" /> <span>Capital</span></label>
+              <label><input type="radio" name="value" value="talent" /> <span>Talent</span></label>
+              <label><input type="radio" name="value" value="risk" /> <span>Risk</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-step="3">
+            <legend>Timeline?</legend>
+            <div class="option-grid">
+              <label><input type="radio" name="urgency" value="now" required /> <span>Now</span></label>
+              <label><input type="radio" name="urgency" value="soon" /> <span>Soon</span></label>
+              <label><input type="radio" name="urgency" value="exploring" /> <span>Exploring</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-step="4">
+            <legend>How should Sina follow up?</legend>
+            <div class="field-stack">
+              <label>
+                <span>Name</span>
+                <input name="name" autocomplete="name" maxlength="120" required placeholder="Your name" />
+              </label>
+              <label>
+                <span>Email, phone, or social</span>
+                <input name="contact" autocomplete="email" maxlength="180" required placeholder="Best contact" />
+              </label>
+              <div class="inline-fields">
+                <label>
+                  <span>Company</span>
+                  <input name="company" autocomplete="organization" maxlength="160" placeholder="Optional" />
+                </label>
+                <label>
+                  <span>Role</span>
+                  <input name="role_title" autocomplete="organization-title" maxlength="160" placeholder="Optional" />
+                </label>
+              </div>
+              <div class="inline-fields">
+                <label>
+                  <span>City</span>
+                  <input name="city" autocomplete="address-level2" maxlength="120" placeholder="Vancouver" />
+                </label>
+                <label>
+                  <span>Preferred</span>
+                  <select name="preferred_contact">
+                    <option value="contact">Best contact</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
+                    <option value="social">Social</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                <span>Context</span>
+                <textarea
+                  name="raw_notes"
+                  maxlength="1000"
+                  rows="4"
+                  placeholder="Add the useful context: opportunity, risk, intro, project, or idea."
+                ></textarea>
+              </label>
+              <label class="trap" aria-hidden="true">
+                <span>Website</span>
+                <input name="website" tabindex="-1" autocomplete="off" />
+              </label>
+              <label class="consent">
+                <input type="checkbox" name="consent_to_contact" checked />
+                <span>Sina can follow up about this signal.</span>
+              </label>
+              <div id="turnstile-slot"></div>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="button" class="ghost" id="back-button">Back</button>
+            <button type="button" id="next-button">Next</button>
+            <button type="submit" id="submit-button" hidden>Send signal</button>
+          </div>
+
+          <p class="status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <aside class="route-card" aria-label="Routed outcome">
+          <p class="eyebrow">Mirrored path</p>
+          <h2 id="route-title">Answer to reveal route</h2>
+          <p id="route-detail">The gateway will use your identity, intent, value, and urgency to pick the right venture lane.</p>
+          <dl>
+            <div>
+              <dt>Lead type</dt>
+              <dd id="lead-type">Pending</dd>
+            </div>
+            <div>
+              <dt>Value</dt>
+              <dd id="value-preview">Pending</dd>
+            </div>
+            <div>
+              <dt>Urgency</dt>
+              <dd id="urgency-preview">Pending</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+    </main>
+
+    <template id="success-template">
+      <div class="success">
+        <p class="eyebrow">Captured</p>
+        <h2></h2>
+        <p></p>
+      </div>
+    </template>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

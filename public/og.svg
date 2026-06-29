@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f7f7f2"/>
+  <path d="M120 360c170-250 410-250 580 0" fill="none" stroke="#1f6f4a" stroke-width="36" stroke-linecap="round"/>
+  <path d="M130 455h620" stroke="#151716" stroke-width="34" stroke-linecap="round"/>
+  <text x="820" y="250" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800" fill="#151716">Sina</text>
+  <text x="820" y="335" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800" fill="#151716">Gateway</text>
+  <text x="820" y="410" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#5c6560">Mirror -> Route -> Capture -> Tag</text>
+</svg>
