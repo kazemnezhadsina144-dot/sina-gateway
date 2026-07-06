@@ -1,11 +1,12 @@
-import { readFileSync } from "node:fs";
+import { loadSinaEnv, loadEnvFile, resolveSupabaseEnv, sinaEnvPath } from "./load-sina-env.js";
 
-const env = loadEnv(".env");
-const url = env.SUPABASE_URL?.replace(/\/$/, "");
-const anonKey = env.SUPABASE_ANON_KEY;
+loadSinaEnv([".env"]);
+
+const env = { ...loadEnvFile(sinaEnvPath()), ...loadEnvFile(".env"), ...process.env };
+const { url, anonKey } = resolveSupabaseEnv(env);
 
 if (!url || !anonKey) {
-  console.error("SKIPPED_ENV_MISSING: Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env");
+  console.error(`SKIPPED_ENV_MISSING: Missing Supabase vars. Set ${sinaEnvPath()} or .env`);
   process.exit(1);
 }
 
@@ -28,7 +29,7 @@ let insert;
 try {
   insert = await fetch(`${url}/rest/v1/gateway_leads`, {
     method: "POST",
-    headers: headers({ prefer: "return=minimal" }),
+    headers: headers({ prefer: "return=minimal" }, anonKey),
     body: JSON.stringify(lead),
   });
 } catch (error) {
@@ -58,7 +59,7 @@ console.log("INSERT OK");
 let read;
 try {
   read = await fetch(`${url}/rest/v1/gateway_leads?contact=eq.${encodeURIComponent(uniqueContact)}&select=id,contact`, {
-    headers: headers(),
+    headers: headers({}, anonKey),
   });
 } catch (error) {
   reportNetworkFailure({ url, error, phase: "read" });
@@ -92,10 +93,10 @@ console.error("READ SECURITY FAILURE: anon key can see lead rows.");
 console.error(body);
 process.exit(1);
 
-function headers(extra = {}) {
+function headers(extra = {}, key = anonKey) {
   return {
-    apikey: anonKey,
-    authorization: `Bearer ${anonKey}`,
+    apikey: key,
+    authorization: `Bearer ${key}`,
     "content-type": "application/json",
     ...extra,
   };
@@ -134,17 +135,4 @@ function projectHost(url) {
 function projectRefFromHost(host) {
   const match = host.match(/^([a-z0-9]+)\.supabase\.co$/i);
   return match ? match[1] : "";
-}
-
-function loadEnv(path) {
-  const text = readFileSync(path, "utf8");
-  const result = {};
-  for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const index = trimmed.indexOf("=");
-    if (index === -1) continue;
-    result[trimmed.slice(0, index).trim()] = trimmed.slice(index + 1).trim().replace(/^["']|["']$/g, "");
-  }
-  return result;
 }

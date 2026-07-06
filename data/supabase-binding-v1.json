@@ -1,0 +1,15 @@
+{
+  "schema_version": "20260706",
+  "ownership": "personal_founder_project",
+  "ownership_note": "NOT Noetfield Systems Inc. Personal GitHub kazemnezhadsina144-dot/sina-gateway.",
+  "project_ref": "tkgpapowwplupyekpivy",
+  "project_label": "noetfield",
+  "project_use": "shared_supabase_infra_only",
+  "table": "public.gateway_leads",
+  "credential_source": "~/.sourcea-secrets/sina-gateway.env",
+  "key_policy": "anon_insert_only",
+  "service_role_forbidden": true,
+  "verified_at": "2026-07-06T06:00:00Z",
+  "verify_command": "npm run verify:supabase",
+  "expected_verify_output": ["INSERT OK", "READ DENIED BY RLS"]
+}

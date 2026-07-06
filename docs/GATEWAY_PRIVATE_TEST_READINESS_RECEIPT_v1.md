@@ -1,6 +1,10 @@
 # Gateway Private Test Readiness Receipt v1
 
-Date: 2026-06-29
+**Current status:** `PRIVATE_TEST_PASS` (verified 2026-07-06)  
+**Production:** `https://sina-gateway-production.up.railway.app`  
+**Supabase:** Noetfield `tkgpapowwplupyekpivy` — live capture via `~/.sourcea-secrets/sina-gateway.env`
+
+Date: 2026-06-29 (initial pass) · upgraded 2026-07-06  
 Workspace: `/Users/sinakazemnezhad/Desktop/SINA GATEWAY`
 
 ## Scope
@@ -80,27 +84,24 @@ Manual founder action required:
 
 ## Notification Status
 
-Status: SKIPPED_WEBHOOK_ENV_MISSING for live sends.
+Status: **PASS** — Telegram high-priority alerts (see `NOTIFICATIONS.md`).
 
 Dry-run safety is PASS:
 
-- `NOTIFY_WEBHOOK_URL` is optional.
+- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_ALERT_CHAT_ID` on Railway for live sends.
+- Legacy `NOTIFY_WEBHOOK_URL` docs superseded; `validate-env.js` accepts either channel.
 - High-priority notification payload is minimal.
 - Payload does not include Supabase keys, env values, IPs, or browser internals.
 - Medium/low-priority leads do not trigger notification sends.
 - Failed notification delivery does not block lead capture.
 
-Manual founder action required:
-
-1. Add `NOTIFY_WEBHOOK_URL` to `.env` when a real webhook receiver exists.
-2. Run `npm run test:notifications`.
-3. Submit one high-priority private test lead and confirm receipt in the webhook destination.
+Live test: `npm run test:notifications` (dry-run) · `npm run test:notify-capture` (production, founder env).
 
 ## Private Test Readiness
 
-Status: READY_FOR_PRIVATE_TEST_AFTER_SUPABASE_SCHEMA.
+Status: **PRIVATE_TEST_PASS** (2026-07-06).
 
-The app is safe for a few private test submissions tomorrow after the Supabase schema is created and live verification passes.
+The app is live on Railway with Supabase capture. `noindex` and `robots.txt` remain until intentional SEO launch.
 
 Current pre-public protections:
 
@@ -108,12 +109,35 @@ Current pre-public protections:
 - Page has `noindex, nofollow`.
 - Supabase uses anon-key path only.
 - Service-role key is not configured.
-- Capture endpoint has rate limiting, size limit, honeypot, structured errors, request IDs, and optional Turnstile.
+- Capture endpoint has rate limiting, size limit, honeypot, structured errors, request IDs, and Turnstile on production.
 
-Remaining manual actions:
+Remaining optional actions:
 
-1. Run `supabase/schema.sql` in Supabase SQL Editor.
-2. Run `npm run verify:supabase` from a network-enabled shell.
-3. Add `NOTIFY_WEBHOOK_URL` only when ready to test live notifications.
-4. Restart the server after env changes.
-5. Keep `noindex` and `robots.txt` in place until intentional public launch.
+1. Delete test rows in Supabase (`docs/PRIVATE_TEST_CLEANUP.sql`).
+2. Remove `noindex` when ready for public indexing.
+3. Assign custom domain on Railway (founder-decide).
+
+---
+
+## Appendix — 10-Step Upgrade Verification (2026-07-06)
+
+**Status:** `PRIVATE_TEST_PASS`
+
+| Command | Result |
+|---------|--------|
+| `npm run verify:supabase` | PASS — INSERT OK; READ DENIED BY RLS |
+| `npm run readiness` | PASS — core checks; supabase-live PASS |
+| `npm run private-test` | PASS — robots, noindex, chain:health, browser-capture, anon-read-denied |
+| `CHAIN_HEALTH_BASE_URL=https://sina-gateway-production.up.railway.app npm run chain:health` | PASS |
+| `npm run test:server-hardening` | PASS |
+| `npm run test:turnstile` | PASS |
+| `npm run test:notifications` | PASS (Telegram dry-run) |
+
+**Supabase:** Noetfield `tkgpapowwplupyekpivy` — live capture (not JSON fallback).  
+**Env source:** `~/.sourcea-secrets/sina-gateway.env` — see `data/supabase-binding-v1.json`.  
+**Production URL:** `https://sina-gateway-production.up.railway.app`  
+**Notifications:** Telegram high-priority alerts (see `NOTIFICATIONS.md`).
+
+Cleanup: remove test rows with `source = private-test` or name like `[PRIVATE-TEST]%` in Supabase dashboard.
+
+**Signer:** Cursor 10-step upgrade pass — Step 4 gate closed

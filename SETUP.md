@@ -16,7 +16,9 @@ Use these settings when creating the fresh Supabase project:
 
 ## Fill `.env`
 
-Open `.env` and paste exactly two Supabase values:
+**Recommended (Sina env):** copy anon credentials to `~/.sourcea-secrets/sina-gateway.env` — loaded automatically by the server and verify scripts. See `data/supabase-binding-v1.json` for the live Noetfield project ref.
+
+Alternatively, open `.env` and paste exactly two Supabase values:
 
 ```bash
 SUPABASE_URL=https://your-project.supabase.co
