@@ -1,3 +1,5 @@
+const STEP_LABELS = ["Who you are", "Goal", "Value", "Timeline", "Contact"];
+
 const CAMPAIGNS = {
   "founder-audit": {
     headline: "Founder Audit intake — solo technical founders.",
@@ -71,29 +73,40 @@ let ROUTES = {
 };
 
 const form = document.querySelector("#gateway-form");
+const workspace = document.querySelector(".workspace");
+const heroCompact = document.querySelector(".hero-compact");
 const steps = [...document.querySelectorAll(".step")];
 const backButton = document.querySelector("#back-button");
 const nextButton = document.querySelector("#next-button");
 const submitButton = document.querySelector("#submit-button");
 const statusEl = document.querySelector("#form-status");
 const progressFill = document.querySelector("#progress-fill");
+const progressSteps = document.querySelector("#progress-steps");
 const stepCount = document.querySelector("#step-count");
 const priorityPreview = document.querySelector("#priority-preview");
 const routePreview = document.querySelector("#route-preview");
 const routePromise = document.querySelector("#route-promise");
 const routeTitle = document.querySelector("#route-title");
 const routeDetail = document.querySelector("#route-detail");
+const routeReasonPreview = document.querySelector("#route-reason-preview");
+const routeDiagramDest = document.querySelector("#route-diagram-dest");
+const routeEdgeB = document.querySelector("#route-edge-b");
 const leadType = document.querySelector("#lead-type");
 const valuePreview = document.querySelector("#value-preview");
 const urgencyPreview = document.querySelector("#urgency-preview");
 const mirrorCopy = document.querySelector("#mirror-copy");
 const modeBanner = document.querySelector("#mode-banner");
 const buildmatchPanel = document.querySelector("#buildmatch-industry-panel");
+const turnstileSlot = document.querySelector("#turnstile-slot");
 
 let currentStep = 0;
+let heroEngaged = false;
+let lastDiagramDest = "";
+const visitedSteps = new Set();
 let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
 
 form.addEventListener("change", () => {
+  markHeroEngaged();
   syncBuildMatchPanel();
   updateMirror();
   if (currentStep < 4 && stepIsValid(currentStep)) {
@@ -164,9 +177,9 @@ function applyCampaignWedge() {
   if (!wedge) return;
 
   const title = document.querySelector("#page-title");
-  const lede = document.querySelector(".hero .lede");
+  const lede = document.querySelector(".lede-mirror") || document.querySelector(".lede");
   if (title) title.textContent = wedge.headline;
-  if (lede) lede.textContent = wedge.lede;
+  if (lede) setMirrorText(wedge.lede, false);
 
   if (modeBanner && wedge.banner) {
     modeBanner.hidden = false;
@@ -181,15 +194,51 @@ function applyCampaignWedge() {
   }
 }
 
+function markHeroEngaged() {
+  if (heroEngaged) return;
+  heroEngaged = true;
+  heroCompact?.classList.add("is-engaged");
+}
+
 function goTo(index) {
+  if (index !== currentStep) visitedSteps.add(currentStep);
+
   currentStep = index;
-  steps.forEach((step, stepIndex) => step.classList.toggle("is-active", stepIndex === index));
-  stepCount.textContent = `Step ${index + 1} of ${steps.length}`;
+  markHeroEngaged();
+
+  steps.forEach((step, stepIndex) => {
+    const isActive = stepIndex === index;
+    step.classList.toggle("is-active", isActive);
+    if (isActive) {
+      step.classList.remove("is-entering");
+      void step.offsetWidth;
+      step.classList.add("is-entering");
+      window.setTimeout(() => step.classList.remove("is-entering"), 240);
+    }
+  });
+
+  const label = STEP_LABELS[index] || `Step ${index + 1}`;
+  stepCount.textContent = label;
   progressFill.style.width = `${((index + 1) / steps.length) * 100}%`;
+  updateProgressSteps(index);
   backButton.hidden = index === 0;
   nextButton.hidden = index === steps.length - 1;
   submitButton.hidden = index !== steps.length - 1;
   updateMirror();
+
+  const focusTarget = steps[index]?.querySelector(
+    "input:not([type='hidden']):not(.trap input), textarea, select, button",
+  );
+  focusTarget?.focus({ preventScroll: true });
+}
+
+function updateProgressSteps(index) {
+  if (!progressSteps) return;
+  progressSteps.querySelectorAll("li").forEach((item, stepIndex) => {
+    item.classList.toggle("is-done", stepIndex < index);
+    item.classList.toggle("is-current", stepIndex === index);
+    item.classList.toggle("is-visited", visitedSteps.has(stepIndex) && stepIndex !== index);
+  });
 }
 
 function stepIsValid(index) {
@@ -265,6 +314,7 @@ function updateMirror() {
   const route = routeVenture(lead);
   const copy = resolveRouteCopy(route, lead);
   const priority = tagPriority(lead);
+  const destLabel = diagramDestLabel(copy, lead);
 
   routePreview.textContent = copy.title;
   routePromise.textContent = copy.promise;
@@ -273,9 +323,55 @@ function updateMirror() {
   leadType.textContent = formatIdentityLabel(lead);
   valuePreview.textContent = lead.value || "Pending";
   urgencyPreview.textContent = lead.urgency || "Pending";
-  priorityPreview.textContent = `Priority: ${priority}`;
 
-  mirrorCopy.textContent = mirrorLine(lead);
+  priorityPreview.textContent = `Priority: ${priority}`;
+  priorityPreview.className = "priority-chip";
+  if (priority === "high") priorityPreview.classList.add("is-high");
+  else if (priority === "medium") priorityPreview.classList.add("is-medium");
+
+  setMirrorText(mirrorLine(lead));
+  updateRoutingDiagram(destLabel, Boolean(lead.identity));
+  if (workspace) workspace.dataset.lane = lead.identity ? route : "";
+}
+
+function diagramDestLabel(copy, lead) {
+  if (!lead.identity) return "?";
+  if (copy.industry) return `${copy.title} · ${copy.industry}`;
+  return copy.title;
+}
+
+function updateRoutingDiagram(destLabel, isLit) {
+  if (!routeDiagramDest) return;
+
+  const changed = lastDiagramDest && lastDiagramDest !== destLabel;
+  routeDiagramDest.textContent = destLabel;
+  routeDiagramDest.classList.toggle("is-lit", isLit);
+
+  if (routeEdgeB) {
+    routeEdgeB.classList.toggle("is-lit", isLit);
+    if (changed && isLit) {
+      routeEdgeB.classList.remove("is-pulse");
+      void routeEdgeB.offsetWidth;
+      routeEdgeB.classList.add("is-pulse");
+      window.setTimeout(() => routeEdgeB.classList.remove("is-pulse"), 500);
+    }
+  }
+
+  lastDiagramDest = destLabel;
+}
+
+function setMirrorText(text, animate = true) {
+  if (!mirrorCopy) return;
+  if (!animate || mirrorCopy.textContent === text) {
+    mirrorCopy.textContent = text;
+    return;
+  }
+
+  mirrorCopy.classList.add("is-fading");
+  window.setTimeout(() => {
+    mirrorCopy.textContent = text;
+    mirrorCopy.classList.remove("is-fading");
+  }, 120);
 }
 
 function routingLead() {
@@ -416,7 +512,19 @@ function showSuccess(result) {
   routeDetail.textContent = lead.route.nextStep;
   leadType.textContent = lead.lead_type;
   priorityPreview.textContent = `Priority: ${lead.priority_tag}`;
-  mirrorCopy.textContent = `Inquiry saved for ${lead.route.title} review.`;
+  priorityPreview.className = "priority-chip";
+  if (lead.priority_tag === "high") priorityPreview.classList.add("is-high");
+  else if (lead.priority_tag === "medium") priorityPreview.classList.add("is-medium");
+  if (routeReasonPreview && lead.route_reason) {
+    routeReasonPreview.hidden = false;
+    routeReasonPreview.textContent = `Why this product line: ${lead.route_reason}`;
+  }
+  setMirrorText(`Inquiry saved for ${lead.route.title} review.`, false);
+  if (workspace) workspace.dataset.lane = lead.route.title;
+  updateRoutingDiagram(
+    lead.route.industry ? `${lead.route.title} · ${lead.route.industry}` : lead.route.title,
+    true,
+  );
 }
 
 function formatReference(leadId, requestId) {

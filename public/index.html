@@ -17,71 +17,99 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/">Sina Gateway</a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="/status.html">Status</a>
+          <a href="https://t.me/Gateway_A" rel="noopener noreferrer">@Gateway_A</a>
+        </nav>
+      </div>
+    </header>
+
     <main class="shell">
-      <section class="hero" aria-labelledby="page-title">
-        <div class="hero-copy">
-          <p class="eyebrow">Sina Gateway</p>
-          <h1 id="page-title">One intake point for opportunities, capital, and trusted introductions.</h1>
-          <p id="mirror-copy" class="lede">
-            Use Sina Gateway to send client work, investor interest, BuildMatch property and trade inquiries,
-            collaborator outreach, and founder inquiries to the right product line for review.
-          </p>
-        </div>
-        <div class="signal-panel" aria-label="Likely destination preview">
-          <span class="signal-label">Likely destination</span>
-          <strong id="route-preview">Answer the form to see</strong>
-          <p id="route-promise">Choose who you are on step 1 — the preview updates as you answer.</p>
-        </div>
-      </section>
-
-      <section class="route-map" aria-labelledby="route-map-title">
-        <h2 id="route-map-title">Where inquiries go</h2>
-        <p class="route-map-lede">
-          Sina Gateway sorts inquiries to named product lines — not a black-hole contact form.
+      <section class="hero-compact" aria-labelledby="page-title">
+        <p class="eyebrow">Commercial intake hub</p>
+        <h1 id="page-title">Sort every inquiry to the right product line.</h1>
+        <p id="mirror-copy" class="lede lede-mirror">
+          Pick who you are on step 1 — the routing console updates live as you answer.
         </p>
-        <ul class="route-map-list">
-          <li><strong>SourceA</strong> — governed AI execution and agentic work with control.</li>
-          <li><strong>Noetfield</strong> — strategic partnership and venture design.</li>
-          <li><strong>TrustField</strong> — trust, governance, and compliance pressure.</li>
-          <li><strong>BuildMatch</strong> — Vancouver platform for local property and trade work (two industries, reviewed separately).</li>
-          <li class="route-map-sub"><strong>BuildMatch — Construction</strong> — building, trades, renovations, commercial site work.</li>
-          <li class="route-map-sub"><strong>BuildMatch — Home services</strong> — maintenance, repairs, residential specialists.</li>
-          <li><strong>Forge</strong> — builders, tools, and collaboration energy.</li>
-          <li><strong>Personal</strong> — friends, warm intros, and network context.</li>
-          <li><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</li>
-        </ul>
+        <p class="hero-cta">
+          <a href="#details-routes" class="text-link">See where inquiries go</a>
+        </p>
       </section>
 
-      <section class="what-next" aria-labelledby="what-next-title">
-        <h2 id="what-next-title">What happens after you send</h2>
-        <ol class="what-next-list">
-          <li>You receive an on-screen confirmation code and which product line will review it.</li>
-          <li>Your inquiry is stored securely for review (live database — not a placeholder).</li>
-          <li>Sina reviews inquiries in priority order and follows up using the contact you provide.</li>
-        </ol>
-        <p class="what-next-note">Urgent inquiries can alert @Gateway_A. Email confirmation is not sent unless explicitly added later.</p>
-      </section>
-
-      <section class="workspace" aria-label="Gateway wizard">
+      <section class="workspace" id="intake" aria-label="Gateway wizard" data-lane="">
         <form id="gateway-form" class="wizard">
           <p class="mode-banner" id="mode-banner" hidden></p>
-          <div class="progress" aria-hidden="true">
-            <span class="progress-fill" id="progress-fill"></span>
+          <p class="preview-banner" id="preview-banner">Preview only — nothing is saved until you submit on the last step.</p>
+
+          <div class="progress-wrap">
+            <div class="progress" aria-hidden="true">
+              <span class="progress-fill" id="progress-fill"></span>
+            </div>
+            <ol class="progress-steps" id="progress-steps" aria-label="Form progress">
+              <li data-step="0">Who you are</li>
+              <li data-step="1">Goal</li>
+              <li data-step="2">Value</li>
+              <li data-step="3">Timeline</li>
+              <li data-step="4">Contact</li>
+            </ol>
           </div>
 
           <div class="step-meta">
-            <span id="step-count">Step 1 of 5</span>
-            <span id="priority-preview">Priority: pending</span>
+            <span id="step-count">Who you are</span>
+            <span id="priority-preview" class="priority-chip">Priority: pending</span>
           </div>
 
           <fieldset class="step is-active" data-step="0">
             <legend>Who are you?</legend>
-            <div class="option-grid">
-              <label><input type="radio" name="identity" value="client" required /> <span>Client</span></label>
-              <label><input type="radio" name="identity" value="investor" /> <span>Investor</span></label>
-              <label><input type="radio" name="identity" value="builder" /> <span>Collaborator</span></label>
-              <label><input type="radio" name="identity" value="buildmatch" /> <span>BuildMatch</span></label>
-              <label><input type="radio" name="identity" value="friend" /> <span>Network</span></label>
+            <div class="option-grid identity-grid">
+              <label class="identity-card">
+                <input type="radio" name="identity" value="client" required />
+                <span class="card-face" data-lane="SourceA">
+                  <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4V7zm2 2v6h12V9H6zm3 8h6v2H9v-2z" fill="currentColor"/></svg>
+                  <span class="card-title">Client</span>
+                  <span class="card-hint">SourceA · governed AI execution</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card">
+                <input type="radio" name="identity" value="investor" />
+                <span class="card-face" data-lane="Noetfield">
+                  <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6h16v12H4zm2-2h12V8H6v8zm2-6h8v2H8v-2zm0 3h5v2H8v-2z" fill="currentColor"/></svg>
+                  <span class="card-title">Investor</span>
+                  <span class="card-hint">Noetfield · strategy &amp; capital</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card">
+                <input type="radio" name="identity" value="builder" />
+                <span class="card-face" data-lane="Forge">
+                  <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l4 4-8 8H6v-4l8-8zm1-1l1-1 2 2-1 1-2-2z" fill="currentColor"/></svg>
+                  <span class="card-title">Collaborator</span>
+                  <span class="card-hint">Forge · build &amp; ship together</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card">
+                <input type="radio" name="identity" value="buildmatch" />
+                <span class="card-face" data-lane="BuildMatch">
+                  <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3v-9zm2 2v5h14v-5l-7-5-7 5zm4 0h6v5H9v-5z" fill="currentColor"/></svg>
+                  <span class="card-title">BuildMatch</span>
+                  <span class="card-hint">Vancouver property &amp; trades</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card">
+                <input type="radio" name="identity" value="friend" />
+                <span class="card-face" data-lane="Personal">
+                  <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z" fill="currentColor"/></svg>
+                  <span class="card-title">Network</span>
+                  <span class="card-hint">Personal · warm intros</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
             </div>
             <fieldset id="buildmatch-industry-panel" class="buildmatch-panel" hidden>
               <legend>Which BuildMatch industry?</legend>
@@ -90,16 +118,22 @@
                 separately.
               </p>
               <div class="option-grid buildmatch-grid">
-                <label
-                  ><input type="radio" name="project_type" value="construction" />
-                  <span>Construction</span>
-                  <small>Builds, trades, renovations, site work</small></label
-                >
-                <label
-                  ><input type="radio" name="project_type" value="home_services" />
-                  <span>Home services</span>
-                  <small>Maintenance, repairs, residential specialists</small></label
-                >
+                <label class="identity-card identity-card-compact">
+                  <input type="radio" name="project_type" value="construction" />
+                  <span class="card-face" data-lane="BuildMatch">
+                    <span class="card-title">Construction</span>
+                    <small>Builds, trades, renovations, site work</small>
+                    <span class="card-check" aria-hidden="true">✓</span>
+                  </span>
+                </label>
+                <label class="identity-card identity-card-compact">
+                  <input type="radio" name="project_type" value="home_services" />
+                  <span class="card-face" data-lane="BuildMatch">
+                    <span class="card-title">Home services</span>
+                    <small>Maintenance, repairs, residential specialists</small>
+                    <span class="card-check" aria-hidden="true">✓</span>
+                  </span>
+                </label>
               </div>
             </fieldset>
           </fieldset>
@@ -150,17 +184,17 @@
               </label>
               <div class="inline-fields">
                 <label>
-                  <span>Company</span>
+                  <span>Company <em class="optional">Optional</em></span>
                   <input name="company" autocomplete="organization" maxlength="160" placeholder="Optional" />
                 </label>
                 <label>
-                  <span>Role</span>
+                  <span>Role <em class="optional">Optional</em></span>
                   <input name="role_title" autocomplete="organization-title" maxlength="160" placeholder="Optional" />
                 </label>
               </div>
               <div class="inline-fields">
                 <label>
-                  <span>City</span>
+                  <span>City <em class="optional">Optional</em></span>
                   <input name="city" autocomplete="address-level2" maxlength="120" placeholder="Vancouver" />
                 </label>
                 <label>
@@ -207,26 +241,75 @@
           <p class="status" id="form-status" role="status" aria-live="polite"></p>
         </form>
 
-        <aside class="route-card" aria-label="Inquiry preview">
-          <p class="eyebrow">Preview</p>
-          <h2 id="route-title">Answer to see destination</h2>
-          <p id="route-detail">Identity, intent, value, and urgency determine the likely product line.</p>
-          <dl>
-            <div>
-              <dt>You are</dt>
-              <dd id="lead-type">Pending</dd>
-            </div>
-            <div>
-              <dt>Value</dt>
-              <dd id="value-preview">Pending</dd>
-            </div>
-            <div>
-              <dt>Urgency</dt>
-              <dd id="urgency-preview">Pending</dd>
-            </div>
-          </dl>
+        <aside class="route-console" aria-label="Live routing console">
+          <div class="route-diagram" id="route-diagram" aria-hidden="true">
+            <div class="route-node route-node-you is-lit">You</div>
+            <div class="route-edge route-edge-a" id="route-edge-a"></div>
+            <div class="route-node route-node-gateway is-lit">Gateway</div>
+            <div class="route-edge route-edge-b" id="route-edge-b"></div>
+            <div class="route-node route-node-dest" id="route-diagram-dest">?</div>
+          </div>
+
+          <div class="signal-panel" aria-label="Likely destination preview">
+            <span class="signal-label">Likely destination</span>
+            <strong id="route-preview">Answer the form to see</strong>
+            <p id="route-promise">Choose who you are on step 1 — the preview updates as you answer.</p>
+          </div>
+
+          <div class="route-card">
+            <p class="eyebrow">Preview</p>
+            <h2 id="route-title">Answer to see destination</h2>
+            <p id="route-detail">Identity, intent, value, and urgency determine the likely product line.</p>
+            <p class="route-reason" id="route-reason-preview" hidden></p>
+            <dl>
+              <div>
+                <dt>You are</dt>
+                <dd id="lead-type">Pending</dd>
+              </div>
+              <div>
+                <dt>Value</dt>
+                <dd id="value-preview">Pending</dd>
+              </div>
+              <div>
+                <dt>Urgency</dt>
+                <dd id="urgency-preview">Pending</dd>
+              </div>
+            </dl>
+          </div>
         </aside>
       </section>
+
+      <details class="info-accordion" id="details-routes">
+        <summary>Where inquiries go</summary>
+        <div class="accordion-body">
+          <p class="route-map-lede">
+            Sina Gateway sorts inquiries to named product lines — not a black-hole contact form.
+          </p>
+          <ul class="route-map-list">
+            <li><strong>SourceA</strong> — governed AI execution and agentic work with control.</li>
+            <li><strong>Noetfield</strong> — strategic partnership and venture design.</li>
+            <li><strong>TrustField</strong> — trust, governance, and compliance pressure.</li>
+            <li><strong>BuildMatch</strong> — Vancouver platform for local property and trade work.</li>
+            <li class="route-map-sub"><strong>Construction</strong> — building, trades, renovations, site work.</li>
+            <li class="route-map-sub"><strong>Home services</strong> — maintenance, repairs, residential specialists.</li>
+            <li><strong>Forge</strong> — builders, tools, and collaboration energy.</li>
+            <li><strong>Personal</strong> — friends, warm intros, and network context.</li>
+            <li><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="info-accordion">
+        <summary>What happens after you submit</summary>
+        <div class="accordion-body">
+          <ol class="what-next-list">
+            <li>You receive an on-screen confirmation code and which product line will review it.</li>
+            <li>Your inquiry is stored securely for review (live database — not a placeholder).</li>
+            <li>Sina reviews inquiries in priority order and follows up using the contact you provide.</li>
+          </ol>
+          <p class="what-next-note">Urgent inquiries can alert @Gateway_A. Email confirmation is not sent unless explicitly added later.</p>
+        </div>
+      </details>
     </main>
 
     <footer class="site-footer">
