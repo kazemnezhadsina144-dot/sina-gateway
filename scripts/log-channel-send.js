@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 
 const args = process.argv.slice(2);
 const countIndex = args.indexOf("--count");
@@ -50,4 +51,12 @@ console.log(
     2,
   ),
 );
-console.log("Run: node scripts/sync-heartbeat-vars.js — to update Cloudflare heartbeat worker vars");
+
+if (!args.includes("--no-sync")) {
+  const sync = spawnSync("npm", ["run", "sync:heartbeat"], { encoding: "utf8", shell: false, cwd: process.cwd() });
+  if (sync.status === 0) {
+    console.log("Heartbeat vars synced to gateway-ops.");
+  } else if (!args.includes("--quiet-sync")) {
+    console.log("Note: run npm run sync:heartbeat after sends (needs wrangler + gateway-ops).");
+  }
+}

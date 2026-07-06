@@ -18,7 +18,7 @@ I run a fixed **Founder Audit** for solo technical founders (pre-seed/seed): in 
 
 Start here if it's useful: https://sina-gateway-production.up.railway.app/?utm_campaign=founder-audit&utm_source=linkedin
 
-— Sina · Noetfield Systems Inc.
+— Sina · personal founder project
 
 ---
 
