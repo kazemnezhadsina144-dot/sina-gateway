@@ -151,9 +151,9 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 2 gateway-ops | **Done** — committed + CF cron live |
 | 3 migration | **Done** — `verify:migration` PASS · `CAPTURE_METADATA_ENABLED=true` on Railway |
 | 4 Turnstile | **Done** — keys on Railway · private-test bypass live |
-| 5 UptimeRobot | **Founder** — arm 2 monitors · `npm run monitors:verify` (URLs must PASS first) |
+| 5 UptimeRobot | **Founder** — arm 2 monitors · `npm run monitors:verify` PASS |
 | 6 chain gate | **Done** — private-test 6/6 PASS |
-| 7 D2 list | **Founder** — fill 25 names (`npm run d3:status`) |
+| 7 D2 list | **Skipped** — launch without first outbound batch |
 | 8 notify test | **Done** — `test:notify-capture` PASS |
 | 9 merge | **Done** — main on Railway |
-| 10 launch | **Founder** — `npm run launch:gate` (automated green; D2 + noindex removal pending) |
+| 10 launch | **Done** — public indexing enabled 2026-07-06 · `npm run launch:gate` |

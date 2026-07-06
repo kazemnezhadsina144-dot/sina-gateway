@@ -117,3 +117,20 @@ Remaining manual actions:
 3. Add `NOTIFY_WEBHOOK_URL` only when ready to test live notifications.
 4. Restart the server after env changes.
 5. Keep `noindex` and `robots.txt` in place until intentional public launch.
+
+## Public Launch (2026-07-06)
+
+Status: **PUBLIC** — indexing enabled on `index.html` and `privacy.html`; `robots.txt` allows `/`.
+
+Launch evidence:
+
+- `npm run launch:gate` PASS (post-launch checks)
+- `npm run chain:health` PASS on production
+- `npm run smoke` PASS on production
+- Turnstile + Telegram notifications configured on Railway
+- D2/D3 outbound skipped at launch (commercial heartbeat not armed)
+
+Founder actions remaining:
+
+1. Arm 2 UptimeRobot monitors from `data/gateway-external-monitors-v1.json`
+2. Run `docs/PRIVATE_TEST_CLEANUP.sql` in Supabase SQL Editor and delete test rows

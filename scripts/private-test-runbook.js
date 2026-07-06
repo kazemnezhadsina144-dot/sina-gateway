@@ -6,11 +6,18 @@ const origin = process.env.PRIVATE_TEST_ORIGIN || baseUrl;
 const stamp = new Date().toISOString().slice(0, 10);
 const contact = `private-test+${Date.now()}@example.com`;
 
+const indexHtml = readFileSync("public/index.html", "utf8");
+const publicLaunched = !/noindex/i.test(indexHtml);
+
 const steps = [];
 let failed = false;
 
-steps.push(checkRobots());
-steps.push(checkNoIndex());
+if (!publicLaunched) {
+  steps.push(checkRobots());
+  steps.push(checkNoIndex());
+} else {
+  steps.push(skipSeoChecks());
+}
 steps.push(runNpm("verify:supabase"));
 steps.push(runChainHealth());
 steps.push(await capturePrivateTestLead());
@@ -18,6 +25,10 @@ steps.push(verifyAnonReadDenied());
 
 printSummary(steps);
 process.exit(failed ? 1 : 0);
+
+function skipSeoChecks() {
+  return record("seo-gates", true, "skipped — public launch (index is indexable)");
+}
 
 function checkRobots() {
   const text = readFileSync("public/robots.txt", "utf8");
@@ -101,7 +112,7 @@ function record(name, ok, detail) {
 }
 
 function printSummary(steps) {
-  console.log("\nPrivate test runbook summary:");
+  console.log(`\nCapture test runbook summary (${publicLaunched ? "public" : "private"} mode):`);
   for (const step of steps) {
     console.log(`- ${step.name}: ${step.ok ? "PASS" : "FAIL"}`);
   }
