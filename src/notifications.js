@@ -6,12 +6,18 @@ export function shouldNotifyLead(lead, telegramEnv) {
 
 export function buildNotificationMessage(lead, requestId) {
   const ref = requestId ? String(requestId).slice(0, 8).toUpperCase() : "";
+  const priorityLabel =
+    lead.priority_tag === "high" ? "🔴 HIGH" : lead.priority_tag === "medium" ? "🟡 MEDIUM" : "🟢 LOW";
+  const introRef =
+    String(lead.referrer || "")
+      .match(/^ref:([a-z0-9-_]+)/i)?.[1] || "";
   return [
     "<b>High-priority Sina Gateway lead</b>",
     `${lead.name || "—"} → ${lead.venture_route || "—"}`,
     lead.contact || "—",
-    `priority: ${lead.priority_tag}`,
+    `priority: ${priorityLabel}`,
     lead.utm_campaign ? `campaign: ${lead.utm_campaign}` : "",
+    introRef ? `intro_ref: ${introRef}` : "",
     lead.route_reason ? `route: ${lead.route_reason}` : "",
     ref ? `ref: ${ref}` : "",
   ]

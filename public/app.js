@@ -74,6 +74,7 @@ const urgencyPreview = document.querySelector("#urgency-preview");
 const mirrorCopy = document.querySelector("#mirror-copy");
 const modeBanner = document.querySelector("#mode-banner");
 const turnstileSlot = document.querySelector("#turnstile-slot");
+const turnstileStatus = document.querySelector("#turnstile-status");
 
 let currentStep = 0;
 let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
@@ -102,6 +103,9 @@ form.addEventListener("submit", async (event) => {
   if (!form.reportValidity()) return;
 
   setBusy(true);
+  if (runtimeConfig.turnstileSiteKey && !turnstileToken() && turnstileStatus) {
+    turnstileStatus.hidden = false;
+  }
 
   try {
     const response = await fetch("/api/leads", {
@@ -121,6 +125,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     statusEl.textContent = `Could not capture yet: ${error.message}`;
   } finally {
+    if (turnstileStatus) turnstileStatus.hidden = true;
     setBusy(false);
   }
 });
@@ -174,6 +179,7 @@ function stepIsValid(index) {
 function payload() {
   const data = new FormData(form);
   const params = new URLSearchParams(window.location.search);
+  const introRef = sanitizeIntroRef(params.get("ref"));
 
   return {
     identity: data.get("identity"),
@@ -193,7 +199,7 @@ function payload() {
     turnstileToken: turnstileToken(),
     source: "online",
     page_path: window.location.pathname,
-    referrer: document.referrer,
+    referrer: introRef ? `ref:${introRef}` : document.referrer,
     utm_source: params.get("utm_source") || "",
     utm_medium: params.get("utm_medium") || "",
     utm_campaign: params.get("utm_campaign") || "",
@@ -316,6 +322,15 @@ function showSuccess(result) {
       form.querySelector("#copy-ref-button").textContent = ref;
     }
   });
+  const shareUrl = buildIntroShareUrl(ref);
+  form.querySelector("#copy-share-button")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      form.querySelector("#copy-share-button").textContent = "Intro link copied";
+    } catch {
+      form.querySelector("#copy-share-button").textContent = shareUrl;
+    }
+  });
   form.querySelector("#send-another-button")?.addEventListener("click", () => window.location.reload());
 
   routePreview.textContent = lead.route.title;
@@ -331,6 +346,26 @@ function formatReference(leadId, requestId) {
   const raw = String(leadId || requestId || "");
   if (!raw) return "—";
   return raw.slice(0, 8).toUpperCase();
+}
+
+function sanitizeIntroRef(value) {
+  const ref = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, "");
+  return ref.slice(0, 40);
+}
+
+function buildIntroShareUrl(refSlug) {
+  const url = new URL(window.location.origin + "/");
+  const params = new URLSearchParams(window.location.search);
+  const campaign = params.get("utm_campaign");
+  const source = params.get("utm_source") || "intro";
+  url.searchParams.set("ref", refSlug.toLowerCase());
+  if (campaign) url.searchParams.set("utm_campaign", campaign);
+  url.searchParams.set("utm_source", source);
+  url.searchParams.set("utm_medium", "share");
+  return url.toString();
 }
 
 function setBusy(isBusy) {
@@ -372,16 +407,20 @@ function renderRuntimeMode() {
 function renderTurnstile() {
   if (!runtimeConfig.turnstileSiteKey || !turnstileSlot) return;
 
+  turnstileSlot.textContent = "Loading bot check…";
+
   const script = document.createElement("script");
   script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
   script.async = true;
   script.defer = true;
+  script.onload = () => {
+    turnstileSlot.textContent = "";
+    const widget = document.createElement("div");
+    widget.className = "cf-turnstile";
+    widget.dataset.sitekey = runtimeConfig.turnstileSiteKey;
+    turnstileSlot.append(widget);
+  };
   document.head.append(script);
-
-  const widget = document.createElement("div");
-  widget.className = "cf-turnstile";
-  widget.dataset.sitekey = runtimeConfig.turnstileSiteKey;
-  turnstileSlot.append(widget);
 }
 
 function turnstileToken() {
