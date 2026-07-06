@@ -5,24 +5,25 @@ const printOnly = process.argv.includes("--print-only");
 const channel = JSON.parse(readFileSync("data/channel-receipts.json", "utf8"));
 
 const vars = {
-  OFFERS_SENT: String(channel.sent || 0),
-  REPLIES: String(channel.replies || 0),
-  L2_RECEIPTS: String(channel.L2_payments || 0),
+  OFFERS_SENT: String(channel.sent ?? 0),
+  REPLIES: String(channel.replies ?? 0),
+  L2_RECEIPTS: String(channel.L2_payments ?? 0),
+  COMMERCIAL_ARMED: "true",
 };
 
-console.log("Heartbeat commercial vars from channel-receipts.json:");
+console.log("Heartbeat commercial vars from data/channel-receipts.json:");
 console.log(JSON.stringify(vars, null, 2));
 
 if (printOnly) {
-  console.log("\nTo apply to Cloudflare gateway-heartbeat worker:");
+  console.log("\nTo apply to Cloudflare gateway-ops worker:");
   for (const [key, value] of Object.entries(vars)) {
-    console.log(`  wrangler variable set ${key} --stdin --service gateway-heartbeat  # value: ${value}`);
+    console.log(`  cd workers/gateway-ops && wrangler variable set ${key} --stdin  # ${value}`);
   }
   process.exit(0);
 }
 
 for (const [key, value] of Object.entries(vars)) {
-  const result = spawnSync("wrangler", ["variable", "set", key, "--stdin", "--cwd", "workers/gateway-heartbeat"], {
+  const result = spawnSync("wrangler", ["variable", "set", key, "--stdin", "--cwd", "workers/gateway-ops"], {
     input: value,
     encoding: "utf8",
     shell: false,
@@ -34,4 +35,4 @@ for (const [key, value] of Object.entries(vars)) {
   console.log(`set ${key}=${value}`);
 }
 
-console.log("Heartbeat worker vars synced.");
+console.log("gateway-ops commercial vars synced from real channel receipts.");

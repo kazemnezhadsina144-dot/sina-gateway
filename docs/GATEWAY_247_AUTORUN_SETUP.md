@@ -32,10 +32,14 @@ Do **not** point other products at `@Gateway_A`.
 
 ## Autorun motor (gateway only)
 
-| Motor | Schedule | Alerts |
-|-------|----------|--------|
-| **`gateway-ops`** CF worker | `*/15` cron | Watchdog RED + daily heartbeat → `@Gateway_A` |
-| Railway `sina-gateway` | always on | High-priority leads → `@Gateway_A` |
+| Tier | Motor | Schedule | Cost | Role |
+|------|-------|----------|------|------|
+| **1** | **`gateway-ops`** CF worker | `*/15` cron | Workers Paid | Real probes → Telegram on infra RED only |
+| **2** | UptimeRobot | 5 min GET | Free | External `/health` + `/ready` alerts |
+| **3** | GitHub Actions deadman | 2×/day | Public repo minutes | Direct Railway `/ready` — no nested CF curl |
+| — | Railway `sina-gateway` | always on | Railway | High-priority leads → `@Gateway_A` |
+
+**Not scheduled (ROI):** GHA heartbeat — CF owns the daily 07:00 PT window. Use `workflow_dispatch` for manual infra checks only.
 
 ```bash
 cd workers/gateway-ops
@@ -50,6 +54,14 @@ Manual smoke:
 curl -sS "https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=watchdog"
 curl -sS "https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=heartbeat"
 ```
+
+**Commercial heartbeat (real data only):** after logging sends in `data/channel-receipts.json`:
+
+```bash
+npm run sync:heartbeat
+```
+
+This sets `COMMERCIAL_ARMED=true` and syncs `OFFERS_SENT` / `REPLIES` / `L2_RECEIPTS` to `gateway-ops`. Until then, heartbeat reports `commercial.status: NOT_CONFIGURED` — no fake RED Telegram.
 
 ---
 
@@ -68,13 +80,11 @@ GET only — never POST `/api/leads` or loop endpoints.
 
 ## Optional backup cron (gateway only)
 
-If you want a tertiary ping **for gateway-ops only** (not NOOS):
-
 | Method | URL | Schedule |
 |--------|-----|----------|
-| GET | `https://gateway-ops…/run?mode=watchdog` | every 15 min |
+| GHA deadman | `GET /ready` on Railway | 2×/day (`06:00` + `18:00` UTC) |
 
-One job max. Do not cron other products from this channel's playbook.
+Do **not** duplicate `gateway-ops` `*/15` in GHA — that wastes minutes with zero extra signal.
 
 ---
 
@@ -89,6 +99,8 @@ One job max. Do not cron other products from this channel's playbook.
 
 ---
 
-## Heartbeat RED is expected
+## Heartbeat commercial gate
 
-`commercial: RED (offers_sent=0)` until Founder Audit outbound starts — infra can be green while commercial is red.
+- **Infra RED** → Telegram alert immediately.
+- **Commercial RED** → Telegram only when `COMMERCIAL_ARMED=true` and real `offers_sent` from `channel-receipts.json` is `0`.
+- **Before outbound starts** → `commercial.status: NOT_CONFIGURED` — no fake RED spam.

@@ -7,9 +7,6 @@
     "crons": ["*/15 * * * *"]
   },
   "vars": {
-    "GATEWAY_BASE_URL": "https://sina-gateway-production.up.railway.app",
-    "OFFERS_SENT": "0",
-    "REPLIES": "0",
-    "L2_RECEIPTS": "0"
+    "GATEWAY_BASE_URL": "https://sina-gateway-production.up.railway.app"
   }
 }

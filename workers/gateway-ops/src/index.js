@@ -1,7 +1,8 @@
 /**
- * Unified gateway ops — manual /run. 24/7 motor: gateway-ops CF cron.
+ * Unified gateway ops — 24/7 motor: CF cron probes Railway; Telegram only on real failures.
  */
 import { sendTelegramAlert } from "./telegram.js";
+
 export default {
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(runScheduled(env));
@@ -15,7 +16,7 @@ export default {
       }
       const mode = url.searchParams.get("mode") || "all";
       const result = await runManual(env, mode);
-      const ok = result.watchdog?.ok !== false && result.heartbeat?.verdict !== "RED";
+      const ok = isOpsHealthy(result);
       return Response.json(result, { status: ok ? 200 : 503 });
     }
     return new Response("gateway-ops ok", { status: 200 });
@@ -26,7 +27,7 @@ async function runScheduled(env) {
   const watchdog = await runWatchdog(env);
   let heartbeat = null;
   if (isHeartbeatWindow()) {
-    heartbeat = await runHeartbeat(env);
+    heartbeat = await runHeartbeat(env, { scheduled: true });
   }
   return { watchdog, heartbeat };
 }
@@ -37,9 +38,15 @@ async function runManual(env, mode) {
     out.watchdog = await runWatchdog(env);
   }
   if (mode === "heartbeat" || mode === "all") {
-    out.heartbeat = await runHeartbeat(env);
+    out.heartbeat = await runHeartbeat(env, { scheduled: false });
   }
   return out;
+}
+
+function isOpsHealthy(result) {
+  if (result.watchdog?.ok === false) return false;
+  if (result.heartbeat?.verdict === "RED") return false;
+  return true;
 }
 
 function isHeartbeatWindow() {
@@ -80,7 +87,7 @@ async function runWatchdog(env) {
   return { ok, checks, telegram, at: new Date().toISOString() };
 }
 
-async function runHeartbeat(env) {
+async function runHeartbeat(env, { scheduled }) {
   const baseUrl = (env.GATEWAY_BASE_URL || "").replace(/\/$/, "");
   const gateway = { health: "FAIL", ready: "FAIL", supabase_table: "FAIL", capture_mode: "unknown" };
 
@@ -105,25 +112,60 @@ async function runHeartbeat(env) {
     gateway.ready = "FAIL";
   }
 
-  const commercial = {
-    offers_sent: Number(env.OFFERS_SENT || 0),
-    replies: Number(env.REPLIES || 0),
-    L2_receipts: Number(env.L2_RECEIPTS || 0),
-    pipeline_by_level: {},
-  };
-
+  const commercial = readCommercial(env);
   const infraRed = Object.values(gateway).includes("FAIL");
-  const commercialRed = commercial.offers_sent === 0;
-  const verdict = infraRed || commercialRed ? "RED" : "GREEN";
+  const verdict = infraRed ? "RED" : "GREEN";
 
   const payload = verdictPayload({ gateway, commercial, verdict });
 
-  const telegram = await sendTelegramAlert(
-    env,
-    `<b>Sina Gateway heartbeat ${verdict}</b>\ninfra: ${infraRed ? "RED" : "GREEN"}\ncommercial: ${commercialRed ? "RED (offers_sent=0)" : "GREEN"}`,
-  );
+  let telegram = { ok: true, skipped: true };
+  if (infraRed) {
+    telegram = await sendTelegramAlert(
+      env,
+      `<b>Sina Gateway heartbeat RED</b>\ninfra: RED\n${JSON.stringify(gateway)}`,
+    );
+  } else if (commercial.armed && commercial.status === "RED") {
+    telegram = await sendTelegramAlert(
+      env,
+      `<b>Sina Gateway heartbeat commercial RED</b>\noffers_sent: ${commercial.offers_sent}\nreplies: ${commercial.replies}\nL2: ${commercial.L2_receipts}`,
+    );
+  } else if (scheduled && commercial.armed) {
+    telegram = await sendTelegramAlert(
+      env,
+      `<b>Sina Gateway heartbeat GREEN</b>\ninfra: PASS\noffers_sent: ${commercial.offers_sent} · replies: ${commercial.replies} · L2: ${commercial.L2_receipts}`,
+    );
+  }
 
   return { ...payload, telegram };
+}
+
+function readCommercial(env) {
+  const armed = env.COMMERCIAL_ARMED === "true";
+  const offers_sent = Number(env.OFFERS_SENT || 0);
+  const replies = Number(env.REPLIES || 0);
+  const L2_receipts = Number(env.L2_RECEIPTS || 0);
+
+  if (!armed) {
+    return {
+      armed: false,
+      status: "NOT_CONFIGURED",
+      offers_sent,
+      replies,
+      L2_receipts,
+      pipeline_by_level: {},
+      note: "Set COMMERCIAL_ARMED after syncing real channel-receipts via npm run sync:heartbeat",
+    };
+  }
+
+  const status = offers_sent === 0 ? "RED" : "GREEN";
+  return {
+    armed: true,
+    status,
+    offers_sent,
+    replies,
+    L2_receipts,
+    pipeline_by_level: {},
+  };
 }
 
 async function probe(url, name) {
@@ -164,7 +206,7 @@ async function probeConfig(url) {
   }
 }
 
-function verdictPayload({ gateway, commercial = defaultCommercial(), verdict = "RED", error = "" }) {
+function verdictPayload({ gateway, commercial = readCommercial({}), verdict = "RED", error = "" }) {
   return {
     at: new Date().toISOString(),
     gateway,
@@ -172,8 +214,4 @@ function verdictPayload({ gateway, commercial = defaultCommercial(), verdict = "
     verdict,
     error,
   };
-}
-
-function defaultCommercial() {
-  return { offers_sent: 0, replies: 0, L2_receipts: 0, pipeline_by_level: {} };
 }

@@ -1,36 +1,20 @@
-name: Gateway Watchdog Cron
+name: Gateway Watchdog Deadman
 
-# Backup watchdog — primary motor is Cloudflare gateway-ops (*/15).
-# Public repo + GitHub Pro: scheduled runs re-enabled for tertiary coverage.
+# ROI: 2x/day direct Railway probe — CF gateway-ops already runs */15.
+# No nested gateway-ops curl; no fake alert steps.
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "0 6,18 * * *"
   workflow_dispatch:
 
 jobs:
   probe:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
-      - name: Run gateway-ops watchdog
-        id: watchdog
+      - name: Probe production /ready
         run: |
           set -euo pipefail
-          url="https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=watchdog"
-          http_code=$(curl -sS -o /tmp/watchdog.json -w "%{http_code}" "$url")
-          echo "http_code=$http_code"
-          cat /tmp/watchdog.json
-          if [ "$http_code" != "200" ]; then
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-          if ! jq -e '.watchdog.ok == true' /tmp/watchdog.json >/dev/null; then
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-          echo "ok=true" >> "$GITHUB_OUTPUT"
-
-      - name: Alert on RED
-        if: failure()
-        run: |
-          echo "Watchdog RED — Telegram alerts fire via gateway-ops (@Gateway_A)."
-          exit 1
+          body=$(curl -fsS "https://sina-gateway-production.up.railway.app/ready")
+          echo "$body"
+          echo "$body" | jq -e '.ok == true and .captureMode == "supabase" and .supabaseTableReady == true'
