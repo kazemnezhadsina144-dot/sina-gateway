@@ -6,24 +6,6 @@ const origin = process.env.PRIVATE_TEST_ORIGIN || baseUrl;
 const stamp = new Date().toISOString().slice(0, 10);
 const contact = `private-test+${Date.now()}@example.com`;
 
-// #region agent log
-function debugLog(hypothesisId, message, data = {}) {
-  fetch("http://127.0.0.1:7918/ingest/97fa0794-3944-45de-9376-725c0c72a437", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "480798" },
-    body: JSON.stringify({
-      sessionId: "480798",
-      runId: process.env.DEBUG_RUN_ID || "pre-fix",
-      hypothesisId,
-      location: "scripts/private-test-runbook.js",
-      message,
-      data,
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-}
-// #endregion
-
 const steps = [];
 let failed = false;
 
@@ -92,15 +74,6 @@ async function capturePrivateTestLead() {
     });
     const body = await response.json();
     const ok = response.ok && body.ok && body.lead?.venture_route === "FounderAudit";
-    // #region agent log
-    debugLog("H2", "founder-audit capture", {
-      ok,
-      status: response.status,
-      venture_route: body.lead?.venture_route,
-      error: body.error || null,
-      details: body.details || null,
-    });
-    // #endregion
     return record(
       "browser-capture",
       ok,

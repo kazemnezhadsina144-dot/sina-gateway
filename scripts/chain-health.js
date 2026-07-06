@@ -3,24 +3,6 @@ const baseUrl = (process.env.CHAIN_HEALTH_BASE_URL || process.env.SMOKE_BASE_URL
   "",
 );
 
-// #region agent log
-function debugLog(hypothesisId, message, data = {}) {
-  fetch("http://127.0.0.1:7918/ingest/97fa0794-3944-45de-9376-725c0c72a437", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "480798" },
-    body: JSON.stringify({
-      sessionId: "480798",
-      runId: process.env.DEBUG_RUN_ID || "pre-fix",
-      hypothesisId,
-      location: "scripts/chain-health.js",
-      message,
-      data,
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-}
-// #endregion
-
 const checks = [
   { name: "health", path: "/health", expectOk: true },
   { name: "ready", path: "/ready", expectOk: true, deep: true },
@@ -36,9 +18,6 @@ for (const check of checks) {
   results.push(row);
   if (!row.ok) failed = true;
   console.log(`${row.ok ? "PASS" : "FAIL"} ${check.name}: ${row.detail}`);
-  // #region agent log
-  debugLog("H4", `http check ${check.name}`, { ok: row.ok, detail: row.detail, baseUrl });
-  // #endregion
 }
 
 let supabase = { ok: false, detail: "not run" };
@@ -66,9 +45,6 @@ try {
     failed = true;
   }
   console.log(`${supabase.ok ? "PASS" : "FAIL"} supabase-verify: ${supabase.detail}`);
-  // #region agent log
-  debugLog("H3", "supabase verify", { ok: supabase.ok, detail: supabase.detail });
-  // #endregion
 } catch (error) {
   supabase = { ok: false, detail: error.message };
   failed = true;
@@ -83,9 +59,6 @@ console.log(`- supabase-verify: ${supabase.ok ? "PASS" : "FAIL"}`);
 
 if (failed) process.exit(1);
 console.log("\nChain health passed.");
-// #region agent log
-debugLog("H5", "chain health complete", { failed, results, supabaseOk: supabase.ok });
-// #endregion
 
 async function runCheck(check) {
   try {
