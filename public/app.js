@@ -1,4 +1,6 @@
 const STEP_LABELS = ["Who you are", "Goal", "Value", "Timeline", "Contact"];
+const DRAFT_KEY = "sina_gateway_draft_v1";
+const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
 
 const VALUE_VISIBILITY = {
   client: ["deal", "project", "lead", "risk"],
@@ -110,6 +112,12 @@ const stepError = document.querySelector("#step-error");
 const valueGrid = document.querySelector("#value-grid");
 const buildmatchPanel = document.querySelector("#buildmatch-industry-panel");
 const turnstileSlot = document.querySelector("#turnstile-slot");
+const stepAnnouncer = document.querySelector("#step-announcer");
+const workspaceTabs = document.querySelector("#workspace-tabs");
+const previewPane = document.querySelector("#preview-pane");
+const routeMapList = document.querySelector("#route-map-list");
+
+const demoMode = new URLSearchParams(window.location.search).get("demo") === "1";
 
 const isMobileWizard = () =>
   window.matchMedia("(max-width: 820px)").matches || window.matchMedia("(pointer: coarse)").matches;
@@ -128,6 +136,7 @@ form.addEventListener("change", (event) => {
   }
   updateMirror();
   clearStepError();
+  saveDraft();
   if (shouldAutoAdvance() && currentStep < steps.length - 1 && stepIsValid(currentStep)) {
     setTimeout(() => goTo(currentStep + 1), 120);
   }
@@ -148,11 +157,20 @@ nextButton.addEventListener("click", () => {
   goTo(Math.min(steps.length - 1, currentStep + 1));
 });
 
+form.addEventListener("input", () => {
+  saveDraft();
+});
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   statusEl.textContent = "";
 
   if (!form.reportValidity()) return;
+
+  if (demoMode) {
+    showDemoSuccess();
+    return;
+  }
 
   setBusy(true);
 
@@ -187,14 +205,20 @@ async function boot() {
     Object.assign(BUILDMATCH_INDUSTRIES, runtimeConfig.buildmatchIndustries);
   }
   applyCampaignWedge();
+  renderDemoMode();
   renderRuntimeMode();
   renderTurnstile();
   wireCardGrids();
   wireHeroScroll();
+  wireMobileTabs();
+  wireRouteMap();
+  const restored = restoreDraft();
   syncBuildMatchPanel();
   syncValueOptions();
-  goTo(0);
+  goTo(restored ? currentStep : 0);
   updateMirror();
+  syncMobileLayout();
+  window.addEventListener("resize", syncMobileLayout);
 }
 
 function applyCampaignWedge() {
@@ -219,6 +243,125 @@ function applyCampaignWedge() {
     if (buildmatchIdentity) buildmatchIdentity.checked = true;
     syncBuildMatchPanel();
   }
+}
+
+function renderDemoMode() {
+  if (!demoMode || !previewBanner) return;
+  previewBanner.hidden = false;
+  previewBanner.classList.add("demo-banner");
+  previewBanner.textContent = "Demo mode — answers update the preview but nothing is saved.";
+}
+
+function wireMobileTabs() {
+  if (!workspaceTabs) return;
+  workspaceTabs.querySelectorAll(".workspace-tab").forEach((tab) => {
+    tab.addEventListener("click", () => setMobileTab(tab.dataset.tab));
+  });
+}
+
+function syncMobileLayout() {
+  const mobile = isMobileWizard();
+  workspace?.classList.toggle("is-mobile-tabs", mobile);
+  if (workspaceTabs) workspaceTabs.hidden = !mobile;
+
+  if (!mobile) {
+    document.querySelectorAll(".workspace-pane").forEach((pane) => {
+      pane.classList.add("is-active");
+    });
+    return;
+  }
+
+  const activeTab = workspaceTabs?.querySelector(".workspace-tab.is-active")?.dataset.tab || "form";
+  setMobileTab(activeTab);
+}
+
+function setMobileTab(tab) {
+  workspaceTabs?.querySelectorAll(".workspace-tab").forEach((button) => {
+    const active = button.dataset.tab === tab;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", active ? "true" : "false");
+  });
+
+  document.querySelectorAll(".workspace-pane").forEach((pane) => {
+    pane.classList.toggle("is-active", pane.dataset.pane === tab);
+  });
+}
+
+function wireRouteMap() {
+  routeMapList?.querySelectorAll(".route-map-item").forEach((item) => {
+    item.querySelector(".route-map-hit")?.addEventListener("click", () => {
+      highlightRouteMapItem(item);
+      const lane = item.dataset.lane;
+      if (workspace && lane) workspace.dataset.lane = lane;
+      document.getElementById("details-routes")?.removeAttribute("open");
+      if (workspace?.classList.contains("is-mobile-tabs")) setMobileTab("preview");
+      document.getElementById("intake")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+function highlightRouteMapItem(activeItem) {
+  routeMapList?.querySelectorAll(".route-map-item").forEach((item) => {
+    item.classList.toggle("is-highlighted", item === activeItem);
+  });
+}
+
+function announceStep(index) {
+  if (!stepAnnouncer) return;
+  stepAnnouncer.textContent = `Now on ${STEP_LABELS[index]}, step ${index + 1} of ${steps.length}.`;
+}
+
+function saveDraft() {
+  if (demoMode) return;
+  const fields = Object.fromEntries(new FormData(form).entries());
+  fields._last_step = String(currentStep);
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ savedAt: Date.now(), fields }));
+  } catch {
+    // ignore quota errors
+  }
+}
+
+function restoreDraft() {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return false;
+    const draft = JSON.parse(raw);
+    if (!draft?.savedAt || Date.now() - draft.savedAt > DRAFT_TTL_MS) {
+      sessionStorage.removeItem(DRAFT_KEY);
+      return false;
+    }
+
+    for (const [name, value] of Object.entries(draft.fields || {})) {
+      if (name === "website" || name === "_last_step") continue;
+      const field = form.elements.namedItem(name);
+      if (!field) continue;
+
+      if (field instanceof RadioNodeList) {
+        const radio = form.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (radio) radio.checked = true;
+        continue;
+      }
+
+      if (field.type === "checkbox") {
+        field.checked = value === "on";
+      } else {
+        field.value = value;
+      }
+    }
+
+    const lastStep = Number(draft.fields?._last_step);
+    if (Number.isFinite(lastStep) && lastStep >= 0 && lastStep < steps.length) {
+      currentStep = lastStep;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearDraft() {
+  sessionStorage.removeItem(DRAFT_KEY);
 }
 
 function shouldAutoAdvance() {
@@ -358,9 +501,11 @@ function goTo(index) {
   backButton.hidden = index === 0;
   nextButton.hidden = index === steps.length - 1;
   submitButton.hidden = index !== steps.length - 1;
-  if (previewBanner) previewBanner.hidden = index === steps.length - 1;
+  if (previewBanner && !demoMode) previewBanner.hidden = index === steps.length - 1;
   clearStepError();
+  announceStep(index);
   updateMirror();
+  saveDraft();
 
   const focusTarget = steps[index]?.querySelector(
     "input:not([type='hidden']):not(.trap input), textarea, select, button",
@@ -656,10 +801,12 @@ function previewLaneDetail(lead, copy) {
 }
 
 function showSuccess(result) {
+  clearDraft();
   const lead = result.lead;
   const template = document.querySelector("#success-template");
   const node = template.content.cloneNode(true);
   const ref = formatReference(lead.id, result.requestId);
+  const successEl = node.querySelector(".success");
 
   node.querySelector("h2").textContent = lead.route.industry
     ? `Inquiry received — BuildMatch (${lead.route.industry})`
@@ -671,18 +818,33 @@ function showSuccess(result) {
   } else {
     reasonEl.hidden = true;
   }
-  node.querySelector(".success-ref").textContent = `Confirmation code ${ref} — save this if you follow up.`;
+  const refEl = node.querySelector(".success-ref");
+  refEl.textContent = `Confirmation code ${ref} — save this if you follow up.`;
   node.querySelector(".success-review").textContent =
     "Sina reviews inquiries within 48 hours on business days.";
   node.querySelector(".success-next").textContent = `Next: ${lead.route.nextStep}`;
+  buildSuccessMinimap(lead, node.querySelector(".success-minimap"));
 
   form.replaceChildren(node);
-  form.querySelector("#copy-ref-button")?.addEventListener("click", async () => {
+  window.requestAnimationFrame(() => {
+    successEl?.classList.add("is-entering");
+    window.setTimeout(() => refEl?.classList.add("is-revealed"), 140);
+  });
+
+  const copyBtn = form.querySelector("#copy-ref-button");
+  const copyToast = form.querySelector("#copy-toast");
+  copyBtn?.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(ref);
-      form.querySelector("#copy-ref-button").textContent = "Copied";
+      copyBtn.textContent = "Copied";
+      copyBtn.classList.add("is-copied");
+      if (copyToast) {
+        copyToast.hidden = false;
+        copyToast.textContent = "Confirmation code copied.";
+        copyToast.classList.add("is-visible");
+      }
     } catch {
-      form.querySelector("#copy-ref-button").textContent = ref;
+      copyBtn.textContent = ref;
     }
   });
   form.querySelector("#send-another-button")?.addEventListener("click", () => window.location.reload());
@@ -707,6 +869,35 @@ function showSuccess(result) {
     { title: lead.route.title, industry: lead.route.industry },
     { identity: lead.lead_type === "collaborator" ? "builder" : lead.lead_type, project_type: lead.project_type },
   );
+  syncMobileLayout();
+}
+
+function showDemoSuccess() {
+  const lead = routingLead();
+  const route = routeVenture(lead);
+  const copy = resolveRouteCopy(route, lead);
+  showSuccess({
+    requestId: "DEMO0000",
+    lead: {
+      id: "demo000000000000",
+      route: { ...copy, title: copy.title },
+      route_reason: previewRouteReason(lead, route),
+      priority_tag: tagPriority(lead),
+      lead_type: formatIdentityLabel(lead),
+    },
+  });
+}
+
+function buildSuccessMinimap(lead, container) {
+  if (!container) return;
+  const label = lead.route.industry ? `BuildMatch · ${lead.route.industry}` : lead.route.title;
+  container.innerHTML = `
+    <span class="route-node is-lit">You</span>
+    <span class="route-edge is-lit"></span>
+    <span class="route-node is-lit">Gateway</span>
+    <span class="route-edge is-lit"></span>
+    <span class="route-node route-node-dest is-lit">${label}</span>
+  `;
 }
 
 function formatReference(leadId, requestId) {

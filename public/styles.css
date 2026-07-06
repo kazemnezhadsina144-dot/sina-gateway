@@ -914,7 +914,10 @@ button.ghost.is-submitting::after {
   .hero-compact h1,
   .buildmatch-panel,
   .identity-card .card-face,
-  .option-grid label:not(.identity-card) > span {
+  .option-grid label:not(.identity-card) > span,
+  .success.is-entering,
+  .success-ref.is-revealed,
+  .copy-toast.is-visible {
     animation: none;
     transition: none;
   }
@@ -1074,6 +1077,256 @@ legend {
   height: 18px;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.workspace-tabs {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.workspace-tab {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: #fff;
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.workspace-tab.is-active {
+  border-color: var(--lane-active-border, rgba(31, 111, 74, 0.45));
+  background: var(--lane-active-soft, #eaf4ed);
+  color: var(--lane-active, var(--green));
+}
+
+.trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: #f3f6f4;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.trust-strip a {
+  color: var(--blue);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.trust-dot {
+  color: var(--line);
+}
+
+.actions-bar {
+  margin-top: 24px;
+}
+
+.route-map-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.55;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.route-map-hit:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.route-map-item.is-highlighted .route-map-hit {
+  background: var(--lane-active-soft, #eaf4ed);
+  color: var(--ink);
+}
+
+.route-map-item.is-highlighted .route-map-hit strong {
+  color: var(--lane-active, var(--green));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .has-tip {
+    position: relative;
+  }
+
+  .has-tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    z-index: 5;
+    width: max-content;
+    max-width: 220px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    background: #fff;
+    box-shadow: var(--shadow);
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 140ms ease, transform 140ms ease;
+  }
+
+  .has-tip:hover::after,
+  .has-tip:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success.is-entering {
+  animation: success-enter 420ms ease;
+}
+
+.success-ref.is-revealed {
+  animation: ref-reveal 520ms ease;
+}
+
+.success-minimap {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0;
+  padding: 12px;
+  border: 1px solid var(--lane-active-border, var(--line));
+  border-radius: var(--radius-card);
+  background: var(--lane-active-soft, #eaf4ed);
+  font-size: 0.75rem;
+}
+
+.success-timeline {
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.success-timeline li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.success-timeline li::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: #fff;
+}
+
+.success-timeline li.is-done::before {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.success-timeline li.is-current::before {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(31, 111, 74, 0.18);
+}
+
+.success-timeline li span {
+  font-weight: 850;
+  color: var(--ink);
+}
+
+.copy-toast {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-control);
+  background: #eaf4ed;
+  color: var(--green);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.copy-toast.is-visible {
+  animation: toast-pop 320ms ease;
+}
+
+#copy-ref-button.is-copied {
+  border-color: var(--green);
+  background: #eaf4ed;
+  color: var(--green);
+}
+
+@keyframes success-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ref-reveal {
+  from {
+    opacity: 0;
+    letter-spacing: 0.08em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: normal;
+  }
+}
+
+@keyframes toast-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-banner {
+  border-color: rgba(40, 93, 143, 0.35);
+  background: #edf3fa;
+  color: #285d8f;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -1199,6 +1452,53 @@ select:focus-visible {
 
   .workspace {
     grid-template-columns: 1fr;
+  }
+
+  .workspace-tabs {
+    display: grid;
+  }
+
+  .workspace.is-mobile-tabs .workspace-pane {
+    display: none;
+  }
+
+  .workspace.is-mobile-tabs .workspace-pane.is-active {
+    display: block;
+  }
+
+  .wizard {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .actions-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    margin: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: rgba(247, 247, 242, 0.96);
+    backdrop-filter: blur(10px);
+  }
+
+  .actions-bar .actions {
+    margin-top: 0;
+  }
+
+  .actions-bar .step-error {
+    margin: 0 0 8px;
+  }
+
+  .identity-card .card-face,
+  .intent-card .card-face,
+  .option-grid label:not(.identity-card) > span,
+  .workspace-tab,
+  button,
+  a.ghost,
+  a.primary {
+    min-height: 44px;
   }
 
   h1 {

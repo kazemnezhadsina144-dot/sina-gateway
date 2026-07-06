@@ -15,6 +15,7 @@
     <link rel="canonical" href="https://sina-gateway-production.up.railway.app/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="preload" href="/styles.css" as="style" />
   </head>
   <body>
     <header class="site-header">
@@ -40,7 +41,12 @@
       </section>
 
       <section class="workspace" id="intake" aria-label="Gateway wizard" data-lane="">
-        <form id="gateway-form" class="wizard">
+        <div class="workspace-tabs" id="workspace-tabs" role="tablist" aria-label="Intake views" hidden>
+          <button type="button" class="workspace-tab is-active" id="tab-form" role="tab" aria-selected="true" aria-controls="gateway-form" data-tab="form">Form</button>
+          <button type="button" class="workspace-tab" id="tab-preview" role="tab" aria-selected="false" aria-controls="preview-pane" data-tab="preview">Preview</button>
+        </div>
+
+        <form id="gateway-form" class="wizard workspace-pane is-active" data-pane="form" role="tabpanel" aria-labelledby="tab-form">
           <p class="mode-banner" id="mode-banner" hidden></p>
           <p class="preview-banner" id="preview-banner">Preview only — nothing is saved until you submit on the last step.</p>
 
@@ -62,6 +68,8 @@
             <span id="priority-preview" class="priority-chip">Priority: pending</span>
           </div>
 
+          <p class="step-announcer visually-hidden" id="step-announcer" aria-live="polite" aria-atomic="true"></p>
+
           <fieldset class="step is-active" data-step="0">
             <legend>Who are you?</legend>
             <div class="option-grid identity-grid" data-card-grid="identity">
@@ -70,7 +78,7 @@
                 <span class="card-face" data-lane="SourceA">
                   <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4V7zm2 2v6h12V9H6zm3 8h6v2H9v-2z" fill="currentColor"/></svg>
                   <span class="card-title">Client</span>
-                  <span class="card-hint">SourceA · governed AI execution</span>
+                  <span class="card-hint has-tip" data-tip="Governed AI execution for workflows and operational pressure">SourceA · governed AI execution</span>
                   <span class="card-check" aria-hidden="true">✓</span>
                 </span>
               </label>
@@ -79,7 +87,7 @@
                 <span class="card-face" data-lane="Noetfield">
                   <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6h16v12H4zm2-2h12V8H6v8zm2-6h8v2H8v-2zm0 3h5v2H8v-2z" fill="currentColor"/></svg>
                   <span class="card-title">Investor</span>
-                  <span class="card-hint">Noetfield · strategy &amp; capital</span>
+                  <span class="card-hint has-tip" data-tip="Strategic ventures, partnerships, and capital context">Noetfield · strategy &amp; capital</span>
                   <span class="card-check" aria-hidden="true">✓</span>
                 </span>
               </label>
@@ -88,7 +96,7 @@
                 <span class="card-face" data-lane="Forge">
                   <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l4 4-8 8H6v-4l8-8zm1-1l1-1 2 2-1 1-2-2z" fill="currentColor"/></svg>
                   <span class="card-title">Collaborator</span>
-                  <span class="card-hint">Forge · build &amp; ship together</span>
+                  <span class="card-hint has-tip" data-tip="Builders, tools, and collaboration on agentic systems">Forge · build &amp; ship together</span>
                   <span class="card-check" aria-hidden="true">✓</span>
                 </span>
               </label>
@@ -97,7 +105,7 @@
                 <span class="card-face" data-lane="BuildMatch">
                   <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3v-9zm2 2v5h14v-5l-7-5-7 5zm4 0h6v5H9v-5z" fill="currentColor"/></svg>
                   <span class="card-title">BuildMatch</span>
-                  <span class="card-hint">Vancouver property &amp; trades</span>
+                  <span class="card-hint has-tip" data-tip="Vancouver platform — Construction and Home services reviewed separately">Vancouver property &amp; trades</span>
                   <span class="card-check" aria-hidden="true">✓</span>
                 </span>
               </label>
@@ -106,7 +114,7 @@
                 <span class="card-face" data-lane="Personal">
                   <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z" fill="currentColor"/></svg>
                   <span class="card-title">Network</span>
-                  <span class="card-hint">Personal · warm intros</span>
+                  <span class="card-hint has-tip" data-tip="Warm intros and people context for the network line">Personal · warm intros</span>
                   <span class="card-check" aria-hidden="true">✓</span>
                 </span>
               </label>
@@ -270,22 +278,30 @@
                 Business and referral inquiries only. Details are used for sorting and follow-up within the
                 relevant product line — not sold or shared outside review.
               </p>
+              <p class="trust-strip" id="trust-strip">
+                <span>Live capture</span>
+                <span class="trust-dot" aria-hidden="true">·</span>
+                <span>48h review</span>
+                <span class="trust-dot" aria-hidden="true">·</span>
+                <a href="/privacy.html">Privacy</a>
+              </p>
               <div id="turnstile-slot"></div>
             </div>
           </fieldset>
 
-          <p class="step-error" id="step-error" role="alert" hidden></p>
-
-          <div class="actions">
-            <button type="button" class="ghost" id="back-button">Back</button>
-            <button type="button" id="next-button">Next</button>
-            <button type="submit" id="submit-button" hidden>Submit inquiry</button>
+          <div class="actions-bar" id="actions-bar">
+            <p class="step-error" id="step-error" role="alert" hidden></p>
+            <div class="actions">
+              <button type="button" class="ghost" id="back-button">Back</button>
+              <button type="button" id="next-button">Next</button>
+              <button type="submit" id="submit-button" hidden>Submit inquiry</button>
+            </div>
           </div>
 
           <p class="status" id="form-status" role="status" aria-live="polite"></p>
         </form>
 
-        <aside class="route-console" aria-label="Live routing console">
+        <aside class="route-console workspace-pane" id="preview-pane" data-pane="preview" role="tabpanel" aria-label="Live routing console" aria-labelledby="tab-preview">
           <div class="route-diagram" id="route-diagram" aria-hidden="true">
             <div class="route-node route-node-you is-lit">You</div>
             <div class="route-edge route-edge-a" id="route-edge-a"></div>
@@ -332,16 +348,16 @@
           <p class="route-map-lede">
             Sina Gateway sorts inquiries to named product lines — not a black-hole contact form.
           </p>
-          <ul class="route-map-list">
-            <li><strong>SourceA</strong> — governed AI execution and agentic work with control.</li>
-            <li><strong>Noetfield</strong> — strategic partnership and venture design.</li>
-            <li><strong>TrustField</strong> — trust, governance, and compliance pressure.</li>
-            <li><strong>BuildMatch</strong> — Vancouver platform for local property and trade work.</li>
-            <li class="route-map-sub"><strong>Construction</strong> — building, trades, renovations, site work.</li>
-            <li class="route-map-sub"><strong>Home services</strong> — maintenance, repairs, residential specialists.</li>
-            <li><strong>Forge</strong> — builders, tools, and collaboration energy.</li>
-            <li><strong>Personal</strong> — friends, warm intros, and network context.</li>
-            <li><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</li>
+          <ul class="route-map-list" id="route-map-list">
+            <li class="route-map-item" data-lane="SourceA"><button type="button" class="route-map-hit"><strong>SourceA</strong> — governed AI execution and agentic work with control.</button></li>
+            <li class="route-map-item" data-lane="Noetfield"><button type="button" class="route-map-hit"><strong>Noetfield</strong> — strategic partnership and venture design.</button></li>
+            <li class="route-map-item" data-lane="TrustField"><button type="button" class="route-map-hit"><strong>TrustField</strong> — trust, governance, and compliance pressure.</button></li>
+            <li class="route-map-item" data-lane="BuildMatch"><button type="button" class="route-map-hit"><strong>BuildMatch</strong> — Vancouver platform for local property and trade work.</button></li>
+            <li class="route-map-sub route-map-item" data-lane="BuildMatch" data-industry="Construction"><button type="button" class="route-map-hit"><strong>Construction</strong> — building, trades, renovations, site work.</button></li>
+            <li class="route-map-sub route-map-item" data-lane="BuildMatch" data-industry="Home services"><button type="button" class="route-map-hit"><strong>Home services</strong> — maintenance, repairs, residential specialists.</button></li>
+            <li class="route-map-item" data-lane="Forge"><button type="button" class="route-map-hit"><strong>Forge</strong> — builders, tools, and collaboration energy.</button></li>
+            <li class="route-map-item" data-lane="Personal"><button type="button" class="route-map-hit"><strong>Personal</strong> — friends, warm intros, and network context.</button></li>
+            <li class="route-map-item" data-lane="FounderAudit"><button type="button" class="route-map-hit"><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</button></li>
           </ul>
         </div>
       </details>
@@ -376,14 +392,21 @@
     </footer>
 
     <template id="success-template">
-      <div class="success">
+      <div class="success is-entering">
         <p class="eyebrow">Inquiry received</p>
         <h2></h2>
+        <div class="success-minimap" aria-label="Your routing path"></div>
         <p class="success-route"></p>
         <p class="success-reason"></p>
+        <ol class="success-timeline">
+          <li class="is-done"><span>Confirmation code</span> — save it for follow-up</li>
+          <li class="is-current"><span>Review</span> — within 48 business hours</li>
+          <li><span>Follow-up</span> — Sina reaches out via your contact</li>
+        </ol>
         <p class="success-ref"></p>
         <p class="success-review"></p>
         <p class="success-next"></p>
+        <p class="copy-toast" id="copy-toast" role="status" aria-live="polite" hidden></p>
         <div class="success-actions">
           <button type="button" class="ghost" id="copy-ref-button">Copy confirmation code</button>
           <a class="ghost" id="telegram-link" href="https://t.me/Gateway_A" rel="noopener noreferrer">@Gateway_A</a>
