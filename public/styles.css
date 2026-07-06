@@ -78,7 +78,117 @@ h1 {
   max-width: 680px;
   color: var(--muted);
   font-size: 1.15rem;
-  line-height: 1.7;
+  line-height: 1.55;
+}
+
+.route-map,
+.what-next {
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.route-map h2,
+.what-next h2 {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+}
+
+.route-map-lede,
+.what-next-note {
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.route-map-list,
+.what-next-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.route-map-list li + li,
+.what-next-list li + li {
+  margin-top: 8px;
+}
+
+.what-next-list {
+  padding-left: 1.35rem;
+}
+
+.privacy-notice {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.consent a {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.site-footer {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.site-footer p {
+  margin: 0 0 8px;
+}
+
+.site-footer a {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.legal-page {
+  max-width: 720px;
+}
+
+.legal-page h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.legal-block {
+  margin: 28px 0;
+}
+
+.legal-block h2 {
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+}
+
+.legal-block p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.legal-back a {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.success-ref {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.success-next {
+  color: var(--muted);
+}
+
+.success-actions {
+  margin-top: 16px;
 }
 
 .signal-panel,

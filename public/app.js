@@ -93,9 +93,13 @@ form.addEventListener("submit", async (event) => {
     });
 
     const result = await response.json();
-    if (!response.ok) throw new Error(result.details || result.error || "Capture failed");
+    if (!response.ok) {
+      const detail = result.details || result.error || "Capture failed";
+      const ref = result.requestId ? ` Reference: ${formatReference(result.requestId)}.` : "";
+      throw new Error(`${detail}${ref}`);
+    }
 
-    showSuccess(result.lead);
+    showSuccess(result);
   } catch (error) {
     statusEl.textContent = `Could not capture yet: ${error.message}`;
   } finally {
@@ -108,10 +112,18 @@ boot();
 async function boot() {
   runtimeConfig = await loadConfig();
   if (runtimeConfig.routes) ROUTES = runtimeConfig.routes;
+  applyCampaignHeadline();
   renderRuntimeMode();
   renderTurnstile();
   goTo(0);
   updateMirror();
+}
+
+function applyCampaignHeadline() {
+  const params = new URLSearchParams(window.location.search);
+  const title = document.querySelector("#page-title");
+  if (!title || params.get("utm_campaign") !== "founder-audit") return;
+  title.textContent = "Founder Audit intake — solo technical founders.";
 }
 
 function goTo(index) {
@@ -170,7 +182,7 @@ function updateMirror() {
   routePreview.textContent = copy.title;
   routePromise.textContent = copy.promise;
   routeTitle.textContent = copy.title;
-  routeDetail.textContent = copy.nextStep;
+  routeDetail.textContent = previewLaneDetail(lead, copy);
   leadType.textContent = lead.identity ? (lead.identity === "builder" ? "collaborator" : lead.identity) : "Pending";
   valuePreview.textContent = lead.value || "Pending";
   urgencyPreview.textContent = lead.urgency || "Pending";
@@ -222,21 +234,53 @@ function mirrorLine(identity) {
     return "You are in the Founder Audit lane: a 5-day audit of how you actually run your company.";
   }
 
-  return lines[identity] || "A short agentic intake for clients, investors, collaborators, construction leads, and friends.";
+  return lines[identity] || "Use the steps below — the lane preview updates as you answer.";
 }
 
-function showSuccess(lead) {
+function previewLaneDetail(lead, copy) {
+  if (!lead.identity) {
+    return "Identity, intent, value, and urgency determine your review lane.";
+  }
+  if (!lead.intent || !lead.value || !lead.urgency) {
+    const hints = {
+      client: "Likely client operating intake — finish the steps to confirm the lane.",
+      investor: "Likely capital and strategic review — finish the steps to confirm the lane.",
+      builder: "Likely Forge / collaborator review — finish the steps to confirm the lane.",
+      construction: "Likely BuildMatch construction review — finish the steps to confirm the lane.",
+      friend: "Likely Personal / network lane — finish the steps to confirm the lane.",
+    };
+    return hints[lead.identity] || `Likely ${copy.title} — finish the steps to confirm.`;
+  }
+  return copy.nextStep;
+}
+
+function showSuccess(result) {
+  const lead = result.lead;
   const template = document.querySelector("#success-template");
   const node = template.content.cloneNode(true);
+  const ref = formatReference(lead.id, result.requestId);
+
   node.querySelector("h2").textContent = `Routed to ${lead.route.title}`;
-  node.querySelector("p").textContent = `${lead.route.promise} Priority tagged as ${lead.priority_tag}.`;
+  node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
+  node.querySelector(".success-ref").textContent = `Reference ${ref} — keep this if you follow up.`;
+  node.querySelector(".success-next").textContent = `Next: ${lead.route.nextStep}`;
+
   form.replaceChildren(node);
+  form.querySelector("#send-another-button")?.addEventListener("click", () => window.location.reload());
+
   routePreview.textContent = lead.route.title;
   routePromise.textContent = lead.route.promise;
   routeTitle.textContent = lead.route.title;
   routeDetail.textContent = lead.route.nextStep;
   leadType.textContent = lead.lead_type;
   priorityPreview.textContent = `Priority: ${lead.priority_tag}`;
+  mirrorCopy.textContent = `Signal captured on the ${lead.route.title} lane.`;
+}
+
+function formatReference(leadId, requestId) {
+  const raw = String(leadId || requestId || "");
+  if (!raw) return "—";
+  return raw.slice(0, 8).toUpperCase();
 }
 
 function setBusy(isBusy) {
