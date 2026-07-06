@@ -13,6 +13,7 @@ async function main() {
   checks.push(await httpCheck("ready", `${baseUrl}/ready`, (b) => b.ok && b.supabaseTableReady));
   checks.push(await httpCheck("turnstile", `${baseUrl}/ready`, (b) => b.turnstileConfigured === true));
   checks.push(await httpCheck("notifications", `${baseUrl}/ready`, (b) => b.notificationsConfigured === true));
+  checks.push(run("monitors:verify"));
   checks.push(run("verify:supabase"));
   checks.push(run("verify:migration"));
   checks.push(run("private-test"));
@@ -30,7 +31,9 @@ async function main() {
   console.log(`\n${passed.length} pass · ${founder.length} founder · ${failed.length} fail`);
 
   if (failed.length) process.exit(1);
-  console.log("\nAutomated gates green. Founder still decides: D2 list, remove noindex, custom domain, public launch.");
+  console.log(
+    "\nAutomated gates green. Founder still decides: UptimeRobot dashboard, D2 list, remove noindex, custom domain, public launch.",
+  );
 }
 
 async function httpCheck(name, url, okFn) {

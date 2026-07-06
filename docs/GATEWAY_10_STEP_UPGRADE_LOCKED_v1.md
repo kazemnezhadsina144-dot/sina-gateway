@@ -151,7 +151,7 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 2 gateway-ops | **Done** — committed + CF cron live |
 | 3 migration | **Done** — `verify:migration` PASS · `CAPTURE_METADATA_ENABLED=true` on Railway |
 | 4 Turnstile | **Done** — keys on Railway · private-test bypass live |
-| 5 UptimeRobot | **Founder** — `data/gateway-external-monitors-v1.json` |
+| 5 UptimeRobot | **Founder** — arm 2 monitors · `npm run monitors:verify` (URLs must PASS first) |
 | 6 chain gate | **Done** — private-test 6/6 PASS |
 | 7 D2 list | **Founder** — fill 25 names (`npm run d3:status`) |
 | 8 notify test | **Done** — `test:notify-capture` PASS |

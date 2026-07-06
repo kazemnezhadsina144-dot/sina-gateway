@@ -48,6 +48,8 @@ npm run e2e:local
 npm run smoke
 npm run chain:health
 npm run private-test
+npm run launch:gate
+npm run monitors:verify
 ```
 
 ## Private test mode (plans 5–14)
