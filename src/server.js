@@ -354,6 +354,7 @@ async function readinessPayload() {
     supabaseTableReady: null,
     notificationsConfigured: telegramConfigured(process.env),
     turnstileConfigured: Boolean(process.env.TURNSTILE_SECRET_KEY),
+    captureMetadataEnabled: process.env.CAPTURE_METADATA_ENABLED === "true",
     testMode: process.env.TEST_MODE === "true",
   };
 
