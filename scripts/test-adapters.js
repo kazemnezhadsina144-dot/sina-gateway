@@ -3,7 +3,7 @@ import { enrichLead, validateLead } from "../src/gateway.js";
 
 const cases = [
   {
-    name: "construction routes to BuildMatch",
+    name: "legacy construction identity normalizes to BuildMatch Construction",
     input: {
       identity: "construction",
       intent: "refer",
@@ -12,7 +12,51 @@ const cases = [
       name: "Alex",
       contact: "alex@example.com",
     },
-    expected: { venture_route: "BuildMatch", priority_tag: "high" },
+    expected: {
+      identity: "buildmatch",
+      venture_route: "BuildMatch",
+      lead_type: "buildmatch",
+      project_type: "construction",
+      priority_tag: "high",
+    },
+  },
+  {
+    name: "buildmatch construction industry routes to BuildMatch",
+    input: {
+      identity: "buildmatch",
+      project_type: "construction",
+      intent: "refer",
+      value: "lead",
+      urgency: "now",
+      name: "Alex",
+      contact: "alex@example.com",
+    },
+    expected: {
+      venture_route: "BuildMatch",
+      lead_type: "buildmatch",
+      project_type: "construction",
+      route_reason: "You selected BuildMatch — Construction.",
+      priority_tag: "high",
+    },
+  },
+  {
+    name: "buildmatch home services routes to BuildMatch",
+    input: {
+      identity: "buildmatch",
+      project_type: "home_services",
+      intent: "hire",
+      value: "project",
+      urgency: "soon",
+      name: "Jamie",
+      contact: "jamie@example.com",
+    },
+    expected: {
+      venture_route: "BuildMatch",
+      lead_type: "buildmatch",
+      project_type: "home_services",
+      route_reason: "You selected BuildMatch — Home services.",
+      priority_tag: "high",
+    },
   },
   {
     name: "builder routes to Forge",
@@ -122,5 +166,18 @@ const invalid = enrichLead({
   urgency: "exploring",
 });
 assert.ok(validateLead(invalid).length >= 2, "invalid lead should return validation errors");
+
+const buildmatchMissingIndustry = enrichLead({
+  identity: "buildmatch",
+  intent: "hire",
+  value: "project",
+  urgency: "soon",
+  name: "No Industry",
+  contact: "no@example.com",
+});
+assert.ok(
+  validateLead(buildmatchMissingIndustry).some((error) => error.includes("BuildMatch")),
+  "buildmatch without industry should fail validation",
+);
 
 console.log("Gateway routing and validation tests passed.");

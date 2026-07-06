@@ -6,7 +6,7 @@
     <title>Sina Gateway</title>
     <meta
       name="description"
-      content="One intake point for client work, investor interest, construction inquiries, collaborator outreach, and introductions — sorted to SourceA, Noetfield, TrustField, and related product lines."
+      content="One intake point for client work, investor interest, BuildMatch local trade inquiries, collaborator outreach, and introductions — sorted to SourceA, Noetfield, TrustField, and related product lines."
     />
     <meta property="og:title" content="Sina Gateway" />
     <meta property="og:description" content="One intake form for opportunities, capital, and trusted introductions — sorted to the right product line for review." />
@@ -23,7 +23,7 @@
           <p class="eyebrow">Sina Gateway</p>
           <h1 id="page-title">One intake point for opportunities, capital, and trusted introductions.</h1>
           <p id="mirror-copy" class="lede">
-            Use Sina Gateway to send client work, investor interest, construction and commercial inquiries,
+            Use Sina Gateway to send client work, investor interest, BuildMatch property and trade inquiries,
             collaborator outreach, and founder inquiries to the right product line for review.
           </p>
         </div>
@@ -43,7 +43,9 @@
           <li><strong>SourceA</strong> — governed AI execution and agentic work with control.</li>
           <li><strong>Noetfield</strong> — strategic partnership and venture design.</li>
           <li><strong>TrustField</strong> — trust, governance, and compliance pressure.</li>
-          <li><strong>BuildMatch</strong> — Vancouver construction and home-services inquiries.</li>
+          <li><strong>BuildMatch</strong> — Vancouver platform for local property and trade work (two industries, reviewed separately).</li>
+          <li class="route-map-sub"><strong>BuildMatch — Construction</strong> — building, trades, renovations, commercial site work.</li>
+          <li class="route-map-sub"><strong>BuildMatch — Home services</strong> — maintenance, repairs, residential specialists.</li>
           <li><strong>Forge</strong> — builders, tools, and collaboration energy.</li>
           <li><strong>Personal</strong> — friends, warm intros, and network context.</li>
           <li><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</li>
@@ -78,9 +80,28 @@
               <label><input type="radio" name="identity" value="client" required /> <span>Client</span></label>
               <label><input type="radio" name="identity" value="investor" /> <span>Investor</span></label>
               <label><input type="radio" name="identity" value="builder" /> <span>Builder / collaborator</span></label>
-              <label><input type="radio" name="identity" value="construction" /> <span>Construction</span></label>
+              <label><input type="radio" name="identity" value="buildmatch" /> <span>BuildMatch</span></label>
               <label><input type="radio" name="identity" value="friend" /> <span>Friend / network</span></label>
             </div>
+            <fieldset id="buildmatch-industry-panel" class="buildmatch-panel" hidden>
+              <legend>Which BuildMatch industry?</legend>
+              <p class="buildmatch-note">
+                BuildMatch is the platform. Pick one industry — Construction and Home services are reviewed
+                separately.
+              </p>
+              <div class="option-grid buildmatch-grid">
+                <label
+                  ><input type="radio" name="project_type" value="construction" />
+                  <span>Construction</span>
+                  <small>Builds, trades, renovations, site work</small></label
+                >
+                <label
+                  ><input type="radio" name="project_type" value="home_services" />
+                  <span>Home services</span>
+                  <small>Maintenance, repairs, residential specialists</small></label
+                >
+              </div>
+            </fieldset>
           </fieldset>
 
           <fieldset class="step" data-step="1">

@@ -29,7 +29,7 @@ Internal code names: [`SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](./SINA_GATEWAY_TE
 | **SourceA** | Help with AI and agent work — with clear rules and control. |
 | **Noetfield** | Strategy, partnerships, and bigger-picture ventures. |
 | **TrustField** | Trust, governance, and compliance questions. |
-| **BuildMatch** | Construction and home-services in Vancouver (early access). |
+| **BuildMatch** | Vancouver platform for local property and trade work. Two industries, reviewed separately: **Construction** (builds, trades, site work) and **Home services** (maintenance, repairs, residential). |
 | **Forge** | Builders, tools, and collaboration. |
 | **Personal** | Friends and warm introductions. |
 | **Founder Audit** | A paid 5-day audit for solo founders ($500). |

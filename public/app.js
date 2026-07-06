@@ -10,9 +10,24 @@ const CAMPAIGNS = {
     banner: "SourceA — client work with guardrails, not chat chaos.",
   },
   buildmatch: {
-    headline: "BuildMatch intake — Vancouver construction inquiries.",
-    lede: "Early access for construction and home-services inquiries in the Vancouver area.",
-    banner: "BuildMatch — local construction and trades inquiries.",
+    headline: "BuildMatch intake — Vancouver property and trade platform.",
+    lede: "BuildMatch covers Construction and Home services as separate industries — pick yours on step 1.",
+    banner: "BuildMatch — Vancouver platform (Construction or Home services).",
+  },
+};
+
+const BUILDMATCH_INDUSTRIES = {
+  construction: {
+    label: "Construction",
+    promise: "BuildMatch — Construction: Vancouver building, trades, renovations, and site work.",
+    nextStep: "Describe the project type, trade, property, and timeline.",
+    mirror: "You are on BuildMatch — Construction: building, trades, or site work in Vancouver.",
+  },
+  home_services: {
+    label: "Home services",
+    promise: "BuildMatch — Home services: Vancouver maintenance, repairs, and residential specialists.",
+    nextStep: "Describe the service needed, property, and when you want help.",
+    mirror: "You are on BuildMatch — Home services: maintenance, repairs, or residential help in Vancouver.",
   },
 };
 
@@ -34,8 +49,8 @@ let ROUTES = {
   },
   BuildMatch: {
     title: "BuildMatch",
-    promise: "Early access for Vancouver construction and home-services opportunities.",
-    nextStep: "Tell Sina what kind of project, trade, property, or opportunity you are bringing.",
+    promise: "Vancouver platform for local property and trade inquiries — pick Construction or Home services.",
+    nextStep: "Choose your BuildMatch industry, then describe the project or service.",
   },
   Forge: {
     title: "Forge",
@@ -73,12 +88,13 @@ const valuePreview = document.querySelector("#value-preview");
 const urgencyPreview = document.querySelector("#urgency-preview");
 const mirrorCopy = document.querySelector("#mirror-copy");
 const modeBanner = document.querySelector("#mode-banner");
-const turnstileSlot = document.querySelector("#turnstile-slot");
+const buildmatchPanel = document.querySelector("#buildmatch-industry-panel");
 
 let currentStep = 0;
 let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
 
 form.addEventListener("change", () => {
+  syncBuildMatchPanel();
   updateMirror();
   if (currentStep < 4 && stepIsValid(currentStep)) {
     setTimeout(() => goTo(currentStep + 1), 120);
@@ -130,9 +146,13 @@ boot();
 async function boot() {
   runtimeConfig = await loadConfig();
   if (runtimeConfig.routes) ROUTES = runtimeConfig.routes;
+  if (runtimeConfig.buildmatchIndustries) {
+    Object.assign(BUILDMATCH_INDUSTRIES, runtimeConfig.buildmatchIndustries);
+  }
   applyCampaignWedge();
   renderRuntimeMode();
   renderTurnstile();
+  syncBuildMatchPanel();
   goTo(0);
   updateMirror();
 }
@@ -153,6 +173,12 @@ function applyCampaignWedge() {
     modeBanner.classList.add("wedge-banner");
     modeBanner.textContent = wedge.banner;
   }
+
+  if (campaign === "buildmatch") {
+    const buildmatchIdentity = form.querySelector('input[name="identity"][value="buildmatch"]');
+    if (buildmatchIdentity) buildmatchIdentity.checked = true;
+    syncBuildMatchPanel();
+  }
 }
 
 function goTo(index) {
@@ -167,8 +193,39 @@ function goTo(index) {
 }
 
 function stepIsValid(index) {
-  const fields = [...steps[index].querySelectorAll("input, textarea")];
+  const stepEl = steps[index];
+  const identity = form.querySelector('input[name="identity"]:checked');
+  if (index === 0 && !identity) return false;
+  if (index === 0 && identity?.value === "buildmatch") {
+    if (!form.querySelector('input[name="project_type"]:checked')) return false;
+  }
+
+  const radioNames = new Set(
+    [...stepEl.querySelectorAll('input[type="radio"]')]
+      .filter((input) => {
+        if (input.name === "project_type" && identity?.value !== "buildmatch") return false;
+        return true;
+      })
+      .map((input) => input.name),
+  );
+
+  for (const name of radioNames) {
+    if (!stepEl.querySelector(`input[name="${name}"]:checked`)) return false;
+  }
+
+  const fields = [...stepEl.querySelectorAll("textarea, select")];
   return fields.every((field) => field.checkValidity());
+}
+
+function syncBuildMatchPanel() {
+  if (!buildmatchPanel) return;
+  const identity = form.querySelector('input[name="identity"]:checked')?.value;
+  const show = identity === "buildmatch";
+  buildmatchPanel.hidden = !show;
+  buildmatchPanel.querySelectorAll('input[name="project_type"]').forEach((input) => {
+    input.required = show;
+    if (!show) input.checked = false;
+  });
 }
 
 function payload() {
@@ -185,6 +242,7 @@ function payload() {
     company: data.get("company"),
     role_title: data.get("role_title"),
     city: data.get("city"),
+    project_type: data.get("project_type"),
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
     preferred_contact: data.get("preferred_contact"),
     consent_to_contact: data.get("consent_to_contact") === "on",
@@ -205,19 +263,19 @@ function payload() {
 function updateMirror() {
   const lead = routingLead();
   const route = routeVenture(lead);
-  const copy = ROUTES[route];
+  const copy = resolveRouteCopy(route, lead);
   const priority = tagPriority(lead);
 
   routePreview.textContent = copy.title;
   routePromise.textContent = copy.promise;
-  routeTitle.textContent = copy.title;
+  routeTitle.textContent = copy.industry ? `BuildMatch — ${copy.industry}` : copy.title;
   routeDetail.textContent = previewLaneDetail(lead, copy);
-  leadType.textContent = lead.identity ? (lead.identity === "builder" ? "collaborator" : lead.identity) : "Pending";
+  leadType.textContent = formatIdentityLabel(lead);
   valuePreview.textContent = lead.value || "Pending";
   urgencyPreview.textContent = lead.urgency || "Pending";
   priorityPreview.textContent = `Priority: ${priority}`;
 
-  mirrorCopy.textContent = mirrorLine(lead.identity);
+  mirrorCopy.textContent = mirrorLine(lead);
 }
 
 function routingLead() {
@@ -230,7 +288,32 @@ function routingLead() {
     raw_notes: data.raw_notes,
     utm_campaign: data.utm_campaign,
     page_path: data.page_path,
+    project_type: data.project_type,
   };
+}
+
+function resolveRouteCopy(routeName, lead) {
+  const base = { ...ROUTES[routeName] };
+  if (routeName === "BuildMatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) {
+    const industry = BUILDMATCH_INDUSTRIES[lead.project_type];
+    return {
+      title: "BuildMatch",
+      promise: industry.promise,
+      nextStep: industry.nextStep,
+      industry: industry.label,
+    };
+  }
+  return base;
+}
+
+function formatIdentityLabel(lead) {
+  if (!lead.identity) return "Pending";
+  if (lead.identity === "builder") return "collaborator";
+  if (lead.identity === "buildmatch") {
+    const industry = BUILDMATCH_INDUSTRIES[lead.project_type];
+    return industry ? `BuildMatch — ${industry.label}` : "BuildMatch";
+  }
+  return lead.identity;
 }
 
 function routeVenture(lead) {
@@ -248,12 +331,12 @@ function tagPriority({ urgency, intent, value, contact }) {
   return "pending";
 }
 
-function mirrorLine(identity) {
+function mirrorLine(lead) {
   const lines = {
     client: "You are likely here to turn a workflow, project, or business pressure into execution.",
     investor: "You are likely looking for the bigger strategic map: ventures, timing, and leverage.",
     builder: "You are likely bringing talent, tools, or collaboration energy into the factory.",
-    construction: "You are likely bringing a Vancouver construction or home-services inquiry to BuildMatch.",
+    buildmatch: "You are on BuildMatch — pick Construction or Home services on step 1.",
     friend: "You are in the Personal line: a friend, warm intro, or network context.",
     founder: "You are likely a solo founder looking for accountability without coaching fluff.",
   };
@@ -268,7 +351,11 @@ function mirrorLine(identity) {
     return "You are looking at Founder Audit — a 5-day audit of how you run your company solo.";
   }
 
-  return lines[identity] || "Use the steps below — the preview updates as you answer.";
+  if (lead.identity === "buildmatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) {
+    return BUILDMATCH_INDUSTRIES[lead.project_type].mirror;
+  }
+
+  return lines[lead.identity] || "Use the steps below — the preview updates as you answer.";
 }
 
 function previewLaneDetail(lead, copy) {
@@ -280,7 +367,9 @@ function previewLaneDetail(lead, copy) {
       client: "Likely SourceA client work — finish the steps to confirm.",
       investor: "Likely Noetfield strategic review — finish the steps to confirm.",
       builder: "Likely Forge / collaborator review — finish the steps to confirm.",
-      construction: "Likely BuildMatch — finish the steps to confirm.",
+      buildmatch: lead.project_type
+        ? `Likely BuildMatch — ${BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type}.`
+        : "Likely BuildMatch — pick Construction or Home services first.",
       friend: "Likely Personal — finish the steps to confirm.",
     };
     return hints[lead.identity] || `Likely ${copy.title} — finish the steps to confirm.`;
@@ -294,7 +383,9 @@ function showSuccess(result) {
   const node = template.content.cloneNode(true);
   const ref = formatReference(lead.id, result.requestId);
 
-  node.querySelector("h2").textContent = `Inquiry received — ${lead.route.title}`;
+  node.querySelector("h2").textContent = lead.route.industry
+    ? `Inquiry received — BuildMatch (${lead.route.industry})`
+    : `Inquiry received — ${lead.route.title}`;
   node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
   const reasonEl = node.querySelector(".success-reason");
   if (lead.route_reason) {

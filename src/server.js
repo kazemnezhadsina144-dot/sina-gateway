@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
 import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, enrichLead, routeCopy, validateLead } from "./gateway.js";
+import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, BUILDMATCH_INDUSTRIES, enrichLead, routeCopy, validateLead } from "./gateway.js";
 import { notifyLead } from "./notifications.js";
 import { telegramConfigured } from "./telegram.js";
 import { verifyTurnstileToken } from "./turnstile.js";
@@ -59,6 +59,7 @@ const server = createServer(async (req, res) => {
         version: appVersion,
         options: OPTIONS,
         routes: ROUTES,
+        buildmatchIndustries: BUILDMATCH_INDUSTRIES,
         routingRules: ROUTING_RULE_DEFINITIONS,
       });
       return;
@@ -161,7 +162,7 @@ async function handleLead(req, res, requestId) {
         lead_type: saved.lead_type,
         priority_tag: saved.priority_tag,
         route_reason: saved.route_reason,
-        route: routeCopy(saved.venture_route),
+        route: routeCopy(saved.venture_route, saved),
       },
     });
   } catch (error) {

@@ -3,7 +3,7 @@ create extension if not exists pgcrypto;
 create table if not exists public.gateway_leads (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  identity text not null check (identity in ('friend', 'client', 'investor', 'builder', 'construction')),
+  identity text not null check (identity in ('friend', 'client', 'investor', 'builder', 'construction', 'buildmatch')),
   intent text not null check (intent in ('hire', 'invest', 'partner', 'refer', 'learn', 'trust')),
   value text not null check (value in ('deal', 'project', 'lead', 'capital', 'talent', 'risk')),
   urgency text not null check (urgency in ('now', 'soon', 'exploring')),
@@ -31,7 +31,7 @@ create table if not exists public.gateway_leads (
   secondary_route text check (secondary_route is null or secondary_route in ('SourceA', 'Noetfield', 'TrustField', 'BuildMatch', 'Forge', 'Personal', 'FounderAudit')),
   route_rule_id text,
   route_confidence text check (route_confidence is null or route_confidence in ('high', 'medium', 'low')),
-  lead_type text not null check (lead_type in ('friend', 'client', 'investor', 'collaborator', 'construction')),
+  lead_type text not null check (lead_type in ('friend', 'client', 'investor', 'collaborator', 'construction', 'buildmatch')),
   priority_tag text not null check (priority_tag in ('high', 'medium', 'low')),
   route_reason text,
   priority_reason text,

@@ -1,5 +1,19 @@
+export const BUILDMATCH_INDUSTRIES = {
+  construction: {
+    label: "Construction",
+    promise: "BuildMatch — Construction: Vancouver building, trades, renovations, and site work.",
+    nextStep: "Describe the project type, trade, property, and timeline.",
+  },
+  home_services: {
+    label: "Home services",
+    promise: "BuildMatch — Home services: Vancouver maintenance, repairs, and residential specialists.",
+    nextStep: "Describe the service needed, property, and when you want help.",
+  },
+};
+
 export const OPTIONS = {
-  identity: ["friend", "client", "investor", "builder", "construction"],
+  identity: ["friend", "client", "investor", "builder", "buildmatch"],
+  buildmatch_industry: ["construction", "home_services"],
   intent: ["hire", "invest", "partner", "refer", "learn", "trust"],
   value: ["deal", "project", "lead", "capital", "talent", "risk"],
   urgency: ["now", "soon", "exploring"],
@@ -23,8 +37,8 @@ export const ROUTES = {
   },
   BuildMatch: {
     title: "BuildMatch",
-    promise: "Early access for Vancouver construction and home-services opportunities.",
-    nextStep: "Tell Sina what kind of project, trade, property, or opportunity you are bringing.",
+    promise: "Vancouver platform for local property and trade inquiries — pick Construction or Home services.",
+    nextStep: "Choose your BuildMatch industry, then describe the project or service.",
   },
   Forge: {
     title: "Forge",
@@ -70,8 +84,8 @@ export const ROUTING_RULE_DEFINITIONS = [
     { notes_any: ["founder audit", "solo founder", "ai cofounder", "founder accountability", "decision ledger"] },
   ),
   rule("identity_friend", "Personal", "high", "You selected Friend / network.", "", { identity: "friend" }),
-  rule("identity_construction", "BuildMatch", "high", "You selected Construction.", "", {
-    identity: "construction",
+  rule("identity_buildmatch", "BuildMatch", "high", "You selected BuildMatch.", "", {
+    identity: "buildmatch",
   }),
   rule("identity_builder", "Forge", "high", "You selected Builder / collaborator.", "SourceA", { identity: "builder" }),
   rule("identity_investor", "Noetfield", "high", "You selected Investor.", "TrustField", {
@@ -109,7 +123,12 @@ export const ROUTING_RULES = ROUTING_RULE_DEFINITIONS.map((definition) => ({
 }));
 
 export function normalizeLead(input = {}) {
-  const identity = clean(input.identity);
+  let identity = clean(input.identity);
+  let project_type = cleanText(input.project_type, 120);
+  if (identity === "construction") {
+    identity = "buildmatch";
+    if (!project_type) project_type = "construction";
+  }
   const intent = clean(input.intent);
   const value = clean(input.value);
   const urgency = clean(input.urgency);
@@ -134,7 +153,7 @@ export function normalizeLead(input = {}) {
     timezone: cleanText(input.timezone, 120),
     budget_range: cleanText(input.budget_range, 80),
     capital_range: cleanText(input.capital_range, 80),
-    project_type: cleanText(input.project_type, 120),
+    project_type,
     trade_type: cleanText(input.trade_type, 120),
     collaboration_type: cleanText(input.collaboration_type, 120),
     intro_source: cleanText(input.intro_source, 160),
@@ -172,6 +191,12 @@ export function validateLead(lead) {
     errors.push("submission looks invalid");
   }
 
+  if (lead.identity === "buildmatch") {
+    if (!OPTIONS.buildmatch_industry.includes(lead.project_type)) {
+      errors.push("BuildMatch inquiries must select Construction or Home services");
+    }
+  }
+
   return errors;
 }
 
@@ -181,7 +206,10 @@ export function enrichLead(input) {
   const venture_route = routeDecision.venture_route;
   const lead_type = lead.identity === "builder" ? "collaborator" : lead.identity;
   const priority_tag = tagPriority(lead);
-  const route_reason = routeDecision.route_reason;
+  let route_reason = routeDecision.route_reason;
+  if (venture_route === "BuildMatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) {
+    route_reason = `You selected BuildMatch — ${BUILDMATCH_INDUSTRIES[lead.project_type].label}.`;
+  }
   const priority_reason = explainPriority(lead, priority_tag);
   const tags = deriveTags(lead, venture_route, priority_tag);
 
@@ -243,8 +271,18 @@ export function tagPriority({ urgency, intent, value, contact }) {
   return "low";
 }
 
-export function routeCopy(routeName) {
-  return ROUTES[routeName] || ROUTES.Noetfield;
+export function routeCopy(routeName, lead = {}) {
+  const base = ROUTES[routeName] || ROUTES.Noetfield;
+  if (routeName === "BuildMatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) {
+    const industry = BUILDMATCH_INDUSTRIES[lead.project_type];
+    return {
+      title: "BuildMatch",
+      promise: industry.promise,
+      nextStep: industry.nextStep,
+      industry: industry.label,
+    };
+  }
+  return { ...base };
 }
 
 export function explainRoute(lead, route) {
@@ -350,6 +388,9 @@ function deriveTags(lead, venture_route, priority_tag) {
   if (lead.raw_notes?.toLowerCase().includes("trust")) tags.add("trust_signal");
   if (lead.raw_notes?.toLowerCase().includes("risk")) tags.add("risk_signal");
   if (lead.raw_notes?.toLowerCase().includes("compliance")) tags.add("compliance_signal");
+  if (lead.identity === "buildmatch" && lead.project_type) {
+    tags.add(`buildmatch_industry:${lead.project_type}`);
+  }
   if (lead.secondary_route) tags.add(`secondary:${lead.secondary_route}`);
   if (lead.route_confidence) tags.add(`route_confidence:${lead.route_confidence}`);
 

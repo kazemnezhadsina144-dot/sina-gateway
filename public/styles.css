@@ -115,6 +115,49 @@ h1 {
   margin-top: 8px;
 }
 
+.route-map-sub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.buildmatch-panel {
+  margin-top: 16px;
+  padding: 14px 14px 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.buildmatch-panel legend {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.buildmatch-note {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.buildmatch-grid label {
+  display: grid;
+  gap: 4px;
+}
+
+.buildmatch-grid small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.buildmatch-grid input:checked + span + small {
+  color: var(--ink);
+}
+
 .what-next-list {
   padding-left: 1.35rem;
 }

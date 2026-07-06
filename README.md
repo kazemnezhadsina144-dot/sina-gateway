@@ -109,7 +109,8 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 ## v1 Routing
 
 - `friend` -> Personal
-- `construction` -> BuildMatch
+- `buildmatch` -> BuildMatch (requires industry: `construction` or `home_services` via `project_type`)
+- legacy `construction` identity -> normalized to `buildmatch` + `project_type=construction`
 - `builder` -> Forge
 - `investor` -> Noetfield
 - `utm_campaign=founder-audit` or founder signals in notes -> FounderAudit

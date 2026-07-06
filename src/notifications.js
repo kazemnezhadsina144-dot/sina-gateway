@@ -1,3 +1,4 @@
+import { BUILDMATCH_INDUSTRIES } from "./gateway.js";
 import { sendTelegramAlert, telegramConfigured } from "./telegram.js";
 
 export function shouldNotifyLead(lead, telegramEnv) {
@@ -12,6 +13,9 @@ export function buildNotificationMessage(lead, requestId) {
     lead.contact || "—",
     `priority: ${lead.priority_tag}`,
     lead.utm_campaign ? `campaign: ${lead.utm_campaign}` : "",
+    lead.identity === "buildmatch" && lead.project_type
+      ? `industry: ${BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type}`
+      : "",
     lead.route_reason ? `route: ${lead.route_reason}` : "",
     ref ? `ref: ${ref}` : "",
   ]
