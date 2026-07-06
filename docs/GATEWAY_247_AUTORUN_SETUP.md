@@ -63,6 +63,15 @@ npm run sync:heartbeat
 
 This sets `COMMERCIAL_ARMED=true` and syncs `OFFERS_SENT` / `REPLIES` / `L2_RECEIPTS` to `gateway-ops`. Until then, heartbeat reports `commercial.status: NOT_CONFIGURED` — no fake RED Telegram.
 
+**REVENUE motor (`gateway_outbound_log_v1`):** registered in SG workflow census. Founder sends D3 outbound → log:
+
+```bash
+npm run channel:send -- --count 1 --mark-sent
+npm run sync:heartbeat
+```
+
+Census reads `data/channel-receipts.json` weekly; `offers_sent` must be > 0 for commercial GREEN.
+
 ---
 
 ## UptimeRobot (gateway only, free)

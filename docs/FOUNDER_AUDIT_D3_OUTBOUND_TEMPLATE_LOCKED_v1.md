@@ -2,7 +2,7 @@
 
 **Audience:** solo technical founder building with AI  
 **Channel:** LinkedIn DM (first batch)  
-**Price:** $500 · **Scope:** 5 business days · **No discovery call**
+**Price:** FOUNDER_SET (see `docs/OFFER_FOUNDER_AUDIT_LOCKED_v1.md`) · **Scope:** 5 business days · **No discovery call**
 
 ---
 
@@ -14,7 +14,7 @@ You're building solo with AI, which usually means nobody checks your decisions, 
 
 I run a fixed **Founder Audit** for solo technical founders (pre-seed/seed): in **5 business days** you get a written report on your decisions, follow-through, offer drift, and people pipeline — plus a personal ledger system installed (not a coaching call).
 
-**$500. Fixed scope.** No discovery call.
+**$[FOUNDER_SET USD]. Fixed scope.** No discovery call.
 
 Start here if it's useful: https://sina-gateway-production.up.railway.app/?utm_campaign=founder-audit&utm_source=linkedin
 
