@@ -18,8 +18,8 @@ async function main() {
   checks.push(run("verify:migration"));
   checks.push(run("private-test"));
   checks.push(d2ListCheck());
-  checks.push(fileCheck("noindex", "public/index.html", (t) => /noindex/i.test(t)));
-  checks.push(fileCheck("robots-block", "public/robots.txt", (t) => /Disallow:\s*\//i.test(t)));
+  checks.push(fileCheck("index-public", "public/index.html", (t) => !/noindex/i.test(t)));
+  checks.push(fileCheck("robots-allow", "public/robots.txt", (t) => /Allow:\s*\//i.test(t)));
   checks.push(fileCheck("privacy-page", "public/privacy.html", (t) => t.includes("Privacy")));
 
   const failed = checks.filter((c) => c.status === "FAIL");
@@ -32,7 +32,7 @@ async function main() {
 
   if (failed.length) process.exit(1);
   console.log(
-    "\nAutomated gates green. Founder still decides: UptimeRobot dashboard, D2 list, remove noindex, custom domain, public launch.",
+    "\nAutomated launch gates green. Founder still decides: UptimeRobot dashboard, D2 outbound, custom domain.",
   );
 }
 

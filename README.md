@@ -52,15 +52,15 @@ npm run launch:gate
 npm run monitors:verify
 ```
 
-## Private test mode (plans 5–14)
-
-While `robots.txt` blocks crawlers and `index.html` has `noindex,nofollow`, run:
+## Capture test (public or private)
 
 ```bash
 npm run private-test
 ```
 
-**Test-lead naming convention**
+**Public launch (2026-07-06):** `index.html` is indexable and `robots.txt` allows `/`. SEO gate checks are skipped in capture test mode; chain health + capture + RLS checks still run.
+
+**Test-lead naming convention** (when exercising capture manually):
 
 - `source`: `private-test`
 - `name`: `[PRIVATE-TEST] YYYY-MM-DD`
