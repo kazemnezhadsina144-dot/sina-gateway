@@ -293,7 +293,44 @@ function publicCaptureError(error) {
 
 function databasePayload(lead) {
   const payload = { ...lead };
-  const nullableFields = ["next_action_at", "last_contacted_at", "archived_at", "duplicate_of"];
+  const nullableFields = [
+    "email",
+    "phone",
+    "social",
+    "company",
+    "role_title",
+    "city",
+    "country",
+    "timezone",
+    "budget_range",
+    "capital_range",
+    "project_type",
+    "trade_type",
+    "collaboration_type",
+    "intro_source",
+    "relationship_context",
+    "owner",
+    "route_reason",
+    "priority_reason",
+    "raw_notes",
+    "page_path",
+    "referrer",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "session_id",
+    "visitor_id",
+    "route_rule_id",
+    "secondary_route",
+    "next_action_at",
+    "last_contacted_at",
+    "archived_at",
+    "duplicate_of",
+    "app_version",
+    "environment",
+    "capture_version",
+    "schema_version",
+  ];
 
   for (const field of nullableFields) {
     if (payload[field] === "") payload[field] = null;
