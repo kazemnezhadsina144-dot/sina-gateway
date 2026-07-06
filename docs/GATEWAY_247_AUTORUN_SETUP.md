@@ -1,99 +1,94 @@
-# Gateway 24/7 Alert Stack (ROI tiers)
+# Gateway 24/7 Alert Stack
 
-**Telegram:** `@Gateway_A` · chat ID `-1004473252322`
-
----
-
-## Service ROI map (locked)
-
-### ✅ UptimeRobot — use it (high ROI, free)
-
-**Role:** Alert only — “is this URL up?” **GET only.**
-
-SSOT: `data/noos-external-monitors-v1.json`
-
-| Monitor | URL | Keyword |
-|---------|-----|---------|
-| NOOS loop runner | `https://noos-loop-runner-production.up.railway.app/health` | `noos-loop-runner` |
-| NOOS fleet tick | `https://noos-loop-fleet-tick-v1.sina-kazemnezhad-ca.workers.dev/health` | — |
-| NOOS deadman | `https://noos-deadman-v1.sina-kazemnezhad-ca.workers.dev/health` | — |
-| Noetfield www (optional) | `https://www.noetfield.com/` | — |
-| Sina Gateway health | `https://sina-gateway-production.up.railway.app/health` | `ok` |
-| Sina Gateway ready | `https://sina-gateway-production.up.railway.app/ready` | status 200 |
-
-**Do not** use UptimeRobot to POST `/loop` or trigger workflows.
-
-### ⚠️ cron-job.org — **one job max** (medium ROI)
-
-**Role:** Tertiary deadman only — not a second loop motor.
-
-| OK | Not OK |
-|----|--------|
-| `POST https://noos-deadman-v1.sina-kazemnezhad-ca.workers.dev/check` every **30 min** | Any job hitting `/loop` or GitHub dispatch |
-| Backup if CF `scheduled()` misfires | Duplicate `*/5` loop ticks |
-
-### ❌ Don't add
-
-- GHA schedules on loops (retired)
-- cron-job.org firing loops every 5 min
-- A third “intelligence” cron until Phase B liveness rows populate
+**Telegram channel:** `@Gateway_A` · `-1004473252322`  
+**Bot:** `@GateWay_A_bot`  
+**Scope:** Sina Gateway only — this channel must not receive other products' alerts.
 
 ---
 
-## Layer A — Primary motors ($0)
+## Why you saw SourceA / NOOS messages here
 
-| Motor | Schedule | Delivers to |
-|-------|----------|-------------|
-| `sourcea-loop-specialist-tick-v1` | `*/15` + dispatch table | nerve + sg-watchdog + sg-heartbeat |
-| `gateway-ops` | `*/15` (Workers Paid) | watchdog + heartbeat backup |
+During setup, `TELEGRAM_ALERT_CHAT_ID` for **other** Cloudflare workers (e.g. SourceA loop-specialist) was mistakenly set to `@Gateway_A`. Those workers post their own nerve/deadman alerts to whatever chat ID they hold.
+
+**Sina Gateway code never sends other-repo messages.** Fix is on those workers' secrets — not in this repo.
+
+**One-time founder fix (Cloudflare dashboard):**
+
+1. Workers → `sourcea-loop-specialist-tick-v1` → Settings → Variables  
+2. Set `TELEGRAM_ALERT_CHAT_ID` back to your **SourceA ops chat** (not `-1004473252322`)  
+3. Repeat for any other worker that should not use `@Gateway_A`
+
+**This repo only arms:**
+
+| Target | Secrets |
+|--------|---------|
+| Railway `sina-gateway` | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALERT_CHAT_ID` |
+| CF `gateway-ops` | same via `wrangler secret put` |
+| CF `gateway-watchdog` / `gateway-heartbeat` | optional manual `/run` |
+
+Do **not** point other products at `@Gateway_A`.
 
 ---
 
-## Layer B — Cloudflare Workers Paid ($5/mo)
+## Autorun motor (gateway only)
 
-`gateway-ops` native cron — deployed with Telegram secrets.
+| Motor | Schedule | Alerts |
+|-------|----------|--------|
+| **`gateway-ops`** CF worker | `*/15` cron | Watchdog RED + daily heartbeat → `@Gateway_A` |
+| Railway `sina-gateway` | always on | High-priority leads → `@Gateway_A` |
 
 ```bash
-cd workers/gateway-ops && wrangler deploy
+cd workers/gateway-ops
+wrangler secret put TELEGRAM_BOT_TOKEN
+wrangler secret put TELEGRAM_ALERT_CHAT_ID
+wrangler deploy
+```
+
+Manual smoke:
+
+```bash
+curl -sS "https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=watchdog"
+curl -sS "https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=heartbeat"
 ```
 
 ---
 
-## Telegram secrets
+## UptimeRobot (gateway only, free)
 
-| Worker / service | `TELEGRAM_BOT_TOKEN` | `TELEGRAM_ALERT_CHAT_ID` |
-|------------------|----------------------|---------------------------|
-| `@GateWay_A_bot` | `8892104468:…` | `-1004473252322` |
-| Railway `sina-gateway` | set | set |
-| `loop-specialist-tick-v1` | set | set |
-| `gateway-ops` | set | set |
-| `noos-deadman-v1` | set | set |
+SSOT: `data/gateway-external-monitors-v1.json`
 
-Arm Supabase for nerve probes:
+| Monitor | URL |
+|---------|-----|
+| Health | `https://sina-gateway-production.up.railway.app/health` (keyword `ok`) |
+| Ready | `https://sina-gateway-production.up.railway.app/ready` (status 200) |
 
-```bash
-cd Noetfield-Systems/SourceA && ./scripts/nerve_probe_cf_secrets_v1.sh
-# Then re-apply Gateway_A chat ID if script overwrote it:
-printf '%s' '-1004473252322' | wrangler secret put TELEGRAM_ALERT_CHAT_ID
-```
+GET only — never POST `/api/leads` or loop endpoints.
 
 ---
 
-## Smoke commands
+## Optional backup cron (gateway only)
 
-```bash
-# Nerve E2E (expect 4/4 PASS)
-curl -sS -X POST https://sourcea-loop-specialist-tick-v1.sina-kazemnezhad-ca.workers.dev/nerve/run | jq '.ok, .probes[].verdict'
+If you want a tertiary ping **for gateway-ops only** (not NOOS):
 
-# Gateway watchdog
-curl -sS "https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=watchdog" | jq '.watchdog.ok'
+| Method | URL | Schedule |
+|--------|-----|----------|
+| GET | `https://gateway-ops…/run?mode=watchdog` | every 15 min |
 
-# Deadman (cron-job.org target)
-curl -sS -X POST https://noos-deadman-v1.sina-kazemnezhad-ca.workers.dev/check | jq '.ok'
-```
+One job max. Do not cron other products from this channel's playbook.
+
+---
+
+## Message types you should see in `@Gateway_A`
+
+| Message | Source |
+|---------|--------|
+| `Sina Gateway watchdog RED` | `gateway-ops` |
+| `Sina Gateway heartbeat RED/GREEN` | `gateway-ops` |
+| `High-priority Sina Gateway lead` | Railway capture |
+| `NF intake probe` | **Wrong** — loop-specialist misconfigured |
 
 ---
 
 ## Heartbeat RED is expected
 
-`commercial: RED (offers_sent=0)` until Founder Audit D3 outbound starts — infra can be GREEN while commercial is RED (doctrine).
+`commercial: RED (offers_sent=0)` until Founder Audit outbound starts — infra can be green while commercial is red.

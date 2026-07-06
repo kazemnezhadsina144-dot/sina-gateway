@@ -1,29 +1,25 @@
 # Ops Secrets Setup
 
-Configure outside the repo. Never commit values.
+Configure outside the repo. Never commit values.  
+**`@Gateway_A` is for Sina Gateway only** — do not reuse this chat ID on other products' workers.
 
-## Telegram (all alerts — same as SourceA / Noetfield)
+## Telegram
 
 | Variable | Where | Purpose |
 |----------|--------|---------|
-| `TELEGRAM_BOT_TOKEN` | loop-specialist CF worker | Watchdog RED + daily heartbeat |
-| `TELEGRAM_ALERT_CHAT_ID` | loop-specialist CF worker | Ops chat |
-| `TELEGRAM_BOT_TOKEN` | Railway `sina-gateway` | High-priority lead capture |
-| `TELEGRAM_ALERT_CHAT_ID` | Railway `sina-gateway` | Ops chat |
-
-Also accepted: `TELEGRAM_ALLOWED_CHAT_ID`, `TELEGRAM_OPS_CHAT_ID` (Noetfield naming).
-
-Arm on loop-specialist (reuse SourceA script):
+| `TELEGRAM_BOT_TOKEN` | Railway `sina-gateway` | High-priority lead alerts |
+| `TELEGRAM_ALERT_CHAT_ID` | Railway `sina-gateway` | `@Gateway_A` (`-1004473252322`) |
+| `TELEGRAM_BOT_TOKEN` | CF `gateway-ops` | Watchdog + heartbeat |
+| `TELEGRAM_ALERT_CHAT_ID` | CF `gateway-ops` | `@Gateway_A` |
 
 ```bash
-cd Noetfield-Systems/SourceA && ./scripts/nerve_probe_cf_secrets_v1.sh
+cd workers/gateway-ops
+wrangler secret put TELEGRAM_BOT_TOKEN
+wrangler secret put TELEGRAM_ALERT_CHAT_ID
+wrangler deploy
 ```
 
-Deploy motor after gateway probe jobs ship:
-
-```bash
-cd Noetfield-Systems/SourceA/cloud/workers/loop-specialist-tick-v1 && wrangler deploy
-```
+Also accepted on Railway: `TELEGRAM_ALLOWED_CHAT_ID`, `TELEGRAM_OPS_CHAT_ID`.
 
 ## Railway (`sina-gateway` service)
 
@@ -34,25 +30,24 @@ cd Noetfield-Systems/SourceA/cloud/workers/loop-specialist-tick-v1 && wrangler d
 | `NODE_ENV` | `production` |
 | `ALLOWED_ORIGINS` | `https://sina-gateway-production.up.railway.app` |
 | `TELEGRAM_BOT_TOKEN` | High-priority lead alerts |
-| `TELEGRAM_ALERT_CHAT_ID` | Ops chat |
+| `TELEGRAM_ALERT_CHAT_ID` | `@Gateway_A` |
 | `TURNSTILE_SITE_KEY` | Browser widget |
 | `TURNSTILE_SECRET_KEY` | Server verification |
 | `CAPTURE_METADATA_ENABLED` | `true` only after Step 3 migration applied |
 
-Test after setting:
+Test:
 
 ```bash
 npm run test:notifications
-TELEGRAM_BOT_TOKEN=... TELEGRAM_ALERT_CHAT_ID=... npm run test:notify-capture
+npm run test:notify-capture
 ```
 
 ## Turnstile
 
-1. Cloudflare Dashboard → Turnstile → Add site
-2. Set keys on Railway
+1. Cloudflare Dashboard → Turnstile → Add site  
+2. Set keys on Railway  
 3. `npm run test:turnstile`
-4. Submit via browser on production
 
-## 24/7 alert stack
+## 24/7 autorun
 
-See [GATEWAY_247_AUTORUN_SETUP.md](GATEWAY_247_AUTORUN_SETUP.md) — loop-specialist (free) + optional Workers Paid ($5) + UptimeRobot + cron-job.org + Telegram `@Gateway_A`.
+See [GATEWAY_247_AUTORUN_SETUP.md](GATEWAY_247_AUTORUN_SETUP.md) — `gateway-ops` CF cron + Railway only.

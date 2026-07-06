@@ -1,5 +1,5 @@
 /**
- * Unified gateway ops — manual /run only. 24/7 autorun lives on sourcea-loop-specialist-tick-v1.
+ * Unified gateway ops — manual /run. 24/7 motor: gateway-ops CF cron.
  */
 import { sendTelegramAlert } from "./telegram.js";
 export default {

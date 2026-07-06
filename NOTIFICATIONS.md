@@ -1,6 +1,6 @@
 # Sina Gateway Notifications
 
-High-priority leads alert via **Telegram ops bot** (same pattern as SourceA nerve-probe / Noetfield intake).
+High-priority leads alert via **Telegram** to `@Gateway_A` (`@GateWay_A_bot`).
 
 Sent when:
 

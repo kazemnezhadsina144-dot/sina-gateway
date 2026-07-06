@@ -1,5 +1,5 @@
 /**
- * Telegram ops delivery — same pattern as SourceA loop-specialist / Noetfield probes.
+ * Telegram ops delivery for @Gateway_A only.
  */
 
 export function telegramConfigured(env = {}) {

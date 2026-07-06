@@ -1,5 +1,5 @@
 /**
- * Cloudflare Watchdog — manual /run. 24/7 motor: sourcea-loop-specialist-tick-v1 sg-watchdog job.
+ * Cloudflare gateway-ops — 24/7 watchdog + heartbeat cron.
  */
 import { sendTelegramAlert } from "./telegram.js";
 export default {

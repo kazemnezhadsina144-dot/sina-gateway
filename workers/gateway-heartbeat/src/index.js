@@ -1,5 +1,5 @@
 /**
- * Daily gateway heartbeat — manual /run. 24/7 motor: sourcea-loop-specialist-tick-v1 sg-heartbeat job.
+ * Daily gateway heartbeat — manual /run. Cron motor: gateway-ops.
  */
 import { sendTelegramAlert } from "./telegram.js";
 export default {

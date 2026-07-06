@@ -29,7 +29,7 @@ cd workers/gateway-watchdog && wrangler deploy
 cd ../gateway-heartbeat && wrangler deploy
 ```
 
-**24/7 stack:** loop-specialist (free) + optional [Workers Paid $5](docs/GATEWAY_247_AUTORUN_SETUP.md) + UptimeRobot + cron-job.org → Telegram `@Gateway_A`.
+**24/7 stack:** `gateway-ops` CF cron + Railway → Telegram `@Gateway_A` only. See [docs/GATEWAY_247_AUTORUN_SETUP.md](docs/GATEWAY_247_AUTORUN_SETUP.md).
 
 ## Secrets
 
