@@ -119,6 +119,10 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 
 ## Locked strategy docs
 
+- [`docs/SINA_GATEWAY_SSOT_LOCKED_v1.md`](docs/SINA_GATEWAY_SSOT_LOCKED_v1.md) — **start here** (live truth)
+- [`docs/SINA_GATEWAY_CONSTITUTION_LOCKED_v1.md`](docs/SINA_GATEWAY_CONSTITUTION_LOCKED_v1.md) — foundational laws
+- [`docs/SINA_GATEWAY_BLUEPRINT_LOCKED_v1.md`](docs/SINA_GATEWAY_BLUEPRINT_LOCKED_v1.md) — megagateway architecture
+- [`docs/ROUTING_MESH_LAWS_LOCKED_v1.md`](docs/ROUTING_MESH_LAWS_LOCKED_v1.md) — venture mesh handoff
 - `docs/UNLOCK_DOCTRINE_LOCKED_v2.md`
 - `docs/FOUNDER_GATEWAY_BLUEPRINT_LOCKED_v1.md`
 - `docs/FOUNDER_AUDIT_OFFER_LOCKED_v1.md`
