@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Status — Sina Gateway</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell legal-page status-page">
+      <p class="eyebrow"><a href="/">Sina Gateway</a></p>
+      <h1>System status</h1>
+      <p class="lede">Live checks against this gateway. Refreshes when you reload.</p>
+
+      <section class="status-panel" id="status-panel" aria-live="polite">
+        <p>Loading…</p>
+      </section>
+
+      <p class="legal-back"><a href="/">← Back to intake</a></p>
+    </main>
+    <script type="module">
+      const panel = document.querySelector("#status-panel");
+
+      function row(label, value, ok) {
+        const cls = ok === true ? "status-ok" : ok === false ? "status-fail" : "";
+        return `<div class="status-row ${cls}"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      try {
+        const [healthRes, readyRes] = await Promise.all([fetch("/health"), fetch("/ready")]);
+        const health = await healthRes.json();
+        const ready = await readyRes.json();
+        const overall = healthRes.ok && readyRes.ok && ready.ok !== false;
+
+        panel.innerHTML = `
+          <p class="status-verdict ${overall ? "status-ok" : "status-fail"}">${overall ? "Operational" : "Degraded"}</p>
+          ${row("Health", healthRes.ok ? "OK" : "FAIL", healthRes.ok)}
+          ${row("Capture", ready.captureMode || "unknown", ready.captureMode === "supabase")}
+          ${row("Supabase table", ready.supabaseTableReady ? "ready" : "not ready", ready.supabaseTableReady)}
+          ${row("Turnstile", ready.turnstileConfigured ? "on" : "off", ready.turnstileConfigured ? true : null)}
+          ${row("Notifications", ready.notificationsConfigured ? "on" : "off", ready.notificationsConfigured)}
+          ${row("Version", ready.version || health.version || "—", null)}
+        `;
+      } catch {
+        panel.innerHTML = `<p class="status-verdict status-fail">Unreachable</p>`;
+      }
+    </script>
+  </body>
+</html>

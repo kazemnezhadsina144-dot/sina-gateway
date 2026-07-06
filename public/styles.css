@@ -191,6 +191,47 @@ h1 {
   margin-top: 16px;
 }
 
+.status-page .status-panel {
+  margin: 24px 0;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.status-verdict {
+  margin: 0 0 16px;
+  font-size: 1.4rem;
+  font-weight: 850;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.status-row span {
+  color: var(--muted);
+}
+
+.status-ok strong,
+.status-verdict.status-ok {
+  color: var(--green);
+}
+
+.status-fail strong,
+.status-verdict.status-fail {
+  color: var(--rust);
+}
+
+.actions button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
 .signal-panel,
 .wizard,
 .route-card {

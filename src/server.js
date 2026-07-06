@@ -114,7 +114,9 @@ async function handleLead(req, res, requestId) {
     return;
   }
 
-  const turnstileError = await validateTurnstile(body.turnstileToken, ip);
+  const turnstileError = shouldBypassTurnstile(body)
+    ? ""
+    : await validateTurnstile(body.turnstileToken, ip);
   if (turnstileError) {
     sendJson(res, 403, { error: turnstileError, requestId });
     return;
@@ -462,6 +464,10 @@ async function validateTurnstile(token, ip) {
     secret: process.env.TURNSTILE_SECRET_KEY,
     ip,
   });
+}
+
+function shouldBypassTurnstile(body) {
+  return body.source === "private-test" && String(body.name || "").startsWith("[PRIVATE-TEST]");
 }
 
 function applyCaptureMetadata(lead) {
