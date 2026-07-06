@@ -1,0 +1,17 @@
+{
+  "channel": "linkedin",
+  "campaign": "founder-audit",
+  "audience": "solo technical AI founders, pre-seed to seed",
+  "offer": "Founder Audit",
+  "price_usd": 500,
+  "sent": 0,
+  "replies": 0,
+  "L1": 0,
+  "L2_payments": 0,
+  "cost_usd": 0,
+  "verdict": "active",
+  "gateway_link": "https://sina-gateway-production.up.railway.app/?utm_campaign=founder-audit&utm_source=linkedin",
+  "list_target": 25,
+  "list_ready": 0,
+  "notes": "Log each send: increment sent, track replies. Stop at 100 sends with zero L1 → rewrite offer."
+}

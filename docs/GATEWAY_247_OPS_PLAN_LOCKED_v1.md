@@ -97,7 +97,9 @@ npx wrangler deploy
 
 Cron: `*/15 * * * *` — probes `/health`, `/ready`, `/api/config`.
 
-Manual run: `curl https://<worker-subdomain>.workers.dev/run`
+**Live (manual trigger):** https://gateway-watchdog.sina-kazemnezhad-ca.workers.dev/run
+
+> Cron trigger deploy may require Workers Paid plan. Use `/run` via external cron or upgrade CF plan.
 
 **Secrets (Cloudflare):**
 
@@ -137,6 +139,10 @@ Extend existing ops heartbeat (Telegram) with gateway block:
 - Infrastructure green + commercial RED → still RED overall  
 
 **Cron:** Cloudflare `0 14 * * *` UTC (= 07:00 Pacific DST) or Railway cron calling `scripts/chain-health.js`.
+
+**Live (manual trigger):** https://gateway-heartbeat.sina-kazemnezhad-ca.workers.dev/run
+
+> Heartbeat returns **RED** while `offers_sent: 0` (by design). Infrastructure can be GREEN while verdict is RED.
 
 ---
 

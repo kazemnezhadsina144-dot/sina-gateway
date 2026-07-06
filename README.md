@@ -44,7 +44,35 @@ npm run test:shared-routing
 npm run check:schema
 npm run e2e:local
 npm run smoke
+npm run chain:health
+npm run private-test
 ```
+
+## Private test mode (plans 5–14)
+
+While `robots.txt` blocks crawlers and `index.html` has `noindex,nofollow`, run:
+
+```bash
+npm run private-test
+```
+
+**Test-lead naming convention**
+
+- `source`: `private-test`
+- `name`: `[PRIVATE-TEST] YYYY-MM-DD`
+- `contact`: `private-test+<timestamp>@example.com`
+
+**Operator note:** After each test session, review rows in Supabase Table Editor and delete test leads. Use `docs/PRIVATE_TEST_CLEANUP.sql` (postgres role).
+
+**Checklist**
+
+1. `npm run verify:supabase` → INSERT OK + READ DENIED
+2. `CHAIN_HEALTH_BASE_URL=https://sina-gateway-production.up.railway.app npm run chain:health` → all PASS
+3. `npm run private-test` → browser-capture PASS
+4. Confirm test row in Supabase dashboard (anon cannot read it)
+5. Delete test rows via cleanup SQL when done
+
+**Outbound (D3):** `docs/FOUNDER_AUDIT_D3_OUTBOUND_TEMPLATE_LOCKED_v1.md` · track sends in `data/channel-receipts.json`
 
 ## Connect Supabase
 
@@ -78,6 +106,8 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 - `docs/FOUNDER_GATEWAY_BLUEPRINT_LOCKED_v1.md`
 - `docs/FOUNDER_AUDIT_OFFER_LOCKED_v1.md`
 - `docs/FOUNDER_AUDIT_D2_LIST_CRITERIA_LOCKED_v1.md`
+- `docs/FOUNDER_AUDIT_D3_OUTBOUND_TEMPLATE_LOCKED_v1.md`
+- `docs/GATEWAY_247_OPS_PLAN_LOCKED_v1.md`
 
 ## Next Upgrades
 

@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gateway-heartbeat",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-05",
+  "triggers": {
+    "crons": ["0 14 * * *"]
+  },
+  "vars": {
+    "GATEWAY_BASE_URL": "https://sina-gateway-production.up.railway.app",
+    "OFFERS_SENT": "0",
+    "REPLIES": "0",
+    "L2_RECEIPTS": "0"
+  }
+}

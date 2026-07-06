@@ -330,6 +330,9 @@ function deriveTags(lead, venture_route, priority_tag) {
   if (lead.company) tags.add("has_company");
   if (lead.city) tags.add(`city:${lead.city.toLowerCase().replace(/\s+/g, "-")}`);
   if (lead.utm_campaign) tags.add(`campaign:${lead.utm_campaign.toLowerCase().replace(/\s+/g, "-")}`);
+  if (lead.source === "private-test" || String(lead.name || "").startsWith("[PRIVATE-TEST]")) {
+    tags.add("private_test");
+  }
   if (lead.raw_notes?.toLowerCase().includes("trust")) tags.add("trust_signal");
   if (lead.raw_notes?.toLowerCase().includes("risk")) tags.add("risk_signal");
   if (lead.raw_notes?.toLowerCase().includes("compliance")) tags.add("compliance_signal");
