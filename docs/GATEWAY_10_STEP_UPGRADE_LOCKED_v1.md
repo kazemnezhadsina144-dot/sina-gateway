@@ -149,11 +149,11 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 |------|--------|
 | 1 Telegram | **Done** — committed + live on Railway |
 | 2 gateway-ops | **Done** — committed + CF cron live |
-| 3 migration | Run `npm run verify:migration` — apply SQL if FAIL |
+| 3 migration | **Founder** — run SQL, then `npm run verify:migration` + `CAPTURE_METADATA_ENABLED=true` |
 | 4 Turnstile | **Founder** — CF Turnstile keys on Railway |
 | 5 UptimeRobot | **Founder** — `data/gateway-external-monitors-v1.json` |
-| 6 chain gate | **PASS** — `npm run chain:health` |
+| 6 chain gate | **Done** — private-test 6/6 PASS |
 | 7 D2 list | **Founder** — fill 25 names |
-| 8 notify test | `npm run test:notify-capture` |
-| 9 merge | **PR open** → merge to `main` |
+| 8 notify test | **Done** — `test:notify-capture` PASS |
+| 9 merge | **PR open** — https://github.com/kazemnezhadsina144-dot/sina-gateway/pull/1 |
 | 10 launch | Blocked on 3–4–7 |
