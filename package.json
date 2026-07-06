@@ -16,6 +16,7 @@
     "test:notifications": "node scripts/test-notifications.js",
     "validate:env": "node scripts/validate-env.js",
     "verify:supabase": "node scripts/verify-supabase.js",
+    "verify:migration": "node scripts/verify-migration.js",
     "smoke": "node scripts/smoke-test.js",
     "chain:health": "node scripts/chain-health.js",
     "private-test": "node scripts/private-test-runbook.js",

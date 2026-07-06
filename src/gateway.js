@@ -185,7 +185,7 @@ export function enrichLead(input) {
   const priority_reason = explainPriority(lead, priority_tag);
   const tags = deriveTags(lead, venture_route, priority_tag);
 
-  return {
+  const base = {
     ...lead,
     venture_route,
     secondary_route: routeDecision.secondary_route,
@@ -202,6 +202,14 @@ export function enrichLead(input) {
     last_contacted_at: cleanText(input.last_contacted_at, 80),
     archived_at: cleanText(input.archived_at, 80),
     duplicate_of: cleanText(input.duplicate_of, 120),
+  };
+
+  if (process.env.CAPTURE_METADATA_ENABLED !== "true") {
+    return base;
+  }
+
+  return {
+    ...base,
     is_test: Boolean(input.is_test),
     app_version: cleanText(input.app_version, 40),
     environment: cleanText(input.environment, 40),

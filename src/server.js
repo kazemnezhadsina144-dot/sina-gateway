@@ -435,14 +435,23 @@ function applyCaptureMetadata(lead) {
     lead.source === "test" ||
     String(lead.name || "").startsWith("[PRIVATE-TEST]");
 
-  return {
+  const base = {
     ...lead,
+    source: testMode ? "test" : lead.source,
+  };
+
+  // Enable after Step 3: supabase/migrations/20260706_capture_metadata.sql applied.
+  if (process.env.CAPTURE_METADATA_ENABLED !== "true") {
+    return base;
+  }
+
+  return {
+    ...base,
     is_test: isTest,
     app_version: appVersion,
     environment: process.env.NODE_ENV || "development",
     capture_version: "v1",
     schema_version: "20260706",
-    source: testMode ? "test" : lead.source,
   };
 }
 

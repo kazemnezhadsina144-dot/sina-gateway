@@ -9,7 +9,7 @@
 5. Set `NODE_ENV=production`.
 6. Set `ALLOWED_ORIGINS` to the production origin.
 7. Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`.
-8. Set `NOTIFY_WEBHOOK_URL` for high-priority lead alerts.
+8. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_ALERT_CHAT_ID` for high-priority lead alerts (`@Gateway_A`).
 9. Run `npm run validate:env`.
 10. Run `npm test`.
 11. Run `npm run check`.

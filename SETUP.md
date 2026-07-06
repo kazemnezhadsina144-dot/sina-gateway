@@ -120,7 +120,8 @@ NODE_ENV=production
 ALLOWED_ORIGINS=https://your-domain.com
 TURNSTILE_SITE_KEY=your-turnstile-site-key
 TURNSTILE_SECRET_KEY=your-turnstile-secret-key
-NOTIFY_WEBHOOK_URL=https://your-webhook-url
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_ALERT_CHAT_ID=-1004473252322
 ```
 
 See `LAUNCH_CHECKLIST.md` and `NOTIFICATIONS.md`.

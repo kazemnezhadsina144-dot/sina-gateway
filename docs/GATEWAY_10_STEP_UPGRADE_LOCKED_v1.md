@@ -20,7 +20,8 @@ No SourceA, NOOS, Noetfield, or TrustField repo changes in this plan.
 |---|---|
 | **What** | Commit and deploy `src/telegram.js`, `src/notifications.js`, `src/server.js`, `NOTIFICATIONS.md`, `.env.example` |
 | **Why** | High-priority leads alert `@Gateway_A` via Bot API — no webhooks |
-| **Railway vars** | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALERT_CHAT_ID=-1004473252322` |
+| **Railway vars** | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALERT_CHAT_ID` |
+| **After SQL** | Set `CAPTURE_METADATA_ENABLED=true` on Railway |
 | **Check** | `curl -sS https://sina-gateway-production.up.railway.app/ready \| jq .notificationsConfigured` → `true` |
 | **Stop** | Do not commit `.env` |
 
@@ -44,7 +45,7 @@ No SourceA, NOOS, Noetfield, or TrustField repo changes in this plan.
 |---|---|
 | **What** | Run `supabase/migrations/20260706_capture_metadata.sql` in Supabase SQL Editor |
 | **Why** | `is_test`, `app_version`, `environment` columns for private-test cleanup and receipts |
-| **Check** | `npm run check:schema` PASS · `/ready` still `supabaseTableReady: true` |
+| **Check** | `npm run verify:migration` PASS after SQL applied |
 | **Stop** | Founder manual SQL only — never service_role in this app |
 
 ---
@@ -146,13 +147,13 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 
 | Step | Status |
 |------|--------|
-| 1 Telegram | Live on Railway · **uncommitted in git** |
-| 2 gateway-ops | Deployed · **uncommitted in git** |
-| 3 migration | **SQL not applied** |
-| 4 Turnstile | **Not configured** |
-| 5 UptimeRobot | **Founder manual** |
-| 6 chain gate | PASS on production |
-| 7 D2 list | Scaffold only (0 names) |
-| 8 notify test | Ready when Step 1 committed |
-| 9 merge | Branch pushed · ops work not on `main` |
+| 1 Telegram | **Done** — committed + live on Railway |
+| 2 gateway-ops | **Done** — committed + CF cron live |
+| 3 migration | Run `npm run verify:migration` — apply SQL if FAIL |
+| 4 Turnstile | **Founder** — CF Turnstile keys on Railway |
+| 5 UptimeRobot | **Founder** — `data/gateway-external-monitors-v1.json` |
+| 6 chain gate | **PASS** — `npm run chain:health` |
+| 7 D2 list | **Founder** — fill 25 names |
+| 8 notify test | `npm run test:notify-capture` |
+| 9 merge | **PR open** → merge to `main` |
 | 10 launch | Blocked on 3–4–7 |

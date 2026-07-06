@@ -4,8 +4,8 @@
 
 ## Preconditions
 
-- [ ] GitHub watchdog cron green for 7 days (or manual `/run` checks)
-- [ ] `NOTIFY_WEBHOOK_URL` tested with `npm run test:notify-capture`
+- [ ] `gateway-ops` or manual `/run` watchdog green for 7 days
+- [ ] `npm run test:notify-capture` posts to Telegram `@Gateway_A`
 - [ ] Turnstile enabled on production
 - [ ] `npm run chain:health` PASS on production
 - [ ] Founder decision: launch with or without first L2 payment

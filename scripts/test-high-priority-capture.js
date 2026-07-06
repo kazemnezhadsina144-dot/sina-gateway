@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+
+loadEnv(".env");
+
 const baseUrl = (process.env.PRIVATE_TEST_BASE_URL || "https://sina-gateway-production.up.railway.app").replace(/\/$/, "");
 const origin = process.env.PRIVATE_TEST_ORIGIN || baseUrl;
 const telegramReady = Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ALERT_CHAT_ID);
@@ -38,3 +42,20 @@ if (body.lead?.priority_tag !== "high") {
 
 console.log("PASS high-priority-capture:", body.requestId);
 console.log("Check Telegram ops chat for alert.");
+
+function loadEnv(path) {
+  try {
+    const text = readFileSync(path, "utf8");
+    for (const line of text.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const index = trimmed.indexOf("=");
+      if (index === -1) continue;
+      const key = trimmed.slice(0, index).trim();
+      if (!key || process.env[key] !== undefined) continue;
+      process.env[key] = trimmed.slice(index + 1).trim().replace(/^["']|["']$/g, "");
+    }
+  } catch {
+    // optional .env
+  }
+}

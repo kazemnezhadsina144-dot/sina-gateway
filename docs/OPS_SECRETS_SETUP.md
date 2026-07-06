@@ -37,6 +37,7 @@ cd Noetfield-Systems/SourceA/cloud/workers/loop-specialist-tick-v1 && wrangler d
 | `TELEGRAM_ALERT_CHAT_ID` | Ops chat |
 | `TURNSTILE_SITE_KEY` | Browser widget |
 | `TURNSTILE_SECRET_KEY` | Server verification |
+| `CAPTURE_METADATA_ENABLED` | `true` only after Step 3 migration applied |
 
 Test after setting:
 

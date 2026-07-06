@@ -125,7 +125,7 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 ## Next Upgrades
 
 - Configure Turnstile before public launch.
-- Configure high-priority notifications with `NOTIFY_WEBHOOK_URL`.
+- Configure high-priority Telegram alerts with `TELEGRAM_BOT_TOKEN` + `TELEGRAM_ALERT_CHAT_ID`.
 - Split contact into email, phone, social, and preferred contact.
 - Add admin read view only after real rows exist.
 
