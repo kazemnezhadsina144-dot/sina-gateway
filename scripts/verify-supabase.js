@@ -32,8 +32,7 @@ try {
     body: JSON.stringify(lead),
   });
 } catch (error) {
-  console.error(`SKIPPED_NETWORK_UNAVAILABLE: Could not reach Supabase (${error.cause?.code || error.code || error.message}).`);
-  process.exit(1);
+  reportNetworkFailure({ url, error, phase: "insert" });
 }
 
 if (!insert.ok) {
@@ -56,8 +55,7 @@ try {
     headers: headers(),
   });
 } catch (error) {
-  console.error(`READ CHECK SKIPPED_NETWORK_UNAVAILABLE: Could not reach Supabase (${error.cause?.code || error.code || error.message}).`);
-  process.exit(1);
+  reportNetworkFailure({ url, error, phase: "read" });
 }
 const body = await read.text();
 
@@ -91,6 +89,41 @@ function headers(extra = {}) {
     "content-type": "application/json",
     ...extra,
   };
+}
+
+function reportNetworkFailure({ url, error, phase }) {
+  const code = error.cause?.code || error.code || "";
+  const message = error.cause?.message || error.message || "unknown error";
+  const host = projectHost(url);
+  const projectRef = projectRefFromHost(host);
+  const prefix = phase === "read" ? "READ CHECK " : "";
+
+  if (code === "ENOTFOUND" || code === "EAI_AGAIN") {
+    console.error(`${prefix}SUPABASE_PROJECT_PAUSED_OR_UNREACHABLE: Could not resolve Supabase host (${code}).`);
+    if (host) console.error(`Host: ${host}`);
+    if (projectRef) {
+      console.error(`Dashboard: https://supabase.com/dashboard/project/${projectRef}`);
+    }
+    console.error("Free-tier projects pause after 7 days of inactivity. Open the dashboard and click Restore project.");
+    console.error("After restore, wait 1-2 minutes, confirm schema.sql is applied, then rerun: npm run verify:supabase");
+    process.exit(1);
+  }
+
+  console.error(`${prefix}SKIPPED_NETWORK_UNAVAILABLE: Could not reach Supabase (${code || message}).`);
+  process.exit(1);
+}
+
+function projectHost(url) {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return "";
+  }
+}
+
+function projectRefFromHost(host) {
+  const match = host.match(/^([a-z0-9]+)\.supabase\.co$/i);
+  return match ? match[1] : "";
 }
 
 function loadEnv(path) {

@@ -31,9 +31,18 @@ npm test
 Extra checks:
 
 ```bash
+npm run readiness
+```
+
+Individual checks:
+
+```bash
 npm run validate:env
 npm run check
 npm run audit:routes
+npm run test:shared-routing
+npm run check:schema
+npm run e2e:local
 npm run smoke
 ```
 
@@ -58,9 +67,17 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 - `construction` -> BuildMatch
 - `builder` -> Forge
 - `investor` -> Noetfield
+- `utm_campaign=founder-audit` or founder signals in notes -> FounderAudit
 - notes mentioning trust/risk/compliance -> TrustField
 - hire/project/deal/lead signals -> SourceA
 - strategic or capital signals -> Noetfield
+
+## Locked strategy docs
+
+- `docs/UNLOCK_DOCTRINE_LOCKED_v2.md`
+- `docs/FOUNDER_GATEWAY_BLUEPRINT_LOCKED_v1.md`
+- `docs/FOUNDER_AUDIT_OFFER_LOCKED_v1.md`
+- `docs/FOUNDER_AUDIT_D2_LIST_CRITERIA_LOCKED_v1.md`
 
 ## Next Upgrades
 

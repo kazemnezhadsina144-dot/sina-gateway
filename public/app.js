@@ -1,4 +1,4 @@
-const ROUTES = {
+let ROUTES = {
   SourceA: {
     title: "SourceA",
     promise: "Governed AI execution for people who need agentic work done with control.",
@@ -29,6 +29,12 @@ const ROUTES = {
     promise: "The human route for friends, warm intros, and network context.",
     nextStep: "Leave the context Sina should remember before following up.",
   },
+  FounderAudit: {
+    title: "Founder Audit",
+    promise:
+      "A 5-day audit of your founder operating system — decisions, commitments, offer, and people pipeline — with ledgers installed at the end.",
+    nextStep: "Share what you are building solo and the decision you most need checked.",
+  },
 };
 
 const form = document.querySelector("#gateway-form");
@@ -52,7 +58,7 @@ const modeBanner = document.querySelector("#mode-banner");
 const turnstileSlot = document.querySelector("#turnstile-slot");
 
 let currentStep = 0;
-let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "" };
+let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
 
 form.addEventListener("change", () => {
   updateMirror();
@@ -101,6 +107,7 @@ boot();
 
 async function boot() {
   runtimeConfig = await loadConfig();
+  if (runtimeConfig.routes) ROUTES = runtimeConfig.routes;
   renderRuntimeMode();
   renderTurnstile();
   goTo(0);
@@ -155,7 +162,7 @@ function payload() {
 }
 
 function updateMirror() {
-  const lead = payload();
+  const lead = routingLead();
   const route = routeVenture(lead);
   const copy = ROUTES[route];
   const priority = tagPriority(lead);
@@ -172,22 +179,22 @@ function updateMirror() {
   mirrorCopy.textContent = mirrorLine(lead.identity);
 }
 
-function routeVenture({ identity, intent, value, raw_notes = "" }) {
-  const notes = String(raw_notes || "").toLowerCase();
+function routingLead() {
+  const data = payload();
+  return {
+    identity: data.identity,
+    intent: data.intent,
+    value: data.value,
+    contact: data.contact,
+    raw_notes: data.raw_notes,
+    utm_campaign: data.utm_campaign,
+    page_path: data.page_path,
+  };
+}
 
-  if (identity === "friend") return "Personal";
-  if (identity === "construction") return "BuildMatch";
-  if (identity === "builder") return "Forge";
-  if (identity === "investor") return "Noetfield";
-  if (intent === "trust") return "TrustField";
-  if (value === "risk") return "TrustField";
-  if (/\b(trust|risk|compliance|audit|governance)\b/i.test(notes)) return "TrustField";
-  if (intent === "invest") return "Noetfield";
-  if (intent === "partner" && value === "capital") return "Noetfield";
-  if (intent === "partner" && value === "talent") return "Forge";
-  if (intent === "hire") return "SourceA";
-  if (["project", "deal", "lead"].includes(value)) return "SourceA";
-  return "Noetfield";
+function routeVenture(lead) {
+  const rule = runtimeConfig.routingRules?.find((candidate) => ruleMatches(candidate.match, lead));
+  return rule?.route || "Noetfield";
 }
 
 function tagPriority({ urgency, intent, value, contact }) {
@@ -207,7 +214,13 @@ function mirrorLine(identity) {
     builder: "You are likely bringing talent, tools, or collaboration energy into the factory.",
     construction: "You are likely bringing a Vancouver construction or home-services signal into BuildMatch early access.",
     friend: "You are in the human lane: context, memory, intro, or a warm signal for Sina.",
+    founder: "You are likely a solo founder looking for accountability without coaching fluff.",
   };
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("utm_campaign") === "founder-audit") {
+    return "You are in the Founder Audit lane: a 5-day audit of how you actually run your company.";
+  }
 
   return lines[identity] || "A short agentic intake for clients, investors, collaborators, construction leads, and friends.";
 }
@@ -278,6 +291,27 @@ function renderTurnstile() {
 
 function turnstileToken() {
   return document.querySelector('input[name="cf-turnstile-response"]')?.value || "";
+}
+
+function ruleMatches(match = {}, lead) {
+  if (match.always) return true;
+  if (match.identity && lead.identity !== match.identity) return false;
+  if (match.intent && lead.intent !== match.intent) return false;
+  if (match.value && lead.value !== match.value) return false;
+  if (match.value_any && !match.value_any.includes(lead.value)) return false;
+  if (match.notes_any) {
+    const notes = String(lead.raw_notes || "").toLowerCase();
+    return match.notes_any.some((term) => notes.includes(term.toLowerCase()));
+  }
+  if (match.utm_campaign) {
+    return String(lead.utm_campaign || "").trim().toLowerCase() === String(match.utm_campaign).trim().toLowerCase();
+  }
+  if (match.page_path_contains) {
+    return String(lead.page_path || "")
+      .toLowerCase()
+      .includes(String(match.page_path_contains).toLowerCase());
+  }
+  return true;
 }
 
 function sessionId() {

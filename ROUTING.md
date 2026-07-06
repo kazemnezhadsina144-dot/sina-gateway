@@ -14,19 +14,22 @@ Each route decision stores:
 
 ## Current Rule Order
 
-1. Friend -> Personal
-2. Construction -> BuildMatch
-3. Builder -> Forge
-4. Investor -> Noetfield
-5. Trust intent -> TrustField
-6. Risk value -> TrustField
-7. Notes mentioning trust/risk/compliance/audit/governance -> TrustField
-8. Invest intent -> Noetfield
-9. Partner + capital -> Noetfield
-10. Partner + talent -> Forge
-11. Hire intent -> SourceA
-12. Deal/project/lead value -> SourceA
-13. Default -> Noetfield
+1. UTM `founder-audit` -> FounderAudit
+2. Page path contains `founder-audit` -> FounderAudit
+3. Notes mention founder audit / solo founder / AI cofounder -> FounderAudit
+4. Friend -> Personal
+5. Construction -> BuildMatch
+6. Builder -> Forge
+7. Investor -> Noetfield
+8. Trust intent -> TrustField
+9. Risk value -> TrustField
+10. Notes mentioning trust/risk/compliance/audit/governance -> TrustField
+11. Invest intent -> Noetfield
+12. Partner + capital -> Noetfield
+13. Partner + talent -> Forge
+14. Hire intent -> SourceA
+15. Deal/project/lead value -> SourceA
+16. Default -> Noetfield
 
 ## Audit
 
@@ -48,6 +51,7 @@ For existing tables, run:
 
 ```sql
 -- paste supabase/migrations/20260629_routing_intelligence.sql
+-- paste supabase/migrations/20260705_founder_audit_route.sql
 ```
 
 For a fresh project, run only `supabase/schema.sql`.

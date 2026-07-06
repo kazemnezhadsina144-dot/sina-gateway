@@ -3,11 +3,13 @@ import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
 import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { enrichLead, routeCopy, validateLead } from "./gateway.js";
+import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, enrichLead, routeCopy, validateLead } from "./gateway.js";
 import { notifyLead } from "./notifications.js";
+import { loadSinaEnv, resolveSupabaseEnv } from "../scripts/load-sina-env.js";
 
 const root = join(fileURLToPath(new URL("..", import.meta.url)));
-loadLocalEnv(join(root, ".env"));
+loadSinaEnv([join(root, ".env")]);
+const supabaseEnv = () => resolveSupabaseEnv(process.env);
 
 const publicDir = join(root, "public");
 const dataDir = join(root, "data");
@@ -23,6 +25,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 const requestCounts = new Map();
+let localSaveQueue = Promise.resolve();
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -52,6 +55,9 @@ const server = createServer(async (req, res) => {
         testMode: process.env.TEST_MODE === "true",
         turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || "",
         version: appVersion,
+        options: OPTIONS,
+        routes: ROUTES,
+        routingRules: ROUTING_RULE_DEFINITIONS,
       });
       return;
     }
@@ -74,7 +80,10 @@ const server = createServer(async (req, res) => {
     sendJson(res, 405, { error: "Method not allowed" });
   } catch (error) {
     logEvent("request_error", { requestId, error: error.message });
-    sendJson(res, 500, { error: "Internal server error", requestId });
+    sendJson(res, error.statusCode || 500, {
+      error: error.publicMessage || "Internal server error",
+      requestId,
+    });
   }
 });
 
@@ -160,20 +169,21 @@ async function handleLead(req, res, requestId) {
 }
 
 async function saveLead(lead) {
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
-    return saveToSupabase(lead);
+  const { url, anonKey } = supabaseEnv();
+  if (url && anonKey) {
+    return saveToSupabase(lead, url, anonKey);
   }
 
   return saveToLocalFile(lead);
 }
 
-async function saveToSupabase(lead) {
-  const endpoint = `${process.env.SUPABASE_URL.replace(/\/$/, "")}/rest/v1/gateway_leads`;
+async function saveToSupabase(lead, url, anonKey) {
+  const endpoint = `${url}/rest/v1/gateway_leads`;
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
-      apikey: process.env.SUPABASE_ANON_KEY,
-      authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+      apikey: anonKey,
+      authorization: `Bearer ${anonKey}`,
       "content-type": "application/json",
       prefer: "return=minimal",
     },
@@ -189,12 +199,21 @@ async function saveToSupabase(lead) {
 }
 
 async function saveToLocalFile(lead) {
-  await mkdir(dataDir, { recursive: true });
-  const existing = await readLocalLeads();
-  const saved = { ...lead };
-  existing.push(saved);
-  await writeFile(dataFile, JSON.stringify(existing, null, 2));
-  return saved;
+  const save = async () => {
+    await mkdir(dataDir, { recursive: true });
+    const existing = await readLocalLeads();
+    const saved = { ...lead };
+    existing.push(saved);
+    await writeFile(dataFile, JSON.stringify(existing, null, 2));
+    return saved;
+  };
+
+  const result = localSaveQueue.then(save, save);
+  localSaveQueue = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
 }
 
 async function readLocalLeads() {
@@ -212,11 +231,17 @@ async function readJson(req) {
 
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > maxBodyBytes) throw new Error("Request body too large");
+    if (size > maxBodyBytes) {
+      throw httpError(413, "Request body too large");
+    }
     chunks.push(chunk);
   }
 
-  return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+  } catch {
+    throw httpError(400, "Request body must be valid JSON");
+  }
 }
 
 async function serveStatic(pathname, res) {
@@ -245,6 +270,13 @@ function sendJson(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
+function httpError(statusCode, publicMessage) {
+  const error = new Error(publicMessage);
+  error.statusCode = statusCode;
+  error.publicMessage = publicMessage;
+  return error;
+}
+
 function publicCaptureError(error) {
   const message = String(error?.message || error);
   if (message.includes("PGRST205") || message.includes("Could not find the table")) {
@@ -269,12 +301,14 @@ function databasePayload(lead) {
 }
 
 function readinessPayload() {
-  const hasSupabase = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
+  const { url, anonKey } = supabaseEnv();
+  const hasSupabase = Boolean(url && anonKey);
   return {
     ok: true,
     version: appVersion,
-    captureMode: captureMode(),
+    captureMode: hasSupabase ? "supabase" : "local",
     supabaseConfigured: hasSupabase,
+    supabaseRef: process.env.GATEWAY_SUPABASE_REF || "",
     notificationsConfigured: Boolean(process.env.NOTIFY_WEBHOOK_URL),
     turnstileConfigured: Boolean(process.env.TURNSTILE_SECRET_KEY),
     testMode: process.env.TEST_MODE === "true",
@@ -282,7 +316,8 @@ function readinessPayload() {
 }
 
 function captureMode() {
-  return process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY ? "supabase" : "local";
+  const { url, anonKey } = supabaseEnv();
+  return url && anonKey ? "supabase" : "local";
 }
 
 function setSecurityHeaders(res) {

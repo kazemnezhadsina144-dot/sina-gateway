@@ -36,71 +36,76 @@ export const ROUTES = {
     promise: "The human route for friends, warm intros, and network context.",
     nextStep: "Leave the context Sina should remember before following up.",
   },
+  FounderAudit: {
+    title: "Founder Audit",
+    promise:
+      "A 5-day audit of your founder operating system — decisions, commitments, offer, and people pipeline — with ledgers installed at the end.",
+    nextStep: "Share what you are building solo and the decision you most need checked.",
+  },
 };
 
-export const ROUTING_RULES = [
-  ["identity_friend", "Personal", "high", "identity friend routes to Personal", "", ({ identity }) => identity === "friend"],
-  [
-    "identity_construction",
-    "BuildMatch",
+export const ROUTING_RULE_DEFINITIONS = [
+  rule(
+    "campaign_founder_audit",
+    "FounderAudit",
     "high",
-    "identity construction routes to BuildMatch",
-    "",
-    ({ identity }) => identity === "construction",
-  ],
-  ["identity_builder", "Forge", "high", "identity builder routes to Forge", "SourceA", ({ identity }) => identity === "builder"],
-  [
-    "identity_investor",
+    "utm campaign founder-audit routes to Founder Audit",
     "Noetfield",
+    { utm_campaign: "founder-audit" },
+  ),
+  rule(
+    "path_founder_audit",
+    "FounderAudit",
     "high",
-    "identity investor routes to Noetfield",
-    "TrustField",
-    ({ identity }) => identity === "investor",
-  ],
-  ["intent_trust", "TrustField", "high", "trust intent routes to TrustField", "Noetfield", ({ intent }) => intent === "trust"],
-  ["value_risk", "TrustField", "high", "risk value routes to TrustField", "SourceA", ({ value }) => value === "risk"],
-  [
+    "founder-audit page path routes to Founder Audit",
+    "Noetfield",
+    { page_path_contains: "founder-audit" },
+  ),
+  rule(
+    "notes_founder_signal",
+    "FounderAudit",
+    "medium",
+    "notes mention founder audit, solo founder, or ai cofounder",
+    "Noetfield",
+    { notes_any: ["founder audit", "solo founder", "ai cofounder", "founder accountability", "decision ledger"] },
+  ),
+  rule("identity_friend", "Personal", "high", "identity friend routes to Personal", "", { identity: "friend" }),
+  rule("identity_construction", "BuildMatch", "high", "identity construction routes to BuildMatch", "", {
+    identity: "construction",
+  }),
+  rule("identity_builder", "Forge", "high", "identity builder routes to Forge", "SourceA", { identity: "builder" }),
+  rule("identity_investor", "Noetfield", "high", "identity investor routes to Noetfield", "TrustField", {
+    identity: "investor",
+  }),
+  rule("intent_trust", "TrustField", "high", "trust intent routes to TrustField", "Noetfield", { intent: "trust" }),
+  rule("value_risk", "TrustField", "high", "risk value routes to TrustField", "SourceA", { value: "risk" }),
+  rule(
     "notes_trust_signal",
     "TrustField",
     "medium",
     "notes mention trust, risk, compliance, audit, or governance",
     "SourceA",
-    ({ raw_notes = "" }) => /\b(trust|risk|compliance|audit|governance)\b/i.test(raw_notes),
-  ],
-  ["intent_invest", "Noetfield", "high", "invest intent routes to Noetfield", "TrustField", ({ intent }) => intent === "invest"],
-  [
-    "partner_capital",
-    "Noetfield",
-    "high",
-    "capital partnership routes to Noetfield",
-    "Forge",
-    ({ intent, value }) => intent === "partner" && value === "capital",
-  ],
-  [
-    "partner_talent",
-    "Forge",
-    "high",
-    "talent partnership routes to Forge",
-    "Noetfield",
-    ({ intent, value }) => intent === "partner" && value === "talent",
-  ],
-  ["intent_hire", "SourceA", "high", "hire intent routes to SourceA", "TrustField", ({ intent }) => intent === "hire"],
-  [
-    "execution_value",
-    "SourceA",
-    "medium",
-    "deal, project, or lead value routes to SourceA",
-    "Noetfield",
-    ({ value }) => ["deal", "project", "lead"].includes(value),
-  ],
-  ["default_strategy", "Noetfield", "low", "default strategic route", "SourceA", () => true],
-].map(([id, route, confidence, reason, secondary_route, when]) => ({
-  id,
-  route,
-  confidence,
-  reason,
-  secondary_route,
-  when,
+    { notes_any: ["trust", "risk", "compliance", "audit", "governance"] },
+  ),
+  rule("intent_invest", "Noetfield", "high", "invest intent routes to Noetfield", "TrustField", { intent: "invest" }),
+  rule("partner_capital", "Noetfield", "high", "capital partnership routes to Noetfield", "Forge", {
+    intent: "partner",
+    value: "capital",
+  }),
+  rule("partner_talent", "Forge", "high", "talent partnership routes to Forge", "Noetfield", {
+    intent: "partner",
+    value: "talent",
+  }),
+  rule("intent_hire", "SourceA", "high", "hire intent routes to SourceA", "TrustField", { intent: "hire" }),
+  rule("execution_value", "SourceA", "medium", "deal, project, or lead value routes to SourceA", "Noetfield", {
+    value_any: ["deal", "project", "lead"],
+  }),
+  rule("default_strategy", "Noetfield", "low", "default strategic route", "SourceA", { always: true }),
+];
+
+export const ROUTING_RULES = ROUTING_RULE_DEFINITIONS.map((definition) => ({
+  ...definition,
+  when: (lead) => ruleMatches(definition.match, lead),
 }));
 
 export function normalizeLead(input = {}) {
@@ -253,6 +258,31 @@ function clean(value) {
 
 function cleanText(value, maxLength) {
   return String(value || "").trim().slice(0, maxLength);
+}
+
+function rule(id, route, confidence, reason, secondary_route, match) {
+  return { id, route, confidence, reason, secondary_route, match };
+}
+
+export function ruleMatches(match, lead) {
+  if (match.always) return true;
+  if (match.identity && lead.identity !== match.identity) return false;
+  if (match.intent && lead.intent !== match.intent) return false;
+  if (match.value && lead.value !== match.value) return false;
+  if (match.value_any && !match.value_any.includes(lead.value)) return false;
+  if (match.notes_any) {
+    const notes = String(lead.raw_notes || "").toLowerCase();
+    return match.notes_any.some((term) => notes.includes(term.toLowerCase()));
+  }
+  if (match.utm_campaign) {
+    return clean(lead.utm_campaign) === clean(match.utm_campaign);
+  }
+  if (match.page_path_contains) {
+    return String(lead.page_path || "")
+      .toLowerCase()
+      .includes(String(match.page_path_contains).toLowerCase());
+  }
+  return true;
 }
 
 function looksLikeContact(contact) {

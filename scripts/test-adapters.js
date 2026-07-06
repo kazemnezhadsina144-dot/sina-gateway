@@ -62,6 +62,32 @@ const cases = [
     },
     expected: { venture_route: "Personal", priority_tag: "medium" },
   },
+  {
+    name: "founder-audit campaign routes to FounderAudit",
+    input: {
+      identity: "client",
+      intent: "learn",
+      value: "project",
+      urgency: "exploring",
+      name: "Riley",
+      contact: "riley@example.com",
+      utm_campaign: "founder-audit",
+    },
+    expected: { venture_route: "FounderAudit", route_rule_id: "campaign_founder_audit", priority_tag: "medium" },
+  },
+  {
+    name: "solo founder notes route to FounderAudit",
+    input: {
+      identity: "client",
+      intent: "learn",
+      value: "project",
+      urgency: "soon",
+      name: "Casey",
+      contact: "casey@example.com",
+      raw_notes: "solo founder building an ai cofounder workflow",
+    },
+    expected: { venture_route: "FounderAudit", route_rule_id: "notes_founder_signal", priority_tag: "medium" },
+  },
 ];
 
 for (const testCase of cases) {

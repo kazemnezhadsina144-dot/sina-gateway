@@ -63,6 +63,16 @@ INSERT OK
 READ DENIED BY RLS (0 rows visible to anon)
 ```
 
+If the verifier prints `SUPABASE_PROJECT_PAUSED_OR_UNREACHABLE`, the Supabase free-tier project is paused or the hostname is wrong.
+
+1. Open [Supabase Dashboard](https://supabase.com/dashboard) and select the project.
+2. Click **Restore project** (or **Unpause**).
+3. Wait 1-2 minutes for DNS to come back.
+4. In SQL Editor, run the full `supabase/schema.sql` if this is a fresh restore.
+5. Rerun `npm run verify:supabase`.
+
+Your `.env` project ref must match the restored project. Paused projects often fail DNS lookup with `ENOTFOUND`.
+
 ## Prove Anon Cannot Read
 
 Run this in the browser console on the gateway page, replacing the two values:
