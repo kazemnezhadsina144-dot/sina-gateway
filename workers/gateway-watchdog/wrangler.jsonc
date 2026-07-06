@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gateway-watchdog",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-05",
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "vars": {
+    "GATEWAY_BASE_URL": "https://sina-gateway-production.up.railway.app"
+  }
+}

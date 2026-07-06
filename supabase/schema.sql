@@ -74,3 +74,7 @@ create index if not exists gateway_leads_status_idx on public.gateway_leads (sta
 create index if not exists gateway_leads_contact_idx on public.gateway_leads (contact);
 create index if not exists gateway_leads_company_idx on public.gateway_leads (company);
 create index if not exists gateway_leads_tags_idx on public.gateway_leads using gin (tags);
+
+-- Table privileges (required in addition to RLS — Supabase SQL editor does not always grant anon)
+grant usage on schema public to anon;
+grant insert on public.gateway_leads to anon;

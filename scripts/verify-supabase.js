@@ -42,6 +42,12 @@ if (!insert.ok) {
     console.error(detail);
     process.exit(1);
   }
+  if (detail.includes("42501") || detail.includes("permission denied for table")) {
+    console.error("SKIPPED_SUPABASE_GRANTS_MISSING: anon role cannot insert into gateway_leads.");
+    console.error("Run supabase/migrations/20260706_anon_insert_grants.sql in the Supabase SQL editor, then retry.");
+    console.error(detail);
+    process.exit(1);
+  }
   console.error("INSERT FAILED");
   console.error(detail);
   process.exit(1);
@@ -60,6 +66,10 @@ try {
 const body = await read.text();
 
 if (!read.ok) {
+  if (read.status === 401 || read.status === 403) {
+    console.log(`READ DENIED BY RLS (${read.status})`);
+    process.exit(0);
+  }
   console.log(`READ BLOCKED (${read.status})`);
   process.exit(0);
 }

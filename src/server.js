@@ -68,7 +68,8 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/ready") {
-      sendJson(res, 200, readinessPayload());
+      const payload = await readinessPayload();
+      sendJson(res, payload.ok ? 200 : 503, payload);
       return;
     }
 
@@ -300,19 +301,58 @@ function databasePayload(lead) {
   return payload;
 }
 
-function readinessPayload() {
+async function readinessPayload() {
   const { url, anonKey } = supabaseEnv();
   const hasSupabase = Boolean(url && anonKey);
-  return {
+  const payload = {
     ok: true,
     version: appVersion,
     captureMode: hasSupabase ? "supabase" : "local",
     supabaseConfigured: hasSupabase,
-    supabaseRef: process.env.GATEWAY_SUPABASE_REF || "",
+    supabaseRef: supabaseRefFromUrl(url),
+    supabaseTableReady: null,
     notificationsConfigured: Boolean(process.env.NOTIFY_WEBHOOK_URL),
     turnstileConfigured: Boolean(process.env.TURNSTILE_SECRET_KEY),
     testMode: process.env.TEST_MODE === "true",
   };
+
+  if (!hasSupabase) return payload;
+
+  const table = await probeSupabaseTable(url, anonKey);
+  payload.supabaseTableReady = table.ok;
+  if (!table.ok) {
+    payload.ok = false;
+    payload.supabaseTableError = table.error;
+  }
+
+  return payload;
+}
+
+async function probeSupabaseTable(url, anonKey) {
+  try {
+    const response = await fetch(`${url}/rest/v1/gateway_leads?select=id&limit=1`, {
+      headers: {
+        apikey: anonKey,
+        authorization: `Bearer ${anonKey}`,
+      },
+    });
+    const body = await response.text();
+    if (response.ok) return { ok: true };
+    if (body.includes("PGRST205") || body.includes("Could not find the table")) {
+      return { ok: false, error: "gateway_leads table missing — run supabase/schema.sql" };
+    }
+    if (response.status === 401 || response.status === 403) {
+      return { ok: true };
+    }
+    return { ok: false, error: `Supabase probe failed (${response.status})` };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+}
+
+function supabaseRefFromUrl(url = "") {
+  const match = String(url).match(/https:\/\/([a-z0-9]+)\.supabase\.co/i);
+  return match ? match[1] : process.env.GATEWAY_SUPABASE_REF || "";
 }
 
 function captureMode() {

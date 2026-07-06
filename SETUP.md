@@ -38,7 +38,13 @@ If you already created the original table before this upgrade, run:
 -- paste supabase/migrations/20260629_routing_intelligence.sql
 ```
 
-For a fresh project, run only `supabase/schema.sql`; it already includes the upgraded fields.
+For a fresh project, run only `supabase/schema.sql`; it already includes the upgraded fields and anon insert grants.
+
+If `npm run verify:supabase` reports `permission denied for table gateway_leads`, run:
+
+```sql
+-- paste supabase/migrations/20260706_anon_insert_grants.sql
+```
 
 ## Test Capture
 
