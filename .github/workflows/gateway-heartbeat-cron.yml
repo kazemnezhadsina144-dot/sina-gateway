@@ -1,8 +1,10 @@
 name: Gateway Heartbeat Cron
 
-# Scheduled runs disabled — main GitHub account Actions quota exhausted.
-# Use Cloudflare gateway-ops worker or external cron (see docs/GATEWAY_247_AUTORUN_SETUP.md).
+# Daily heartbeat backup — primary motor is Cloudflare gateway-ops (07:00 PT window).
+# Fails only on gateway infra RED; commercial RED (zero offers) is logged, not a workflow failure.
 on:
+  schedule:
+    - cron: "0 14 * * *"
   workflow_dispatch:
 
 jobs:
@@ -14,6 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Sync commercial vars to heartbeat worker
         run: node scripts/sync-heartbeat-vars.js --print-only
@@ -22,13 +26,17 @@ jobs:
         id: heartbeat
         run: |
           set -euo pipefail
-          url="https://gateway-heartbeat.sina-kazemnezhad-ca.workers.dev/run"
+          url="https://gateway-ops.sina-kazemnezhad-ca.workers.dev/run?mode=heartbeat"
           http_code=$(curl -sS -o /tmp/heartbeat.json -w "%{http_code}" "$url")
           echo "http_code=$http_code"
           cat /tmp/heartbeat.json
-          echo "verdict=$(jq -r '.verdict' /tmp/heartbeat.json)" >> "$GITHUB_OUTPUT"
+          echo "verdict=$(jq -r '.heartbeat.verdict' /tmp/heartbeat.json)" >> "$GITHUB_OUTPUT"
+          if ! jq -e '.heartbeat.gateway.health == "PASS" and .heartbeat.gateway.ready == "PASS"' /tmp/heartbeat.json >/dev/null; then
+            exit 1
+          fi
 
       - name: Post heartbeat verdict
         run: |
-          echo "Daily heartbeat runs via loop-specialist Telegram motor (see docs/GATEWAY_247_AUTORUN_SETUP.md)"
+          echo "Daily heartbeat via gateway-ops → @Gateway_A"
+          echo "verdict=${{ steps.heartbeat.outputs.verdict }}"
           cat /tmp/heartbeat.json
