@@ -241,7 +241,17 @@ function applyCampaignWedge() {
   if (campaign === "buildmatch") {
     const buildmatchIdentity = form.querySelector('input[name="identity"][value="buildmatch"]');
     if (buildmatchIdentity) buildmatchIdentity.checked = true;
+    const industry = (params.get("project_type") || "").toLowerCase();
+    if (industry === "construction" || industry === "home_services") {
+      const projectType = form.querySelector(`input[name="project_type"][value="${industry}"]`);
+      if (projectType) projectType.checked = true;
+    }
     syncBuildMatchPanel();
+  }
+
+  if (campaign === "sourcea") {
+    const clientIdentity = form.querySelector('input[name="identity"][value="client"]');
+    if (clientIdentity) clientIdentity.checked = true;
   }
 }
 

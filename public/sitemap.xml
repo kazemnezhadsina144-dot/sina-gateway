@@ -7,6 +7,12 @@
     <loc>https://sina-gateway-production.up.railway.app/founder-audit</loc>
   </url>
   <url>
+    <loc>https://sina-gateway-production.up.railway.app/for-clients</loc>
+  </url>
+  <url>
+    <loc>https://sina-gateway-production.up.railway.app/buildmatch</loc>
+  </url>
+  <url>
     <loc>https://sina-gateway-production.up.railway.app/privacy.html</loc>
   </url>
 </urlset>
