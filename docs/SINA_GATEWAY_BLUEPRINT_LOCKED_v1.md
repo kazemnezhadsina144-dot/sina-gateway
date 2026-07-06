@@ -11,9 +11,9 @@
 
 Most founders run **many doors** (LinkedIn, email, DMs, forms) into **one overwhelmed brain**. Ventures multiply; intake stays chaotic.
 
-**Sina Gateway** is the **single personal front door**: one wizard, one capture pipeline, one ops channel — **deterministic routing** to named venture lanes. The gateway **learns** from receipts; it does **not** become those ventures.
+**Sina Gateway** is the **commercial megagateway**: portfolio **control panel** plus **routing mesh** for all products, sites, and directions. One capture pipeline, one command channel (`@Gateway_A`), deterministic routing to venture lanes.
 
-**One line:** *My personal megagateway — route every signal honestly, tag it, alert me when it matters, hand off to the right lane.*
+**One line:** *Commercial control plane for the portfolio — route every signal, tag it, command it from one surface, hand off to the right lane.*
 
 ---
 
@@ -39,10 +39,11 @@ flowchart TB
     Local["data/leads.json fallback"]
   end
 
-  subgraph ops [Personal Ops]
+  subgraph ops [Commercial Control Panel]
     TG["@Gateway_A"]
     GOps["gateway-ops cron"]
     UR["UptimeRobot GET"]
+    Status["/status.html"]
   end
 
   subgraph lanes [Venture Lanes - EXTERNAL]
@@ -111,17 +112,18 @@ The gateway learns **operations**, not venture strategy:
 
 ---
 
-## §6 — Telegram doctrine
+## §6 — Telegram doctrine (commercial control panel)
 
 | Component | Behavior |
 |-----------|----------|
-| `@Gateway_A` channel | Personal operator room; charter pinned |
-| Watchdog | Message **only** on probe FAIL |
-| Heartbeat | Message on infra RED; commercial only if `COMMERCIAL_ARMED` |
-| Lead alert | High-priority captures only |
-| Bot commands | Future (`/start`, `/status`) — not v1 blocker |
+| `@Gateway_A` channel | **Portfolio command surface** — charter, verdicts, alerts |
+| Watchdog | Infra RED when probes fail |
+| Heartbeat | Infra RED immediately; **commercial GREEN/RED when armed** |
+| Lead alert | High-priority captures across **any lane** |
+| Lane aggregates | Weekly portfolio stats (no PII) — planned control panel content |
+| Bot commands | Future (`/start`, `/status`, `/lanes`) |
 
-Silence when green is **correct**, not broken.
+**Not personal-only:** channel exists for **commercial routing visibility**, not private notes. Infra silence when green is fine; **commercial motion must post when armed.**
 
 ---
 

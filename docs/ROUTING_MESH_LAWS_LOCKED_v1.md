@@ -19,7 +19,7 @@ Intake and consent happen on Sina Gateway. **Contracts, invoices, and SOWs** hap
 
 ## M2 — Copy matches lane, voice stays personal
 
-Lane landing pages (`/founder-audit`, `/for-clients`) describe **what that lane is for**. Footer and operator line always say **personal founder project — Sina Kazemnezhad**.
+Lane landing pages describe **what that lane is for**. Footer: **Sina Gateway — operated by Sina Kazemnezhad** (commercial megagateway control plane).
 
 ---
 

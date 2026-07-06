@@ -12,11 +12,11 @@ When docs conflict, **this file** is operational truth. For identity law, see [`
 | Field | Truth |
 |-------|--------|
 | **Name** | Sina Gateway |
-| **Type** | Personal megagateway (intake + routing + capture + tag) |
-| **Operator** | Sina Kazemnezhad — solo founder, personal account |
-| **Not** | Noetfield Systems Inc., SourceA Inc., or any venture’s corporate site |
-| **Mission** | One honest front door; route signals to named lanes; receipt-native ops |
-| **Pattern** | Mirror → Route → Capture → Tag |
+| **Type** | **Commercial megagateway** — portfolio control panel + routing mesh |
+| **Operator account** | Sina Kazemnezhad — personal founder account (runs the control plane) |
+| **Not** | Noetfield Systems Inc., SourceA Inc., or any single venture’s corporate site |
+| **Mission** | One command surface; route signals to all venture lanes; receipt-native commercial ops |
+| **Pattern** | Mirror → Route → Capture → Tag → Handoff |
 
 ---
 
@@ -40,7 +40,7 @@ When docs conflict, **this file** is operational truth. For identity law, see [`
 | **Privacy** | `/privacy.html` | Policy |
 | **Status** | `/status.html` | Internal ops snapshot (noindex) |
 | **Health** | `/health`, `/ready` | Probes |
-| **Telegram channel** | `@Gateway_A` · `-1004473252322` | Personal ops + high-priority alerts |
+| **Telegram channel** | `@Gateway_A` · `-1004473252322` | **Commercial control panel** — alerts, verdicts, portfolio motion |
 | **Telegram bot** | `@GateWay_A_bot` | Alert delivery (not full intake bot yet) |
 | **CF ops worker** | `gateway-ops` · `*/15` cron | Watchdog; Telegram on RED only |
 | **Supabase** | `tkgpapowwplupyekpivy` | `gateway_leads` table |
@@ -69,7 +69,9 @@ When docs conflict, **this file** is operational truth. For identity law, see [`
 SINA_GATEWAY_CONSTITUTION_LOCKED_v1.md   ← laws (identity, separation)
 SINA_GATEWAY_SSOT_LOCKED_v1.md           ← this file (live truth)
 SINA_GATEWAY_BLUEPRINT_LOCKED_v1.md      ← architecture + evolution
-ROUTING.md + src/gateway.js              ← routing truth (code wins on rules)
+SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md    ← operator vocabulary
+SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md ← public copy rules
+ROUTING_MESH_LAWS_LOCKED_v1.md           ← venture handoff laws
 WEDGE_LOCKED_v1.md                       ← current 90-day marketing wedge
 GATEWAY_10_STEP_UPGRADE_LOCKED_v1.md      ← infra rollout status
 GATEWAY_888_UPGRADES_PLAN.md             ← backlog (numbered, not all law)
@@ -113,8 +115,8 @@ npm run validate:utm         # campaign taxonomy
 |------|--------|
 | Public launch | **Live** — indexable |
 | Wedge | **Founder Audit** (D2/D3 skipped by founder choice) |
-| Commercial heartbeat | **Not armed** (`COMMERCIAL_ARMED` false) |
-| Telegram silence when green | **Expected** |
+| Commercial heartbeat | **Not armed** — arm with `npm run sync:heartbeat` after real sends |
+| Control panel silence on infra | **Expected when green** — commercial posts require `COMMERCIAL_ARMED` |
 | Batch 2 (intro links, /for-clients) | Branch `cursor/888-batch-2-attraction` — merge pending |
 
 ---
@@ -123,4 +125,4 @@ npm run validate:utm         # campaign taxonomy
 
 | Date | Change |
 |------|--------|
-| 2026-07-06 | v1 SSOT created — personal megagateway identity separated from ventures |
+| 2026-07-06 | v1.1 — commercial megagateway + control panel framing; terminology docs |

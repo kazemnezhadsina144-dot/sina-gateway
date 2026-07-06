@@ -1,85 +1,85 @@
-# Sina Gateway — Constitution (Foundational Laws) v1
+# Sina Gateway — Constitution (Foundational Laws) v1.1
 
 **Status:** Locked · **Date:** 2026-07-06  
-**Operator:** Sina Kazemnezhad (personal founder account)  
-**Supersedes:** informal “gateway is part of Noetfield” assumptions — **it is not.**
+**Operator account:** Sina Kazemnezhad (personal founder account)  
+**System scope:** **Commercial megagateway** — portfolio control panel and routing  
+**Supersedes:** v1.0 “personal-only ops” framing
 
 ---
 
 ## Article I — Identity
 
-**Law 1 — Personal megagateway.** Sina Gateway is a **personal intake and routing system** operated by Sina Kazemnezhad. It is not Noetfield Systems Inc., not SourceA corporate HQ, not TrustField Ltd., and not any venture’s official homepage.
+**Law 1 — Commercial megagateway.** Sina Gateway is a **commercial intake and routing control plane** for a **portfolio** of products, sites, and directions. It is operated from Sina Kazemnezhad’s **personal founder account**. It is not Noetfield Systems Inc.’s corporate homepage, not SourceA’s product site, and not any single venture’s official entity page.
 
-**Law 2 — One front door, many lanes.** The gateway’s job is **Mirror → Route → Capture → Tag**. It is the **general** at the door; venture lanes are **destinations**, not co-owners of the gateway.
+**Law 2 — Control panel + mesh.** The gateway is simultaneously: (a) **control panel** for portfolio ops (`@Gateway_A`, status, verdicts, alerts), and (b) **routing mesh** for every inbound signal. Pattern: **Mirror → Route → Capture → Tag**.
 
-**Law 3 — Separate mission.** This system’s mission is: *honest intake, deterministic routing, receipt-native ops, and founder-controlled follow-up* — for every signal that enters through Sina’s personal network surface.
+**Law 3 — Mission.** Route every commercial and strategic signal to the correct **venture lane**, capture with receipts, operate the portfolio from one command surface, hand off to lane-specific delivery without identity merge.
 
 ---
 
 ## Article II — Separation from ventures
 
-**Law 4 — Route, do not merge.** When a client or viewer matches a lane (SourceA, Noetfield, TrustField, BuildMatch, Forge, Personal, Founder Audit), the gateway **routes** the signal. It does **not** speak as that venture, bind that venture contractually, or imply employment/agency with that venture.
+**Law 4 — Route, do not merge.** Lanes (SourceA, Noetfield, TrustField, BuildMatch, Forge, Personal, Founder Audit) are **directions** in the mesh. The gateway routes; it does not contract, invoice, or legally bind on their behalf unless the founder does so explicitly in that lane’s context.
 
-**Law 5 — No identity bleed.** Public copy on this gateway uses **“Sina Gateway”** and **“personal founder project.”** Never “Noetfield Systems Inc.” on intake, footer, Telegram charter, or alerts unless the routed lane is Noetfield **and** the copy explicitly says *routed for strategic review* — not corporate representation.
+**Law 5 — Operator vs venture brand.** Public copy: **“Sina Gateway”** + **operated by Sina Kazemnezhad**. Lane names appear as **review destinations**. Never present the gateway as a subsidiary of Noetfield Systems Inc.
 
-**Law 6 — Learn without absorbing.** The gateway may **observe** which lanes convert, which UTMs work, and which rules fire — to improve routing and founder ops. It must **not** import another venture’s repo, secrets, cron, or brand into this codebase as if they were one system.
+**Law 6 — Learn without absorbing.** The control plane learns lane volume, UTM, conversion, and infra health. Venture repos, secrets, and delivery SSOTs stay in **lane repos**.
 
-**Law 7 — One-way mesh.** External properties may link **into** the gateway with UTM. The gateway may link **out** to lane explainers. No circular “we are all one product” narrative.
+**Law 7 — One-way mesh.** Products and sites link **into** the gateway with UTM. Gateway links **out** to lane surfaces. No “one company” fiction.
 
 ---
 
 ## Article III — Receipts and truth
 
-**Law 8 — Receipts over promises.** A signal is real when captured with `requestId`, lane, and timestamp — not when someone says they are interested. Payment receipts unlock commercial GREEN; conversation does not.
+**Law 8 — Receipts over promises.** Signals are real when captured with `requestId`, lane, and timestamp. Commercial GREEN requires real receipts (`offers_sent`, payments), not narrative.
 
-**Law 9 — No fake surface.** No fake testimonials, ratings, team pages, email acks, uptime stats, subscriber counts, or corporate authority this operator does not hold.
+**Law 9 — No fake surface.** No fake testimonials, ratings, team pages, email acks, or authority not held.
 
-**Law 10 — Honest silence.** Telegram and heartbeat stay **quiet when healthy**. Alerts fire on failure or real commercial state — never daily fake RED/GREEN spam.
+**Law 10 — Commercial visibility.** The control panel (`@Gateway_A`) carries **portfolio truth**: infra RED, high-priority signals, and **commercial verdicts when armed**. Silence on infra when healthy is correct; **commercial motion must be visible when armed** — not hidden as “personal only.”
 
-**Law 11 — Operator is human.** Review windows, follow-up, and offers are **founder-paced**. The gateway does not claim 24/7 human support.
+**Law 11 — Honest capacity.** Review windows are founder-paced. No fake 24/7 human support claim.
 
 ---
 
 ## Article IV — Routing
 
-**Law 12 — Deterministic routing.** Venture choice is **rule-based** (`src/gateway.js`), logged with `route_rule_id` and `route_reason`. No black-hole forms.
+**Law 12 — Deterministic routing.** Rule-based (`src/gateway.js`), logged with `route_rule_id` and `route_reason`.
 
-**Law 13 — Viewer decides lane inputs.** Identity, intent, value, urgency, notes, and UTM determine lane — not the operator’s mood at intake time.
+**Law 13 — Viewer/client inputs decide.** Identity, intent, value, urgency, notes, UTM — not operator mood.
 
-**Law 14 — One audience per season.** Marketing picks **one wedge** at a time (`docs/WEDGE_LOCKED_v1.md`). All lanes remain routable; not all lanes are marketed simultaneously.
+**Law 14 — One marketing wedge per season.** All lanes routable; one marketed heavily (`WEDGE_LOCKED_v1.md`).
 
-**Law 15 — High-priority is scarce.** Telegram lead alerts fire for **high-priority** signals only — not every submit.
+**Law 15 — Alert discipline.** High-priority Telegram for urgent signals; portfolio aggregates on schedule when configured.
 
 ---
 
 ## Article V — Data and privacy
 
-**Law 16 — Anon capture only.** Browser uses anon key; service-role never ships in this app.
-
-**Law 17 — RLS is law.** Anonymous read of lead rows is denied. Founder reviews in Supabase dashboard or future admin view.
-
-**Law 18 — Test rows are labeled.** `is_test`, `[PRIVATE-TEST]`, and `private-test` source are cleaned before treating DB as production truth.
+**Law 16 — Anon capture only.**  
+**Law 17 — RLS is law.**  
+**Law 18 — Test rows labeled and cleaned.**
 
 ---
 
 ## Article VI — Ops
 
-**Law 19 — Telegram is personal ops.** `@Gateway_A` is the **personal operator channel** for this gateway: watchdog RED, high-priority leads, optional heartbeat when armed. Other products’ workers must not post here unless explicitly reconfigured.
+**Law 19 — Telegram is the commercial control panel channel.** `@Gateway_A` is the **portfolio command surface**: watchdog RED, high-priority intake alerts, commercial heartbeat when armed, lane aggregates when published. Not a private diary; not other products’ default alert sink.
 
-**Law 20 — Infra motors are separate.** `gateway-ops` watches Railway; UptimeRobot is external GET-only; deadman/NOOS/SourceA crons live in **their** repos — operate, don’t edit from here unless scoped.
+**Law 20 — Motors federated.** `gateway-ops` probes this gateway; lane products keep their own infra; mesh coordinates, does not centralize all crons in one repo.
 
-**Law 21 — Git truth on main.** Production Railway deploys from `main`. Receipts in docs cite commit or script PASS, not vibes.
+**Law 21 — Git truth on main.**
 
 ---
 
 ## Article VII — Amendments
 
-**Law 22 — Founder amends.** Only Sina Kazemnezhad may lock/unlock constitutional changes. Agents implement; they do not redefine mission or impersonate ventures.
+**Law 22 — Founder amends.**  
+**Law 23 — SSOT wins operational conflicts; Constitution wins identity law.**
 
-**Law 23 — SSOT wins conflicts.** If any doc disagrees with [`SINA_GATEWAY_SSOT_LOCKED_v1.md`](./SINA_GATEWAY_SSOT_LOCKED_v1.md), SSOT wins for **live operational truth**. Constitution wins for **identity and law**.
+**Vocabulary:** [`SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](./SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md) · Client copy: [`SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](./SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md)
 
 ---
 
-## One paragraph (pin this mentally)
+## One paragraph (pin this)
 
-> **Sina Gateway is my personal megagateway — separate mission, separate ops, separate brand — that routes people to the right venture lane based on who they are and what they need. I learn from every lane, but I do not pretend to be those lanes. Receipts, honesty, and quiet green infra are the product.**
+> **Sina Gateway is my commercial megagateway — the control panel and routing mesh for every product, site, and direction in the portfolio. I operate it from my personal founder account; I do not pretend to be Noetfield or SourceA. Signals enter once, get tagged with receipts, alert the control panel when it matters, and hand off to the right lane.**

@@ -123,6 +123,8 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 - [`docs/SINA_GATEWAY_CONSTITUTION_LOCKED_v1.md`](docs/SINA_GATEWAY_CONSTITUTION_LOCKED_v1.md) — foundational laws
 - [`docs/SINA_GATEWAY_BLUEPRINT_LOCKED_v1.md`](docs/SINA_GATEWAY_BLUEPRINT_LOCKED_v1.md) — megagateway architecture
 - [`docs/ROUTING_MESH_LAWS_LOCKED_v1.md`](docs/ROUTING_MESH_LAWS_LOCKED_v1.md) — venture mesh handoff
+- [`docs/SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](docs/SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md) — operator vocabulary
+- [`docs/SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](docs/SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md) — public copy rules
 - `docs/UNLOCK_DOCTRINE_LOCKED_v2.md`
 - `docs/FOUNDER_GATEWAY_BLUEPRINT_LOCKED_v1.md`
 - `docs/FOUNDER_AUDIT_OFFER_LOCKED_v1.md`
