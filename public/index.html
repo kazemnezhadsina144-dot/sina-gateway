@@ -31,8 +31,8 @@
       <section class="hero-compact" aria-labelledby="page-title">
         <p class="eyebrow">Commercial intake hub</p>
         <h1 id="page-title">Sort every inquiry to the right product line.</h1>
-        <p id="mirror-copy" class="lede lede-mirror">
-          Pick who you are on step 1 — the routing console updates live as you answer.
+        <p id="mirror-copy" class="lede lede-mirror" data-empty="Pick who you are — preview updates live.">
+          Pick who you are — preview updates live.
         </p>
         <p class="hero-cta">
           <a href="#details-routes" class="text-link">See where inquiries go</a>
@@ -64,7 +64,7 @@
 
           <fieldset class="step is-active" data-step="0">
             <legend>Who are you?</legend>
-            <div class="option-grid identity-grid">
+            <div class="option-grid identity-grid" data-card-grid="identity">
               <label class="identity-card">
                 <input type="radio" name="identity" value="client" required />
                 <span class="card-face" data-lane="SourceA">
@@ -111,7 +111,7 @@
                 </span>
               </label>
             </div>
-            <fieldset id="buildmatch-industry-panel" class="buildmatch-panel" hidden>
+            <fieldset id="buildmatch-industry-panel" class="buildmatch-panel" aria-hidden="true">
               <legend>Which BuildMatch industry?</legend>
               <p class="buildmatch-note">
                 BuildMatch is the platform. Pick one industry — Construction and Home services are reviewed
@@ -140,25 +140,67 @@
 
           <fieldset class="step" data-step="1">
             <legend>What do you want?</legend>
-            <div class="option-grid">
-              <label><input type="radio" name="intent" value="hire" required /> <span>Hire</span></label>
-              <label><input type="radio" name="intent" value="invest" /> <span>Invest</span></label>
-              <label><input type="radio" name="intent" value="partner" /> <span>Partner</span></label>
-              <label><input type="radio" name="intent" value="refer" /> <span>Refer</span></label>
-              <label><input type="radio" name="intent" value="learn" /> <span>Learn</span></label>
-              <label><input type="radio" name="intent" value="trust" /> <span>Trust / risk</span></label>
+            <div class="option-grid intent-grid" data-card-grid="intent">
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="hire" required />
+                <span class="card-face">
+                  <span class="card-title">Hire</span>
+                  <span class="card-hint">Delegate work with governance</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="invest" />
+                <span class="card-face">
+                  <span class="card-title">Invest</span>
+                  <span class="card-hint">Capital and strategic fit</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="partner" />
+                <span class="card-face">
+                  <span class="card-title">Partner</span>
+                  <span class="card-hint">Build something together</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="refer" />
+                <span class="card-face">
+                  <span class="card-title">Refer</span>
+                  <span class="card-hint">Send someone our way</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="learn" />
+                <span class="card-face">
+                  <span class="card-title">Learn</span>
+                  <span class="card-hint">Understand the map first</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
+              <label class="identity-card intent-card">
+                <input type="radio" name="intent" value="trust" />
+                <span class="card-face">
+                  <span class="card-title">Trust / risk</span>
+                  <span class="card-hint">Governance and compliance</span>
+                  <span class="card-check" aria-hidden="true">✓</span>
+                </span>
+              </label>
             </div>
           </fieldset>
 
           <fieldset class="step" data-step="2">
             <legend>What could we create?</legend>
-            <div class="option-grid">
-              <label><input type="radio" name="value" value="deal" required /> <span>Deal</span></label>
-              <label><input type="radio" name="value" value="project" /> <span>Project</span></label>
-              <label><input type="radio" name="value" value="lead" /> <span>Referral</span></label>
-              <label><input type="radio" name="value" value="capital" /> <span>Capital</span></label>
-              <label><input type="radio" name="value" value="talent" /> <span>Talent</span></label>
-              <label><input type="radio" name="value" value="risk" /> <span>Risk</span></label>
+            <div class="option-grid value-grid" id="value-grid">
+              <label data-value="deal"><input type="radio" name="value" value="deal" required /> <span>Deal</span></label>
+              <label data-value="project"><input type="radio" name="value" value="project" /> <span>Project</span></label>
+              <label data-value="lead"><input type="radio" name="value" value="lead" /> <span>Referral</span></label>
+              <label data-value="capital"><input type="radio" name="value" value="capital" /> <span>Capital</span></label>
+              <label data-value="talent"><input type="radio" name="value" value="talent" /> <span>Talent</span></label>
+              <label data-value="risk"><input type="radio" name="value" value="risk" /> <span>Risk</span></label>
             </div>
           </fieldset>
 
@@ -232,6 +274,8 @@
             </div>
           </fieldset>
 
+          <p class="step-error" id="step-error" role="alert" hidden></p>
+
           <div class="actions">
             <button type="button" class="ghost" id="back-button">Back</button>
             <button type="button" id="next-button">Next</button>
@@ -247,7 +291,10 @@
             <div class="route-edge route-edge-a" id="route-edge-a"></div>
             <div class="route-node route-node-gateway is-lit">Gateway</div>
             <div class="route-edge route-edge-b" id="route-edge-b"></div>
-            <div class="route-node route-node-dest" id="route-diagram-dest">?</div>
+            <div class="route-dest-group" id="route-dest-group">
+              <div class="route-node route-node-dest" id="route-diagram-dest">?</div>
+              <div class="route-node route-node-industry" id="route-diagram-industry" hidden></div>
+            </div>
           </div>
 
           <div class="signal-panel" aria-label="Likely destination preview">

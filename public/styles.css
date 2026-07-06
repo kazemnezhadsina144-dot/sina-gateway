@@ -101,10 +101,21 @@ textarea {
 .hero-compact {
   max-width: 42rem;
   padding: 20px 0 8px;
+  --hero-scroll: 0;
+}
+
+.hero-compact h1 {
+  opacity: calc(1 - var(--hero-scroll) * 0.18);
+  transform: translateY(calc(var(--hero-scroll) * -4px));
+  transition: opacity 120ms ease, transform 120ms ease;
 }
 
 .hero-compact.is-engaged h1 {
   font-size: clamp(1.65rem, 4vw, 2.35rem);
+}
+
+.hero-compact.is-engaged .lede-mirror {
+  font-size: 0.98rem;
 }
 
 .hero-cta {
@@ -252,10 +263,25 @@ h1 {
 }
 
 .buildmatch-panel {
+  overflow: hidden;
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    max-height 280ms ease,
+    opacity 200ms ease,
+    margin-top 200ms ease;
+}
+
+.buildmatch-panel.is-open {
+  max-height: 420px;
   margin-top: 16px;
+  opacity: 1;
+  pointer-events: auto;
   padding: 14px 14px 6px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: rgba(255, 255, 255, 0.55);
 }
 
@@ -531,6 +557,116 @@ h1 {
   color: var(--lane-active, var(--green));
 }
 
+.route-dest-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.route-node-industry {
+  font-size: 0.68rem;
+  text-transform: none;
+  font-weight: 750;
+}
+
+.intent-card .card-face {
+  min-height: 92px;
+}
+
+.intent-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.value-grid label.is-hidden {
+  display: none;
+}
+
+.step-error {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(155, 77, 47, 0.35);
+  border-radius: var(--radius-control);
+  background: #fdf0ea;
+  color: var(--rust);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.priority-chip.is-low,
+.priority-chip.is-pending {
+  border-color: var(--line);
+  background: #f6f8f6;
+  color: var(--muted);
+}
+
+button.is-submitting {
+  position: relative;
+  color: transparent;
+}
+
+button.is-submitting::after {
+  content: "Sending…";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+button.ghost.is-submitting::after {
+  color: var(--ink);
+}
+
+.wizard.is-busy {
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .hero-compact,
+  .route-console,
+  .info-accordion,
+  .site-footer,
+  .preview-banner,
+  .progress-wrap,
+  .step-meta,
+  .actions,
+  .step:not(.is-active),
+  .trap,
+  #turnstile-slot {
+    display: none !important;
+  }
+
+  .workspace {
+    display: block;
+  }
+
+  .wizard {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+
+  .success {
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+    page-break-inside: avoid;
+  }
+
+  .success-actions {
+    display: none;
+  }
+}
+
 .route-node-dest {
   border-color: var(--lane-active-border, var(--line));
   background: #fff;
@@ -774,7 +910,11 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .step.is-entering,
   .route-edge.is-pulse,
-  .lede-mirror {
+  .lede-mirror,
+  .hero-compact h1,
+  .buildmatch-panel,
+  .identity-card .card-face,
+  .option-grid label:not(.identity-card) > span {
     animation: none;
     transition: none;
   }

@@ -1,10 +1,18 @@
 const STEP_LABELS = ["Who you are", "Goal", "Value", "Timeline", "Contact"];
 
+const VALUE_VISIBILITY = {
+  client: ["deal", "project", "lead", "risk"],
+  investor: ["deal", "capital", "project", "risk"],
+  builder: ["project", "talent", "deal", "lead"],
+  buildmatch: ["project", "deal", "lead"],
+  friend: ["lead", "project"],
+};
+
 const CAMPAIGNS = {
   "founder-audit": {
-    headline: "Founder Audit intake — solo technical founders.",
-    lede: "A 5-day audit of how you actually run your company — decisions, commitments, offer, and pipeline.",
-    banner: "Founder Audit — accountability for solo AI founders.",
+    headline: "Founder Audit — no fluff, just your operating system checked.",
+    lede: "Five days. Decisions, commitments, offer, pipeline — audited and ledgered. Solo technical founders only.",
+    banner: "Founder Audit — blunt accountability for solo AI founders.",
   },
   sourcea: {
     headline: "SourceA intake — governed AI execution.",
@@ -90,14 +98,21 @@ const routeTitle = document.querySelector("#route-title");
 const routeDetail = document.querySelector("#route-detail");
 const routeReasonPreview = document.querySelector("#route-reason-preview");
 const routeDiagramDest = document.querySelector("#route-diagram-dest");
+const routeDiagramIndustry = document.querySelector("#route-diagram-industry");
 const routeEdgeB = document.querySelector("#route-edge-b");
 const leadType = document.querySelector("#lead-type");
 const valuePreview = document.querySelector("#value-preview");
 const urgencyPreview = document.querySelector("#urgency-preview");
 const mirrorCopy = document.querySelector("#mirror-copy");
 const modeBanner = document.querySelector("#mode-banner");
+const previewBanner = document.querySelector("#preview-banner");
+const stepError = document.querySelector("#step-error");
+const valueGrid = document.querySelector("#value-grid");
 const buildmatchPanel = document.querySelector("#buildmatch-industry-panel");
 const turnstileSlot = document.querySelector("#turnstile-slot");
+
+const isMobileWizard = () =>
+  window.matchMedia("(max-width: 820px)").matches || window.matchMedia("(pointer: coarse)").matches;
 
 let currentStep = 0;
 let heroEngaged = false;
@@ -105,22 +120,31 @@ let lastDiagramDest = "";
 const visitedSteps = new Set();
 let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
 
-form.addEventListener("change", () => {
+form.addEventListener("change", (event) => {
   markHeroEngaged();
   syncBuildMatchPanel();
+  if (event.target.name === "identity") {
+    syncValueOptions();
+  }
   updateMirror();
-  if (currentStep < 4 && stepIsValid(currentStep)) {
+  clearStepError();
+  if (shouldAutoAdvance() && currentStep < steps.length - 1 && stepIsValid(currentStep)) {
     setTimeout(() => goTo(currentStep + 1), 120);
   }
 });
 
-backButton.addEventListener("click", () => goTo(Math.max(0, currentStep - 1)));
+backButton.addEventListener("click", () => {
+  clearStepError();
+  goTo(Math.max(0, currentStep - 1));
+});
 
 nextButton.addEventListener("click", () => {
   if (!stepIsValid(currentStep)) {
-    steps[currentStep].querySelector("input, textarea")?.reportValidity();
+    showStepError(stepValidationMessage(currentStep));
+    steps[currentStep].querySelector("input, textarea, select")?.reportValidity();
     return;
   }
+  clearStepError();
   goTo(Math.min(steps.length - 1, currentStep + 1));
 });
 
@@ -165,7 +189,10 @@ async function boot() {
   applyCampaignWedge();
   renderRuntimeMode();
   renderTurnstile();
+  wireCardGrids();
+  wireHeroScroll();
   syncBuildMatchPanel();
+  syncValueOptions();
   goTo(0);
   updateMirror();
 }
@@ -194,6 +221,113 @@ function applyCampaignWedge() {
   }
 }
 
+function shouldAutoAdvance() {
+  return !isMobileWizard();
+}
+
+function wireHeroScroll() {
+  if (!heroCompact || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  window.addEventListener(
+    "scroll",
+    () => {
+      const scroll = Math.min(window.scrollY / 140, 1);
+      heroCompact.style.setProperty("--hero-scroll", String(scroll));
+    },
+    { passive: true },
+  );
+}
+
+function wireCardGrids() {
+  document.querySelectorAll("[data-card-grid]").forEach((grid) => {
+    const inputs = [...grid.querySelectorAll('input[type="radio"]')];
+    if (!inputs.length) return;
+
+    const syncTabIndex = () => {
+      const checkedIndex = inputs.findIndex((input) => input.checked);
+      const focusIndex = checkedIndex >= 0 ? checkedIndex : 0;
+      inputs.forEach((input, index) => {
+        input.tabIndex = index === focusIndex ? 0 : -1;
+      });
+    };
+
+    syncTabIndex();
+    grid.addEventListener("change", syncTabIndex);
+    grid.addEventListener("keydown", (event) => {
+      const currentIndex = inputs.indexOf(document.activeElement);
+      if (currentIndex < 0) return;
+
+      let nextIndex = currentIndex;
+
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        event.preventDefault();
+        nextIndex = (currentIndex + 1) % inputs.length;
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        event.preventDefault();
+        nextIndex = (currentIndex - 1 + inputs.length) % inputs.length;
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        nextIndex = 0;
+      } else if (event.key === "End") {
+        event.preventDefault();
+        nextIndex = inputs.length - 1;
+      } else {
+        return;
+      }
+
+      inputs[nextIndex].focus();
+      inputs[nextIndex].checked = true;
+      inputs[nextIndex].dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
+}
+
+function syncValueOptions() {
+  if (!valueGrid) return;
+  const identity = form.querySelector('input[name="identity"]:checked')?.value;
+  const allowed = identity
+    ? VALUE_VISIBILITY[identity] || []
+    : ["deal", "project", "lead", "capital", "talent", "risk"];
+
+  valueGrid.querySelectorAll("label[data-value]").forEach((label) => {
+    const value = label.dataset.value;
+    const show = allowed.includes(value);
+    label.classList.toggle("is-hidden", !show);
+    const input = label.querySelector('input[type="radio"]');
+    if (!show && input?.checked) input.checked = false;
+  });
+}
+
+function showStepError(message) {
+  if (!stepError) return;
+  stepError.hidden = !message;
+  stepError.textContent = message || "";
+}
+
+function clearStepError() {
+  showStepError("");
+}
+
+function stepValidationMessage(index) {
+  const identity = form.querySelector('input[name="identity"]:checked');
+  if (index === 0 && !identity) return "Pick who you are to continue.";
+  if (index === 0 && identity?.value === "buildmatch" && !form.querySelector('input[name="project_type"]:checked')) {
+    return "Pick a BuildMatch industry — Construction or Home services.";
+  }
+  const labels = ["an identity", "a goal", "a value type", "a timeline"];
+  if (index < labels.length) return `Choose ${labels[index]} before continuing.`;
+  return "Complete the required fields on this step.";
+}
+
+function formatStepLabel(index) {
+  const name = STEP_LABELS[index] || `Step ${index + 1}`;
+  const ordinal = `Step ${index + 1} of ${steps.length}`;
+  const identity = form.querySelector('input[name="identity"]:checked')?.value;
+  if (index === 0 && identity === "buildmatch" && !form.querySelector('input[name="project_type"]:checked')) {
+    return `${name} · ${ordinal} — pick BuildMatch industry`;
+  }
+  return `${name} · ${ordinal}`;
+}
+
 function markHeroEngaged() {
   if (heroEngaged) return;
   heroEngaged = true;
@@ -217,13 +351,15 @@ function goTo(index) {
     }
   });
 
-  const label = STEP_LABELS[index] || `Step ${index + 1}`;
+  const label = formatStepLabel(index);
   stepCount.textContent = label;
   progressFill.style.width = `${((index + 1) / steps.length) * 100}%`;
   updateProgressSteps(index);
   backButton.hidden = index === 0;
   nextButton.hidden = index === steps.length - 1;
   submitButton.hidden = index !== steps.length - 1;
+  if (previewBanner) previewBanner.hidden = index === steps.length - 1;
+  clearStepError();
   updateMirror();
 
   const focusTarget = steps[index]?.querySelector(
@@ -270,7 +406,8 @@ function syncBuildMatchPanel() {
   if (!buildmatchPanel) return;
   const identity = form.querySelector('input[name="identity"]:checked')?.value;
   const show = identity === "buildmatch";
-  buildmatchPanel.hidden = !show;
+  buildmatchPanel.classList.toggle("is-open", show);
+  buildmatchPanel.setAttribute("aria-hidden", show ? "false" : "true");
   buildmatchPanel.querySelectorAll('input[name="project_type"]').forEach((input) => {
     input.required = show;
     if (!show) input.checked = false;
@@ -314,7 +451,7 @@ function updateMirror() {
   const route = routeVenture(lead);
   const copy = resolveRouteCopy(route, lead);
   const priority = tagPriority(lead);
-  const destLabel = diagramDestLabel(copy, lead);
+  const reason = previewRouteReason(lead, route);
 
   routePreview.textContent = copy.title;
   routePromise.textContent = copy.promise;
@@ -324,28 +461,72 @@ function updateMirror() {
   valuePreview.textContent = lead.value || "Pending";
   urgencyPreview.textContent = lead.urgency || "Pending";
 
-  priorityPreview.textContent = `Priority: ${priority}`;
+  priorityPreview.textContent = priorityLabel(priority);
   priorityPreview.className = "priority-chip";
   if (priority === "high") priorityPreview.classList.add("is-high");
   else if (priority === "medium") priorityPreview.classList.add("is-medium");
+  else priorityPreview.classList.add("is-low");
 
-  setMirrorText(mirrorLine(lead));
-  updateRoutingDiagram(destLabel, Boolean(lead.identity));
+  if (routeReasonPreview) {
+    if (reason && lead.identity) {
+      routeReasonPreview.hidden = false;
+      routeReasonPreview.textContent = `Why this product line: ${reason}`;
+    } else {
+      routeReasonPreview.hidden = true;
+      routeReasonPreview.textContent = "";
+    }
+  }
+
+  setMirrorText(mirrorLine(lead), Boolean(lead.identity));
+  updateRoutingDiagram(copy, lead);
   if (workspace) workspace.dataset.lane = lead.identity ? route : "";
+}
+
+function priorityLabel(priority) {
+  if (priority === "high") return "Priority: high";
+  if (priority === "medium") return "Priority: medium";
+  return "Priority: pending";
+}
+
+function previewRouteReason(lead, route) {
+  const rule = runtimeConfig.routingRules?.find((candidate) => ruleMatches(candidate.match, lead));
+  if (!rule) return "";
+  if (route === "BuildMatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) {
+    return `You selected BuildMatch — ${BUILDMATCH_INDUSTRIES[lead.project_type].label}.`;
+  }
+  return rule.reason || "";
 }
 
 function diagramDestLabel(copy, lead) {
   if (!lead.identity) return "?";
-  if (copy.industry) return `${copy.title} · ${copy.industry}`;
+  if (lead.identity === "buildmatch" && BUILDMATCH_INDUSTRIES[lead.project_type]) return "BuildMatch";
+  if (copy.industry) return copy.title;
   return copy.title;
 }
 
-function updateRoutingDiagram(destLabel, isLit) {
+function updateRoutingDiagram(copy, lead) {
   if (!routeDiagramDest) return;
 
-  const changed = lastDiagramDest && lastDiagramDest !== destLabel;
+  const destLabel = diagramDestLabel(copy, lead);
+  const isLit = Boolean(lead.identity);
+  const industryLabel = BUILDMATCH_INDUSTRIES[lead.project_type]?.label || "";
+  const showIndustry = lead.identity === "buildmatch" && industryLabel;
+  const changed = lastDiagramDest && lastDiagramDest !== `${destLabel}|${industryLabel}`;
+
   routeDiagramDest.textContent = destLabel;
   routeDiagramDest.classList.toggle("is-lit", isLit);
+
+  if (routeDiagramIndustry) {
+    if (showIndustry) {
+      routeDiagramIndustry.hidden = false;
+      routeDiagramIndustry.textContent = industryLabel;
+      routeDiagramIndustry.classList.add("is-lit");
+    } else {
+      routeDiagramIndustry.hidden = true;
+      routeDiagramIndustry.textContent = "";
+      routeDiagramIndustry.classList.remove("is-lit");
+    }
+  }
 
   if (routeEdgeB) {
     routeEdgeB.classList.toggle("is-lit", isLit);
@@ -357,7 +538,7 @@ function updateRoutingDiagram(destLabel, isLit) {
     }
   }
 
-  lastDiagramDest = destLabel;
+  lastDiagramDest = `${destLabel}|${industryLabel}`;
 }
 
 function setMirrorText(text, animate = true) {
@@ -452,7 +633,7 @@ function mirrorLine(lead) {
     return BUILDMATCH_INDUSTRIES[lead.project_type].mirror;
   }
 
-  return lines[lead.identity] || "Use the steps below — the preview updates as you answer.";
+  return lines[lead.identity] || mirrorCopy?.dataset.empty || "Pick who you are — preview updates live.";
 }
 
 function previewLaneDetail(lead, copy) {
@@ -511,10 +692,11 @@ function showSuccess(result) {
   routeTitle.textContent = lead.route.title;
   routeDetail.textContent = lead.route.nextStep;
   leadType.textContent = lead.lead_type;
-  priorityPreview.textContent = `Priority: ${lead.priority_tag}`;
+  priorityPreview.textContent = priorityLabel(lead.priority_tag);
   priorityPreview.className = "priority-chip";
   if (lead.priority_tag === "high") priorityPreview.classList.add("is-high");
   else if (lead.priority_tag === "medium") priorityPreview.classList.add("is-medium");
+  else priorityPreview.classList.add("is-low");
   if (routeReasonPreview && lead.route_reason) {
     routeReasonPreview.hidden = false;
     routeReasonPreview.textContent = `Why this product line: ${lead.route_reason}`;
@@ -522,8 +704,8 @@ function showSuccess(result) {
   setMirrorText(`Inquiry saved for ${lead.route.title} review.`, false);
   if (workspace) workspace.dataset.lane = lead.route.title;
   updateRoutingDiagram(
-    lead.route.industry ? `${lead.route.title} · ${lead.route.industry}` : lead.route.title,
-    true,
+    { title: lead.route.title, industry: lead.route.industry },
+    { identity: lead.lead_type === "collaborator" ? "builder" : lead.lead_type, project_type: lead.project_type },
   );
 }
 
@@ -537,7 +719,10 @@ function setBusy(isBusy) {
   submitButton.disabled = isBusy;
   nextButton.disabled = isBusy;
   backButton.disabled = isBusy;
-  submitButton.textContent = isBusy ? "Sending..." : "Submit inquiry";
+  form.classList.toggle("is-busy", isBusy);
+  submitButton.classList.toggle("is-submitting", isBusy);
+  submitButton.setAttribute("aria-busy", isBusy ? "true" : "false");
+  if (!isBusy) submitButton.textContent = "Submit inquiry";
 }
 
 async function loadConfig() {
