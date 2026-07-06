@@ -1,0 +1,34 @@
+name: Gateway Watchdog Cron
+
+# Scheduled runs disabled — main GitHub account Actions quota exhausted.
+# Use Cloudflare gateway-ops worker or external cron (see docs/GATEWAY_247_AUTORUN_SETUP.md).
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Cloudflare watchdog
+        id: watchdog
+        run: |
+          set -euo pipefail
+          url="https://gateway-watchdog.sina-kazemnezhad-ca.workers.dev/run"
+          http_code=$(curl -sS -o /tmp/watchdog.json -w "%{http_code}" "$url")
+          echo "http_code=$http_code"
+          cat /tmp/watchdog.json
+          if [ "$http_code" != "200" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          if ! jq -e '.ok == true' /tmp/watchdog.json >/dev/null; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Alert on RED
+        if: failure()
+        run: |
+          echo "Watchdog RED — alerts fire via loop-specialist Telegram motor (see docs/GATEWAY_247_AUTORUN_SETUP.md)"
+          exit 1

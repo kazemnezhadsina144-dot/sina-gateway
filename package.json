@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node scripts/test-adapters.js",
-    "check": "node --check src/server.js && node --check src/gateway.js && node --check src/notifications.js && node --check public/app.js && node --check scripts/verify-supabase.js && node --check scripts/validate-env.js && node --check scripts/smoke-test.js && node --check scripts/audit-routes.js && node --check scripts/test-notifications.js && node --check scripts/e2e-local-pipeline.js && node --check scripts/readiness-check.js && node --check scripts/test-server-hardening.js && node --check scripts/test-shared-routing.js && node --check scripts/check-schema-drift.js && node --check scripts/chain-health.js && node --check scripts/private-test-runbook.js",
+    "check": "node --check src/server.js && node --check src/gateway.js && node --check src/turnstile.js && node --check src/notifications.js && node --check public/app.js && node --check scripts/verify-supabase.js && node --check scripts/validate-env.js && node --check scripts/smoke-test.js && node --check scripts/audit-routes.js && node --check scripts/test-notifications.js && node --check scripts/e2e-local-pipeline.js && node --check scripts/readiness-check.js && node --check scripts/test-server-hardening.js && node --check scripts/test-shared-routing.js && node --check scripts/check-schema-drift.js && node --check scripts/chain-health.js && node --check scripts/private-test-runbook.js && node --check scripts/test-turnstile.js && node --check scripts/test-high-priority-capture.js && node --check scripts/validate-d2-list.js && node --check scripts/log-channel-send.js && node --check scripts/sync-heartbeat-vars.js",
     "audit:routes": "node scripts/audit-routes.js",
     "e2e:local": "node scripts/e2e-local-pipeline.js",
     "readiness": "node scripts/readiness-check.js",
@@ -19,6 +19,11 @@
     "smoke": "node scripts/smoke-test.js",
     "chain:health": "node scripts/chain-health.js",
     "private-test": "node scripts/private-test-runbook.js",
+    "test:turnstile": "node scripts/test-turnstile.js",
+    "test:notify-capture": "node scripts/test-high-priority-capture.js",
+    "validate:d2-list": "node scripts/validate-d2-list.js",
+    "channel:send": "node scripts/log-channel-send.js",
+    "sync:heartbeat": "node scripts/sync-heartbeat-vars.js",
     "cleanup:local": "node scripts/cleanup-local-leads.js"
   },
   "engines": {

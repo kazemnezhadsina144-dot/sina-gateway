@@ -40,6 +40,14 @@ If you already created the original table before this upgrade, run:
 
 For a fresh project, run only `supabase/schema.sql`; it already includes the upgraded fields and anon insert grants.
 
+After deploy, apply incremental migrations in order:
+
+```sql
+-- supabase/migrations/20260705_founder_audit_route.sql
+-- supabase/migrations/20260706_anon_insert_grants.sql
+-- supabase/migrations/20260706_capture_metadata.sql
+```
+
 If `npm run verify:supabase` reports `permission denied for table gateway_leads`, run:
 
 ```sql

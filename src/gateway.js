@@ -202,6 +202,11 @@ export function enrichLead(input) {
     last_contacted_at: cleanText(input.last_contacted_at, 80),
     archived_at: cleanText(input.archived_at, 80),
     duplicate_of: cleanText(input.duplicate_of, 120),
+    is_test: Boolean(input.is_test),
+    app_version: cleanText(input.app_version, 40),
+    environment: cleanText(input.environment, 40),
+    capture_version: cleanText(input.capture_version || "v1", 20),
+    schema_version: cleanText(input.schema_version || "20260706", 20),
   };
 }
 
@@ -333,6 +338,7 @@ function deriveTags(lead, venture_route, priority_tag) {
   if (lead.source === "private-test" || String(lead.name || "").startsWith("[PRIVATE-TEST]")) {
     tags.add("private_test");
   }
+  if (lead.is_test) tags.add("is_test");
   if (lead.raw_notes?.toLowerCase().includes("trust")) tags.add("trust_signal");
   if (lead.raw_notes?.toLowerCase().includes("risk")) tags.add("risk_signal");
   if (lead.raw_notes?.toLowerCase().includes("compliance")) tags.add("compliance_signal");

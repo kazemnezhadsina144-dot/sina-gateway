@@ -1,0 +1,22 @@
+{
+  "schema": "gateway-external-monitors-v1",
+  "version": "1.0.0",
+  "one_law": "UptimeRobot GET alert only — never POST capture or loop endpoints",
+  "provider": "uptimerobot",
+  "tier": "free",
+  "interval_minutes": 5,
+  "monitors": [
+    {
+      "id": "sina-gateway-health",
+      "title": "Sina Gateway health",
+      "url": "https://sina-gateway-production.up.railway.app/health",
+      "keyword": "ok"
+    },
+    {
+      "id": "sina-gateway-ready",
+      "title": "Sina Gateway ready",
+      "url": "https://sina-gateway-production.up.railway.app/ready",
+      "expected_status": 200
+    }
+  ]
+}

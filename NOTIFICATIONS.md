@@ -1,39 +1,34 @@
 # Sina Gateway Notifications
 
-High-priority notifications are sent when:
+High-priority leads alert via **Telegram ops bot** (same pattern as SourceA nerve-probe / Noetfield intake).
+
+Sent when:
 
 - `priority_tag` is `high`
-- `NOTIFY_WEBHOOK_URL` is configured
+- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_ALERT_CHAT_ID` are set on Railway
 
-The app sends a JSON payload by `POST`:
+Message shape (HTML):
 
-```json
-{
-  "text": "High-priority Sina Gateway lead: Name -> SourceA",
-  "requestId": "safe-error-or-log-id",
-  "lead": {
-    "id": "uuid",
-    "name": "Lead name",
-    "contact": "lead@example.com",
-    "identity": "client",
-    "intent": "hire",
-    "value": "project",
-    "urgency": "now",
-    "venture_route": "SourceA",
-    "priority_tag": "high",
-    "raw_notes": "Context"
-  }
-}
+```
+High-priority Sina Gateway lead
+Name → VentureRoute
+contact@example.com
+priority: high
+req: <requestId>
 ```
 
-Use any webhook receiver that accepts JSON, such as Slack automation, Discord webhook, Make, Zapier, Pipedream, or a private Worker.
+If Telegram delivery fails, lead capture still succeeds. Server logs `notification_failed`.
 
-If notification delivery fails, the lead capture still succeeds. The server logs `notification_failed` with the same `requestId`.
-
-Dry-run safety test:
+Dry-run:
 
 ```bash
 npm run test:notifications
 ```
 
-This validates the payload shape and confirms medium/low-priority leads do not trigger sends.
+Live production test:
+
+```bash
+TELEGRAM_BOT_TOKEN=... TELEGRAM_ALERT_CHAT_ID=... npm run test:notify-capture
+```
+
+See `docs/OPS_SECRETS_SETUP.md`.
