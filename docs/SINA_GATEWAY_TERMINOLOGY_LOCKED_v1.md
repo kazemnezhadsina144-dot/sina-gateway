@@ -1,112 +1,120 @@
-# Sina Gateway — Terminology (Operator / Internal) v1
+# Sina Gateway — Terminology (Operator / Internal) v2
 
 **Status:** Locked · **Date:** 2026-07-06  
-**Audience:** Founder, agents, ops — **not** client-facing. For public copy use [`SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](./SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md).
+**Audience:** You, agents, ops — plain English first. Code names in parentheses.  
+**Public copy:** [`SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](./SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md)
 
 ---
 
-## Core identity terms
+## How to use this doc
 
-| Term | Definition | Use | Do not confuse with |
-|------|------------|-----|---------------------|
-| **Megagateway** | Commercial intake + routing **control plane** for the whole portfolio | “The megagateway routes signals to lanes.” | A single product website |
-| **Sina Gateway** | Proper name of this system (repo + production URL + ops stack) | Brand on intake surfaces | Noetfield, SourceA, or any lane |
-| **Control panel** | Operator-facing command surface: `@Gateway_A`, `/status.html`, scripts, Supabase review | “Check the control panel for verdict.” | Client-facing dashboard (not built yet) |
-| **Operator account** | Sina Kazemnezhad’s personal founder account that **runs** the megagateway | Legal/ops ownership | Corporate entity (Noetfield Systems Inc.) |
-| **Portfolio** | All venture lanes + external sites/products the gateway routes **toward** | “Portfolio routing” | One merged company |
+1. **Say the human term** in conversation and client-facing copy.  
+2. **Use the code name** only in logs, Supabase, and scripts.  
+3. If a word sounds like startup jargon, check the **“Say it like a human”** column.
 
 ---
 
-## Routing mesh terms
+## What this system is (one paragraph)
 
-| Term | Definition |
-|------|------------|
-| **Venture lane** | Named routing destination: SourceA, Noetfield, TrustField, BuildMatch, Forge, Personal, FounderAudit |
-| **Direction** | Synonym for lane in conversation; code uses `venture_route` |
-| **Product surface** | External site/app for a lane (e.g. `sourcea.app`, `noetfield.com`) — **downstream** of capture |
-| **Mesh** | One gateway capture layer → many lane handoffs; one-way links with UTM |
-| **Route decision** | Output of `ROUTING_RULES`: `venture_route`, `route_rule_id`, `route_reason`, `route_confidence` |
-| **Secondary route** | Ambiguous signal’s alternate lane (when used) |
-| **Wedge** | One lane marketed per 90-day season (`WEDGE_LOCKED_v1.md`) |
-| **Handoff** | Founder action after capture: reply, offer, contract — in **lane** context |
+**Sina Gateway** is the **main front door** for your business: one form, one database, one Telegram channel — and **automatic sorting** into the right product line (SourceA, Noetfield, Founder Audit, etc.). You run it from your **personal account**; it is **not** Noetfield Systems Inc. and not any single product’s website.
+
+Internal shorthand: **megagateway** = that whole setup (intake + sorting + ops channel).
 
 ---
 
-## Capture terms
+## Core terms
 
-| Term | Definition |
-|------|------------|
-| **Signal** | Any inbound submission (preferred internal word) |
-| **Lead** | Database row / `gateway_leads` record; OK in code, avoid in client hero copy |
-| **Capture** | Successful POST to `/api/leads` with `requestId` |
-| **Tag** | `priority_tag`, `lead_type`, UTM tags, `tags[]` |
-| **Reference ID** | First 8 chars of UUID — client receipt |
-| **Intro ref** | `?ref=` chain stored as `ref:…` in `referrer` |
-| **Private test** | `source=private-test`, `[PRIVATE-TEST]` naming, `is_test=true` |
-
----
-
-## Commercial ops terms
-
-| Term | Definition |
-|------|------------|
-| **Commercial ops** | Portfolio-level motion: outbound, offers sent, replies, L2 receipts — **not** “personal diary” |
-| **Commercial heartbeat** | Daily portfolio verdict in `@Gateway_A` when `COMMERCIAL_ARMED=true` |
-| **Infra verdict** | Watchdog/heartbeat on Railway health — separate from commercial |
-| **Armed** | `COMMERCIAL_ARMED=true` after real `channel-receipts.json` sync |
-| **GREEN / RED** | Verdict labels — infra or commercial; must be receipt-backed |
-| **High-priority alert** | Telegram message for `priority_tag=high` captures |
-| **Lane aggregate** | Weekly counts per `venture_route` (no PII) — control panel content |
+| Human term | What it really means | Code / doc alias | Say it like a human |
+|------------|----------------------|------------------|---------------------|
+| **Main intake hub** | The live site + API that accepts inquiries | Sina Gateway, `sina-gateway` repo | “Send them to the gateway.” |
+| **Product line** | One business direction you route to | Venture lane, `venture_route` | “This goes to the SourceA line.” |
+| **Sorting** | Rules that pick the product line | Routing, `ROUTING_RULES` | “The form sorted them to Founder Audit.” |
+| **Inquiry** | What someone submitted | Signal, lead, `gateway_leads` row | “We got an inquiry from a founder.” |
+| **Confirmation code** | Short ID the visitor keeps | Reference ID, first 8 of UUID | “Your code is A1B2C3D4.” |
+| **Ops channel** | Telegram where you see alerts | `@Gateway_A`, control panel | “Check the gateway channel.” |
+| **Your portfolio** | All products/sites you route among | Portfolio mesh | “Across everything I’m building.” |
+| **Handoff** | You reply, quote, or move them to the right product | Lane handoff | “I’ll hand this to SourceA delivery.” |
 
 ---
 
-## Telegram terms
+## Product lines (locked names)
 
-| Term | Definition |
-|------|------------|
-| **`@Gateway_A`** | **Commercial control panel channel** — portfolio alerts, verdicts, high-priority signals |
-| **`@GateWay_A_bot`** | Delivery bot for alerts (and future intake commands) |
-| **Watchdog post** | Infra RED only (probe failure) |
-| **Heartbeat post** | Infra and/or commercial scheduled verdict |
-| **Charter** | Pinned channel description (`TELEGRAM_CHANNEL_CHARTER_v1.md`) |
+Use these **exact names** with clients. They are brands, not departments.
 
----
+| Name | Human meaning |
+|------|----------------|
+| **SourceA** | Paid / client work — AI execution with guardrails |
+| **Noetfield** | Strategy, ventures, investor-style conversations |
+| **TrustField** | Trust, risk, compliance questions |
+| **BuildMatch** | Vancouver construction & trades |
+| **Forge** | Builders, collaborators, tools |
+| **Personal** | Friends, warm intros — low noise |
+| **Founder Audit** | Paid audit offer for solo founders |
 
-## Separation terms (legal / brand)
-
-| Term | Definition |
-|------|------------|
-| **Route, don’t merge** | Gateway names lanes; does not speak as corporate entity for them |
-| **Identity bleed** | Forbidden: implying Noetfield Systems Inc. owns this intake |
-| **Operator line** | Footer: operated by Sina Kazemnezhad — personal founder project |
-| **Lane SSOT** | Each venture’s own docs/repo for delivery truth |
+Code: all caps in DB for FounderAudit → display as **Founder Audit**.
 
 ---
 
-## Script / env vocabulary
+## Capture & database
 
-| Token | Meaning |
-|-------|---------|
-| `npm run launch:gate` | Pre/post launch verification |
-| `npm run chain:health` | Production probe chain |
-| `npm run sync:heartbeat` | Push commercial counters to `gateway-ops` |
-| `COMMERCIAL_ARMED` | Enable commercial heartbeat posts |
-| `GATEWAY_BASE_URL` | Production URL for probes |
+| Human term | Meaning | Code |
+|------------|---------|------|
+| **Saved** | Inquiry stored successfully | Capture OK, `requestId` |
+| **Urgent** | Needs fast Telegram ping | `priority_tag: high` |
+| **Test row** | Fake runbook data | `is_test`, `[PRIVATE-TEST]` |
+| **Intro link** | URL with `?ref=` for who sent them | `referrer: ref:…` |
+| **Campaign link** | URL with `utm_campaign=` | UTM fields |
 
 ---
 
-## Banned internal sloppy terms
+## Telegram & monitoring
 
-| Sloppy | Say instead |
+| Human term | Meaning | When it posts |
+|------------|---------|----------------|
+| **Site-down alert** | Health check failed | Watchdog RED only |
+| **Daily business summary** | Offers sent, replies, payments | Heartbeat when `COMMERCIAL_ARMED=true` |
+| **New urgent inquiry alert** | High-priority form submit | Railway → bot → channel |
+| **Armed** | Commercial counters synced to Cloudflare | After `npm run sync:heartbeat` |
+
+**Important:** Quiet channel when the **site is fine** is normal. Quiet when **business is active but armed** is not — arm and sync after real outbound.
+
+---
+
+## Legal / brand (short)
+
+| Rule | Human wording |
+|------|----------------|
+| Who runs the site | Operated by Sina Kazemnezhad |
+| What the site is not | Not Noetfield Systems Inc.; not “the company” for every product line |
+| What the form does | Sorts inquiries; does not sign contracts for product lines |
+
+---
+
+## Scripts (what you actually run)
+
+| Command | Human purpose |
+|---------|----------------|
+| `npm run launch:gate` | “Is the site ready?” |
+| `npm run chain:health` | “Is production working?” |
+| `npm run test:notify-capture` | “Does Telegram get urgent inquiries?” |
+| `npm run sync:heartbeat` | “Push real outbound numbers to daily summary.” |
+
+---
+
+## Words to drop in conversation
+
+| Jargon | Say instead |
 |--------|-------------|
-| “Personal ops only” | **Commercial control panel** (operator is personal; scope is portfolio) |
-| “The gateway is Noetfield” | **Routed to Noetfield lane** |
-| “Lead funnel” (client copy) | **Signal intake** |
-| “We’re enterprise” | **Lane-specific** only if true for that lane |
-| “Bot posts everything” | **Alerts on rule triggers** |
+| Control plane | Ops channel, dashboard |
+| Signal (with clients) | Inquiry, submission, message |
+| Venture lane (with clients) | Product line, destination |
+| Mesh | Routing between products |
+| Receipt-native | “We only count what actually happened” |
+| Armed commercial heartbeat | “Turn on daily business summary on Telegram” |
+| Identity bleed | “Don’t pretend to be Noetfield on this site” |
 
 ---
 
 ## Amendment
 
-v1 · 2026-07-06 · Supersedes informal “personal-only gateway” wording.
+v2 · 2026-07-06 · Human-dictionary pass; v1 jargon demoted to code aliases.

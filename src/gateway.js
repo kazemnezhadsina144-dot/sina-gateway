@@ -13,7 +13,7 @@ export const ROUTES = {
   },
   Noetfield: {
     title: "Noetfield",
-    promise: "The parent-company lane for strategic partnership, venture design, and bigger-picture alignment.",
+    promise: "Strategy, partnerships, and bigger-picture ventures.",
     nextStep: "Describe the opportunity and where you think the strongest overlap is.",
   },
   TrustField: {
@@ -24,7 +24,7 @@ export const ROUTES = {
   BuildMatch: {
     title: "BuildMatch",
     promise: "Early access for Vancouver construction and home-services opportunities.",
-    nextStep: "Tell Sina what kind of project, trade, property, or lead you are bringing.",
+    nextStep: "Tell Sina what kind of project, trade, property, or opportunity you are bringing.",
   },
   Forge: {
     title: "Forge",
@@ -33,7 +33,7 @@ export const ROUTES = {
   },
   Personal: {
     title: "Personal",
-    promise: "The human route for friends, warm intros, and network context.",
+    promise: "Friends, warm intros, and network context.",
     nextStep: "Leave the context Sina should remember before following up.",
   },
   FounderAudit: {
@@ -49,7 +49,7 @@ export const ROUTING_RULE_DEFINITIONS = [
     "campaign_founder_audit",
     "FounderAudit",
     "high",
-    "utm campaign founder-audit routes to Founder Audit",
+    "You came from the Founder Audit link.",
     "Noetfield",
     { utm_campaign: "founder-audit" },
   ),
@@ -57,7 +57,7 @@ export const ROUTING_RULE_DEFINITIONS = [
     "path_founder_audit",
     "FounderAudit",
     "high",
-    "founder-audit page path routes to Founder Audit",
+    "You started from the Founder Audit page.",
     "Noetfield",
     { page_path_contains: "founder-audit" },
   ),
@@ -65,42 +65,42 @@ export const ROUTING_RULE_DEFINITIONS = [
     "notes_founder_signal",
     "FounderAudit",
     "medium",
-    "notes mention founder audit, solo founder, or ai cofounder",
+    "Your notes mention Founder Audit or solo-founder context.",
     "Noetfield",
     { notes_any: ["founder audit", "solo founder", "ai cofounder", "founder accountability", "decision ledger"] },
   ),
-  rule("identity_friend", "Personal", "high", "identity friend routes to Personal", "", { identity: "friend" }),
-  rule("identity_construction", "BuildMatch", "high", "identity construction routes to BuildMatch", "", {
+  rule("identity_friend", "Personal", "high", "You selected Friend / network.", "", { identity: "friend" }),
+  rule("identity_construction", "BuildMatch", "high", "You selected Construction.", "", {
     identity: "construction",
   }),
-  rule("identity_builder", "Forge", "high", "identity builder routes to Forge", "SourceA", { identity: "builder" }),
-  rule("identity_investor", "Noetfield", "high", "identity investor routes to Noetfield", "TrustField", {
+  rule("identity_builder", "Forge", "high", "You selected Builder / collaborator.", "SourceA", { identity: "builder" }),
+  rule("identity_investor", "Noetfield", "high", "You selected Investor.", "TrustField", {
     identity: "investor",
   }),
-  rule("intent_trust", "TrustField", "high", "trust intent routes to TrustField", "Noetfield", { intent: "trust" }),
-  rule("value_risk", "TrustField", "high", "risk value routes to TrustField", "SourceA", { value: "risk" }),
+  rule("intent_trust", "TrustField", "high", "You selected Trust / risk as your goal.", "Noetfield", { intent: "trust" }),
+  rule("value_risk", "TrustField", "high", "This inquiry is about risk.", "SourceA", { value: "risk" }),
   rule(
     "notes_trust_signal",
     "TrustField",
     "medium",
-    "notes mention trust, risk, compliance, audit, or governance",
+    "Your notes mention trust, risk, or compliance.",
     "SourceA",
     { notes_any: ["trust", "risk", "compliance", "audit", "governance"] },
   ),
-  rule("intent_invest", "Noetfield", "high", "invest intent routes to Noetfield", "TrustField", { intent: "invest" }),
-  rule("partner_capital", "Noetfield", "high", "capital partnership routes to Noetfield", "Forge", {
+  rule("intent_invest", "Noetfield", "high", "You selected Invest.", "TrustField", { intent: "invest" }),
+  rule("partner_capital", "Noetfield", "high", "You want a capital partnership.", "Forge", {
     intent: "partner",
     value: "capital",
   }),
-  rule("partner_talent", "Forge", "high", "talent partnership routes to Forge", "Noetfield", {
+  rule("partner_talent", "Forge", "high", "You want a talent collaboration.", "Noetfield", {
     intent: "partner",
     value: "talent",
   }),
-  rule("intent_hire", "SourceA", "high", "hire intent routes to SourceA", "TrustField", { intent: "hire" }),
-  rule("execution_value", "SourceA", "medium", "deal, project, or lead value routes to SourceA", "Noetfield", {
+  rule("intent_hire", "SourceA", "high", "You want to hire.", "TrustField", { intent: "hire" }),
+  rule("execution_value", "SourceA", "medium", "This is about a deal, project, or lead.", "Noetfield", {
     value_any: ["deal", "project", "lead"],
   }),
-  rule("default_strategy", "Noetfield", "low", "default strategic route", "SourceA", { always: true }),
+  rule("default_strategy", "Noetfield", "low", "General inquiry — default sort is Noetfield.", "SourceA", { always: true }),
 ];
 
 export const ROUTING_RULES = ROUTING_RULE_DEFINITIONS.map((definition) => ({
@@ -262,7 +262,7 @@ export function explainPriority(lead, priority) {
   }
   if (priority === "medium" && lead.urgency === "soon") return "timeline is soon";
   if (priority === "medium") return "contact provided";
-  return "low-intent or incomplete signal";
+  return "Still exploring or missing contact details.";
 }
 
 function clean(value) {

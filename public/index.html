@@ -6,10 +6,10 @@
     <title>Sina Gateway</title>
     <meta
       name="description"
-      content="One intake point for client work, investor interest, construction leads, collaborator outreach, and trusted network signals — routed across SourceA, Noetfield, TrustField, and related venture lanes."
+      content="One intake point for client work, investor interest, construction inquiries, collaborator outreach, and introductions — sorted to SourceA, Noetfield, TrustField, and related product lines."
     />
     <meta property="og:title" content="Sina Gateway" />
-    <meta property="og:description" content="Mirror, route, capture, tag — one intake for opportunities, capital, and trusted introductions." />
+    <meta property="og:description" content="One intake form for opportunities, capital, and trusted introductions — sorted to the right product line for review." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/og.svg" />
     <link rel="canonical" href="https://sina-gateway-production.up.railway.app/" />
@@ -23,41 +23,41 @@
           <p class="eyebrow">Sina Gateway</p>
           <h1 id="page-title">One intake point for opportunities, capital, and trusted introductions.</h1>
           <p id="mirror-copy" class="lede">
-            Use Sina Gateway to route client work, investor interest, construction and commercial leads,
-            collaborator outreach, and founder-network signals to the right review lane.
+            Use Sina Gateway to send client work, investor interest, construction and commercial inquiries,
+            collaborator outreach, and founder inquiries to the right product line for review.
           </p>
         </div>
-        <div class="signal-panel" aria-label="Current route preview">
-          <span class="signal-label">Current route</span>
-          <strong id="route-preview">Awaiting signal</strong>
-          <p id="route-promise">Choose who you are on step 1 — the lane preview updates immediately.</p>
+        <div class="signal-panel" aria-label="Likely destination preview">
+          <span class="signal-label">Likely destination</span>
+          <strong id="route-preview">Answer the form to see</strong>
+          <p id="route-promise">Choose who you are on step 1 — the preview updates as you answer.</p>
         </div>
       </section>
 
       <section class="route-map" aria-labelledby="route-map-title">
-        <h2 id="route-map-title">Where signals go</h2>
+        <h2 id="route-map-title">Where inquiries go</h2>
         <p class="route-map-lede">
-          Sina Gateway routes inquiries across named venture lanes — not a black hole form.
+          Sina Gateway sorts inquiries to named product lines — not a black-hole contact form.
         </p>
         <ul class="route-map-list">
           <li><strong>SourceA</strong> — governed AI execution and agentic work with control.</li>
           <li><strong>Noetfield</strong> — strategic partnership and venture design.</li>
           <li><strong>TrustField</strong> — trust, governance, and compliance pressure.</li>
-          <li><strong>BuildMatch</strong> — Vancouver construction and home-services leads.</li>
+          <li><strong>BuildMatch</strong> — Vancouver construction and home-services inquiries.</li>
           <li><strong>Forge</strong> — builders, tools, and collaboration energy.</li>
           <li><strong>Personal</strong> — friends, warm intros, and network context.</li>
-          <li><strong>Founder Audit</strong> — solo founders (campaign link or notes signal).</li>
+          <li><strong>Founder Audit</strong> — solo founders (campaign link or mention it in your notes).</li>
         </ul>
       </section>
 
       <section class="what-next" aria-labelledby="what-next-title">
         <h2 id="what-next-title">What happens after you send</h2>
         <ol class="what-next-list">
-          <li>You receive an on-screen confirmation with a reference ID and routed lane.</li>
-          <li>The signal is captured securely for review (live database — not a placeholder).</li>
-          <li>Sina reviews in priority order and follows up on the contact you provide.</li>
+          <li>You receive an on-screen confirmation code and which product line will review it.</li>
+          <li>Your inquiry is stored securely for review (live database — not a placeholder).</li>
+          <li>Sina reviews inquiries in priority order and follows up using the contact you provide.</li>
         </ol>
-        <p class="what-next-note">High-priority signals alert the operator channel. Email confirmation is not sent unless explicitly added later.</p>
+        <p class="what-next-note">Urgent inquiries can alert @Gateway_A. Email confirmation is not sent unless explicitly added later.</p>
       </section>
 
       <section class="workspace" aria-label="Gateway wizard">
@@ -100,7 +100,7 @@
             <div class="option-grid">
               <label><input type="radio" name="value" value="deal" required /> <span>Deal</span></label>
               <label><input type="radio" name="value" value="project" /> <span>Project</span></label>
-              <label><input type="radio" name="value" value="lead" /> <span>Lead</span></label>
+              <label><input type="radio" name="value" value="lead" /> <span>Referral</span></label>
               <label><input type="radio" name="value" value="capital" /> <span>Capital</span></label>
               <label><input type="radio" name="value" value="talent" /> <span>Talent</span></label>
               <label><input type="radio" name="value" value="risk" /> <span>Risk</span></label>
@@ -167,11 +167,11 @@
               </label>
               <label class="consent">
                 <input type="checkbox" name="consent_to_contact" checked required />
-                <span>I consent to follow-up about this signal. <a href="/privacy.html">Privacy</a></span>
+                <span>I consent to follow-up about this inquiry. <a href="/privacy.html">Privacy</a></span>
               </label>
               <p class="privacy-notice">
-                Business and referral signals only. Details are used for routing and follow-up within the
-                relevant review lane — not sold or shared outside review.
+                Business and referral inquiries only. Details are used for sorting and follow-up within the
+                relevant product line — not sold or shared outside review.
               </p>
               <div id="turnstile-slot"></div>
             </div>
@@ -180,19 +180,19 @@
           <div class="actions">
             <button type="button" class="ghost" id="back-button">Back</button>
             <button type="button" id="next-button">Next</button>
-            <button type="submit" id="submit-button" hidden>Send signal</button>
+            <button type="submit" id="submit-button" hidden>Submit inquiry</button>
           </div>
 
           <p class="status" id="form-status" role="status" aria-live="polite"></p>
         </form>
 
-        <aside class="route-card" aria-label="Routed outcome">
-          <p class="eyebrow">Mirrored path</p>
-          <h2 id="route-title">Answer to reveal route</h2>
-          <p id="route-detail">Identity, intent, value, and urgency determine your review lane.</p>
+        <aside class="route-card" aria-label="Inquiry preview">
+          <p class="eyebrow">Preview</p>
+          <h2 id="route-title">Answer to see destination</h2>
+          <p id="route-detail">Identity, intent, value, and urgency determine the likely product line.</p>
           <dl>
             <div>
-              <dt>Lead type</dt>
+              <dt>You are</dt>
               <dd id="lead-type">Pending</dd>
             </div>
             <div>
@@ -210,8 +210,8 @@
 
     <footer class="site-footer">
       <p>
-        <strong>Sina Gateway</strong> — personal founder project operated by Sina Kazemnezhad. Not
-        Noetfield Systems Inc.
+        <strong>Sina Gateway</strong> — operated by Sina Kazemnezhad. One intake form; inquiries are sorted
+        to the right product line for review. Not Noetfield Systems Inc.
       </p>
       <p>
         <a href="/privacy.html">Privacy</a>
@@ -226,7 +226,7 @@
 
     <template id="success-template">
       <div class="success">
-        <p class="eyebrow">Signal received</p>
+        <p class="eyebrow">Inquiry received</p>
         <h2></h2>
         <p class="success-route"></p>
         <p class="success-reason"></p>
@@ -234,9 +234,9 @@
         <p class="success-review"></p>
         <p class="success-next"></p>
         <div class="success-actions">
-          <button type="button" class="ghost" id="copy-ref-button">Copy reference ID</button>
+          <button type="button" class="ghost" id="copy-ref-button">Copy confirmation code</button>
           <a class="ghost" id="telegram-link" href="https://t.me/Gateway_A" rel="noopener noreferrer">@Gateway_A</a>
-          <button type="button" class="ghost" id="send-another-button">Send another signal</button>
+          <button type="button" class="ghost" id="send-another-button">Submit another inquiry</button>
         </div>
       </div>
     </template>

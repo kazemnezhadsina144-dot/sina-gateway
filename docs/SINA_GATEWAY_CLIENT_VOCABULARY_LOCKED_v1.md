@@ -1,135 +1,137 @@
-# Sina Gateway — Client-Facing Vocabulary v1
+# Sina Gateway — Client-Facing Vocabulary v2
 
 **Status:** Locked · **Date:** 2026-07-06  
-**Audience:** Public web, landings, success screens, DMs, `@Gateway_A` charter  
-**Internal terms:** [`SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](./SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md)
+**Rule:** Write like you talk to a smart stranger — not like a SaaS landing page.
+
+Internal code names: [`SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](./SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md)
 
 ---
 
-## Brand (always)
+## The brand
 
-| Say | Don’t say |
-|-----|-----------|
-| **Sina Gateway** | Noetfield Systems Inc., “our company” (corporate), “we” (team fiction) |
-| **Review lane** / **routed lane** | “Department,” “subsidiary,” “owned by Noetfield” |
-| **Signal** | Lead (in hero/marketing), “ticket,” “support case” |
-| **Reference ID** | Ticket number, order number (unless paid) |
-| **Operated by Sina Kazemnezhad** | CEO of Noetfield, corporate officer titles |
+| Use | Avoid |
+|-----|--------|
+| **Sina Gateway** | “Our platform,” “we” (fake team), Noetfield Systems Inc. |
+| **Inquiry** / **submission** | Signal, lead, ticket, pipeline |
+| **Product line** | Venture lane, vertical, subsidiary, department |
+| **Confirmation code** | Ticket #, order # (until they paid) |
+| **Operated by Sina Kazemnezhad** | CEO titles, corporate “we” |
 
-**Footer line (locked):**  
-*Sina Gateway — operated by Sina Kazemnezhad. Routes signals to named venture lanes; not a corporate homepage for any single venture.*
+**Footer (locked):**  
+*Sina Gateway — operated by Sina Kazemnezhad. One intake form; inquiries are sorted to the right product line for review.*
 
 ---
 
-## Lane names (client-visible)
+## Product lines — what clients read
 
-Use **exact** lane names on success screens and route maps:
-
-| Lane name | Client-facing one-liner |
-|-----------|-------------------------|
-| **SourceA** | Governed AI execution and agentic work with control. |
-| **Noetfield** | Strategic partnership and venture design. |
-| **TrustField** | Trust, governance, and compliance pressure. |
-| **BuildMatch** | Vancouver construction and home-services (early access). |
+| Name | Plain description |
+|------|-------------------|
+| **SourceA** | Help with AI and agent work — with clear rules and control. |
+| **Noetfield** | Strategy, partnerships, and bigger-picture ventures. |
+| **TrustField** | Trust, governance, and compliance questions. |
+| **BuildMatch** | Construction and home-services in Vancouver (early access). |
 | **Forge** | Builders, tools, and collaboration. |
-| **Personal** | Friends, warm intros, network context. |
-| **Founder Audit** | Solo founder accountability audit (5-day offer). |
+| **Personal** | Friends and warm introductions. |
+| **Founder Audit** | A paid 5-day audit for solo founders ($500). |
 
-**Rule:** Name the lane; don’t claim that lane’s legal entity runs this website.
-
----
-
-## Wizard copy patterns
-
-| Step | Client language |
-|------|-----------------|
-| Identity | “Who are you?” (client, investor, builder, construction, friend, founder) |
-| Intent | “What are you trying to do?” |
-| Value | “What kind of opportunity is this?” |
-| Urgency | “When matters?” |
-| Contact | “How should we reach you?” |
-| Submit | **“Send signal”** (not “Submit lead”) |
-| Success | **“Signal received”** + lane name + Reference ID |
+**Rule:** Name the product line. Do **not** say they are submitting “to Noetfield the corporation” on this website.
 
 ---
 
-## Success screen (locked phrases)
+## Form & buttons
 
-1. **“Routed to [Lane]”** — headline  
-2. **“Reference [ID] — keep this if you follow up.”**  
-3. **“Review window: operator follow-up within 48 hours on business days.”**  
-4. **“Why this lane: [route_reason]”** — when available  
-5. **No** “We emailed you” unless email integration is real  
-
----
-
-## Campaign / UTM (in links only)
-
-Clients see **clean URLs**, not jargon:
-
-```
-https://sina-gateway-production.up.railway.app/founder-audit
-https://sina-gateway-production.up.railway.app/?utm_campaign=founder-audit&utm_source=linkedin
-```
-
-| Param | Client-visible? | Meaning |
-|-------|-----------------|---------|
-| `utm_campaign` | No (in URL OK) | Which offer/lane campaign |
-| `utm_source` | No | Which channel (linkedin, landing, …) |
-| `ref` | No | Introducer chain (no PII) |
+| UI element | Client text |
+|------------|-------------|
+| Page title | One intake point for opportunities, capital, and trusted introductions. |
+| Submit button | **Submit inquiry** |
+| Success headline | **Inquiry received — [Product line]** |
+| Side panel label | **Likely destination** |
+| Side panel empty | Answer the questions to see where this goes. |
+| Section title | **Where inquiries go** |
+| Consent | I consent to follow-up about this inquiry. |
 
 ---
 
-## Telegram (`@Gateway_A`) — public description
+## After they submit (success screen)
 
-**Channel title idea:** Sina Gateway — control panel  
+1. **“Inquiry received — [SourceA / Founder Audit / …]”**  
+2. **“Confirmation code: [8 chars] — save this if you follow up.”**  
+3. **“Sina reviews inquiries within 48 hours on business days.”**  
+4. **“Why this product line: [short reason]”** — when the system has one  
+5. **Never** “We emailed you” unless email is really wired up  
 
-**Short description (client-safe):**  
-*Commercial routing control panel for Sina Gateway: intake alerts, portfolio verdicts, and lane health. Not 24/7 human chat.*
-
-**Pinned charter:** use [`TELEGRAM_CHANNEL_CHARTER_v1.md`](./TELEGRAM_CHANNEL_CHARTER_v1.md) (update to commercial framing).
-
----
-
-## Offers (Founder Audit example)
-
-| Say | Don’t say |
-|-----|-----------|
-| “$500 USD · 5-day Founder Audit” | “Limited time,” fake scarcity |
-| “Personal founder project” | “Noetfield Systems pricing” |
-| “Start intake” | “Buy now” (until payment integrated) |
+Buttons: **Copy confirmation code** · **Copy invite link** · **Submit another inquiry**
 
 ---
 
-## Privacy & trust (client)
+## How to talk about Telegram
 
-| Say | Don’t say |
-|-----|-----------|
-| “Captured securely for review” | “Encrypted bank-level” (unless audited) |
-| “See Privacy” → `/privacy.html` | “GDPR certified” (until reviewed) |
-| “You can request deletion” (when process live) | “We never store data” (false) |
+**Channel name:** `@Gateway_A`  
+**Public description:**  
+*Updates from Sina Gateway: urgent inquiries, site status, and business summaries. Not a live chat — Sina reviews inquiries on a human schedule.*
 
----
-
-## Words never on client surfaces
-
-- Fake testimonials, star ratings, “500+ customers”  
-- “Noetfield Systems Inc.” as operator of this site  
-- “24/7 support”  
-- “We received your email” (no email integration)  
-- “Official” + venture name unless that venture’s own site  
+Do **not** say: control plane, mesh, verdict, armed, infra.
 
 ---
 
-## Tone
+## DMs and posts (examples)
 
-- **Direct** — short sentences  
-- **Honest** — name what happens next  
-- **System-native** — reference IDs, lanes, review windows  
-- **Not motivational** — no coach fluff on gateway (Founder Audit offer may be blunt)  
+**Founder Audit outreach:**  
+> I run a 5-day Founder Audit for solo technical founders. If you want a blunt read on how you’re actually operating, start here: [link]
+
+**General:**  
+> One form for anything business-related — client work, investors, construction, collabs: [gateway link]. It sorts you to the right place.
+
+---
+
+## Trust — honest only
+
+| OK | Not OK |
+|----|--------|
+| “Stored securely for review” | “Bank-grade encryption” (unless audited) |
+| Link to Privacy | “GDPR certified” (until true) |
+| “Operated by one founder” | “Our team,” 24/7 support |
+| Real price on Founder Audit | Fake urgency, fake testimonials |
+
+---
+
+## Tone checklist
+
+- Short sentences.  
+- Say what happens next.  
+- No coach-speak on the main form (Founder Audit page can be direct/blunt).  
+- No fake scale (“thousands of founders”).  
+
+---
+
+## UI ↔ vocabulary map (code may still say “lead”)
+
+| Visitor sees | Database / code |
+|--------------|-----------------|
+| Inquiry | `gateway_leads` row |
+| Product line | `venture_route` |
+| Confirmation code | `id` / `requestId` (first 8 shown) |
+| Likely destination | Route preview |
+
+---
+
+## Say this, not that
+
+| Avoid (jargon) | Say instead |
+|----------------|-------------|
+| Signal received | **Inquiry received** |
+| Send signal | **Submit inquiry** |
+| Venture lane / review lane | **Product line** |
+| Routed to SourceA | **Inquiry received — SourceA** |
+| Reference ID | **Confirmation code** |
+| Mirrored path | **Preview** |
+| Lead type | **You are** |
+| Operator channel | **@Gateway_A** |
+| Capture failed | **Could not save inquiry** |
+| Control plane / mesh / verdict | *(internal only — never on the site)* |
 
 ---
 
 ## Amendment
 
-v1 · 2026-07-06
+v2 · 2026-07-06 · Human dictionary alignment with public UI.

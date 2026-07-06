@@ -2,17 +2,17 @@ const CAMPAIGNS = {
   "founder-audit": {
     headline: "Founder Audit intake — solo technical founders.",
     lede: "A 5-day audit of how you actually run your company — decisions, commitments, offer, and pipeline.",
-    banner: "Founder Audit lane — blunt accountability for solo AI founders.",
+    banner: "Founder Audit — accountability for solo AI founders.",
   },
   sourcea: {
     headline: "SourceA intake — governed AI execution.",
-    lede: "Route agentic work, workflows, and operational pressure into a control-plane review lane.",
-    banner: "SourceA lane — execution with governance, not chat chaos.",
+    lede: "Send agentic work and operational pressure to SourceA for governed execution review.",
+    banner: "SourceA — client work with guardrails, not chat chaos.",
   },
   buildmatch: {
-    headline: "BuildMatch intake — Vancouver construction signals.",
-    lede: "Early access for construction and home-services opportunities in the Vancouver area.",
-    banner: "BuildMatch lane — local construction and trades leads.",
+    headline: "BuildMatch intake — Vancouver construction inquiries.",
+    lede: "Early access for construction and home-services inquiries in the Vancouver area.",
+    banner: "BuildMatch — local construction and trades inquiries.",
   },
 };
 
@@ -24,7 +24,7 @@ let ROUTES = {
   },
   Noetfield: {
     title: "Noetfield",
-    promise: "The parent-company lane for strategic partnership, venture design, and bigger-picture alignment.",
+    promise: "Strategy, partnerships, and bigger-picture ventures.",
     nextStep: "Describe the opportunity and where you think the strongest overlap is.",
   },
   TrustField: {
@@ -35,7 +35,7 @@ let ROUTES = {
   BuildMatch: {
     title: "BuildMatch",
     promise: "Early access for Vancouver construction and home-services opportunities.",
-    nextStep: "Tell Sina what kind of project, trade, property, or lead you are bringing.",
+    nextStep: "Tell Sina what kind of project, trade, property, or opportunity you are bringing.",
   },
   Forge: {
     title: "Forge",
@@ -44,7 +44,7 @@ let ROUTES = {
   },
   Personal: {
     title: "Personal",
-    promise: "The human route for friends, warm intros, and network context.",
+    promise: "Friends, warm intros, and network context.",
     nextStep: "Leave the context Sina should remember before following up.",
   },
   FounderAudit: {
@@ -119,7 +119,7 @@ form.addEventListener("submit", async (event) => {
 
     showSuccess(result);
   } catch (error) {
-    statusEl.textContent = `Could not capture yet: ${error.message}`;
+    statusEl.textContent = `Could not save inquiry yet: ${error.message}`;
   } finally {
     setBusy(false);
   }
@@ -253,8 +253,8 @@ function mirrorLine(identity) {
     client: "You are likely here to turn a workflow, project, or business pressure into execution.",
     investor: "You are likely looking for the bigger strategic map: ventures, timing, and leverage.",
     builder: "You are likely bringing talent, tools, or collaboration energy into the factory.",
-    construction: "You are likely bringing a Vancouver construction or home-services signal into BuildMatch early access.",
-    friend: "You are in the human lane: context, memory, intro, or a warm signal for Sina.",
+    construction: "You are likely bringing a Vancouver construction or home-services inquiry to BuildMatch.",
+    friend: "You are in the Personal line: a friend, warm intro, or network context.",
     founder: "You are likely a solo founder looking for accountability without coaching fluff.",
   };
 
@@ -265,23 +265,23 @@ function mirrorLine(identity) {
   }
 
   if (campaign === "founder-audit") {
-    return "You are in the Founder Audit lane: a 5-day audit of how you actually run your company.";
+    return "You are looking at Founder Audit — a 5-day audit of how you run your company solo.";
   }
 
-  return lines[identity] || "Use the steps below — the lane preview updates as you answer.";
+  return lines[identity] || "Use the steps below — the preview updates as you answer.";
 }
 
 function previewLaneDetail(lead, copy) {
   if (!lead.identity) {
-    return "Identity, intent, value, and urgency determine your review lane.";
+    return "Identity, intent, value, and urgency determine the likely product line.";
   }
   if (!lead.intent || !lead.value || !lead.urgency) {
     const hints = {
-      client: "Likely client operating intake — finish the steps to confirm the lane.",
-      investor: "Likely capital and strategic review — finish the steps to confirm the lane.",
-      builder: "Likely Forge / collaborator review — finish the steps to confirm the lane.",
-      construction: "Likely BuildMatch construction review — finish the steps to confirm the lane.",
-      friend: "Likely Personal / network lane — finish the steps to confirm the lane.",
+      client: "Likely SourceA client work — finish the steps to confirm.",
+      investor: "Likely Noetfield strategic review — finish the steps to confirm.",
+      builder: "Likely Forge / collaborator review — finish the steps to confirm.",
+      construction: "Likely BuildMatch — finish the steps to confirm.",
+      friend: "Likely Personal — finish the steps to confirm.",
     };
     return hints[lead.identity] || `Likely ${copy.title} — finish the steps to confirm.`;
   }
@@ -294,17 +294,17 @@ function showSuccess(result) {
   const node = template.content.cloneNode(true);
   const ref = formatReference(lead.id, result.requestId);
 
-  node.querySelector("h2").textContent = `Routed to ${lead.route.title}`;
+  node.querySelector("h2").textContent = `Inquiry received — ${lead.route.title}`;
   node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
   const reasonEl = node.querySelector(".success-reason");
   if (lead.route_reason) {
-    reasonEl.textContent = `Why this lane: ${lead.route_reason}`;
+    reasonEl.textContent = `Why this product line: ${lead.route_reason}`;
   } else {
     reasonEl.hidden = true;
   }
-  node.querySelector(".success-ref").textContent = `Reference ${ref} — keep this if you follow up.`;
+  node.querySelector(".success-ref").textContent = `Confirmation code ${ref} — save this if you follow up.`;
   node.querySelector(".success-review").textContent =
-    "Review window: operator follow-up within 48 hours on business days.";
+    "Sina reviews inquiries within 48 hours on business days.";
   node.querySelector(".success-next").textContent = `Next: ${lead.route.nextStep}`;
 
   form.replaceChildren(node);
@@ -324,7 +324,7 @@ function showSuccess(result) {
   routeDetail.textContent = lead.route.nextStep;
   leadType.textContent = lead.lead_type;
   priorityPreview.textContent = `Priority: ${lead.priority_tag}`;
-  mirrorCopy.textContent = `Signal captured on the ${lead.route.title} lane.`;
+  mirrorCopy.textContent = `Inquiry saved for ${lead.route.title} review.`;
 }
 
 function formatReference(leadId, requestId) {
@@ -337,7 +337,7 @@ function setBusy(isBusy) {
   submitButton.disabled = isBusy;
   nextButton.disabled = isBusy;
   backButton.disabled = isBusy;
-  submitButton.textContent = isBusy ? "Sending..." : "Send signal";
+  submitButton.textContent = isBusy ? "Sending..." : "Submit inquiry";
 }
 
 async function loadConfig() {
@@ -362,7 +362,7 @@ function renderRuntimeMode() {
 
   if (runtimeConfig.testMode) {
     modeBanner.hidden = false;
-    modeBanner.textContent = "Test mode: submissions are marked as test leads.";
+    modeBanner.textContent = "Test mode: submissions are marked as test inquiries.";
     return;
   }
 

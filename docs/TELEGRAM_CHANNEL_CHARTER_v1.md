@@ -1,34 +1,30 @@
-# @Gateway_A — Channel Charter (paste to pin)
+# @Gateway_A — pin this in the channel
 
-**Status:** Commercial control panel · paste into `@Gateway_A` and pin
+**Sina Gateway — ops & business updates**
 
----
+This channel is for **Sina Gateway**: the main intake hub for client work, investors, construction leads, collabs, and Founder Audit.
 
-**SINA GATEWAY — commercial control panel**
+**What shows up here:**
+- Urgent new inquiries (product line + confirmation code)
+- Alerts if the website or database is down
+- Business summaries when outbound is active (messages sent, replies, paid work)
+- Occasional counts by product line (no names)
 
-This channel is the **portfolio command surface** for Sina Gateway: routing, alerts, and verdicts across venture lanes — not a single product’s support desk.
+**What this is not:**
+- Live chat (one founder, human schedule)
+- A feed of “all good” every 15 minutes
+- Alerts from other apps (unless misconfigured)
 
-**You will see here:**
-- High-priority intake signals (lane + reference ID)
-- Infra alerts when Railway health fails
-- Commercial portfolio verdicts when outbound is armed (offers sent, replies, L2)
-- Optional weekly lane aggregates (counts only, no names)
-
-**You will not see here:**
-- 24/7 human chat (solo operator)
-- Spam “all green” every 15 minutes when nothing changed
-- Other products’ nerve probes (unless misconfigured)
-
-**Submit a signal (clients):**
+**Submit an inquiry:**  
 https://sina-gateway-production.up.railway.app/
 
-**Founder Audit:**
+**Founder Audit ($500):**  
 https://sina-gateway-production.up.railway.app/founder-audit
 
-**SourceA clients:**
+**Client / SourceA work:**  
 https://sina-gateway-production.up.railway.app/for-clients
 
-**Privacy:**
+**Privacy:**  
 https://sina-gateway-production.up.railway.app/privacy.html
 
-Operated by **Sina Kazemnezhad** — commercial megagateway routing mesh. Not Noetfield Systems Inc.
+— Sina Kazemnezhad (personal account). Not Noetfield Systems Inc.
