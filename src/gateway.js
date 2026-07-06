@@ -83,11 +83,11 @@ export const ROUTING_RULE_DEFINITIONS = [
     "Noetfield",
     { notes_any: ["founder audit", "solo founder", "ai cofounder", "founder accountability", "decision ledger"] },
   ),
-  rule("identity_friend", "Personal", "high", "You selected Friend / network.", "", { identity: "friend" }),
+  rule("identity_friend", "Personal", "high", "You selected Network.", "", { identity: "friend" }),
   rule("identity_buildmatch", "BuildMatch", "high", "You selected BuildMatch.", "", {
     identity: "buildmatch",
   }),
-  rule("identity_builder", "Forge", "high", "You selected Builder / collaborator.", "SourceA", { identity: "builder" }),
+  rule("identity_builder", "Forge", "high", "You selected Collaborator.", "SourceA", { identity: "builder" }),
   rule("identity_investor", "Noetfield", "high", "You selected Investor.", "TrustField", {
     identity: "investor",
   }),

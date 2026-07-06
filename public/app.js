@@ -308,7 +308,8 @@ function resolveRouteCopy(routeName, lead) {
 
 function formatIdentityLabel(lead) {
   if (!lead.identity) return "Pending";
-  if (lead.identity === "builder") return "collaborator";
+  if (lead.identity === "builder") return "Collaborator";
+  if (lead.identity === "friend") return "Network";
   if (lead.identity === "buildmatch") {
     const industry = BUILDMATCH_INDUSTRIES[lead.project_type];
     return industry ? `BuildMatch — ${industry.label}` : "BuildMatch";
@@ -335,9 +336,9 @@ function mirrorLine(lead) {
   const lines = {
     client: "You are likely here to turn a workflow, project, or business pressure into execution.",
     investor: "You are likely looking for the bigger strategic map: ventures, timing, and leverage.",
-    builder: "You are likely bringing talent, tools, or collaboration energy into the factory.",
+    builder: "You are likely bringing talent, tools, or collaboration energy as a collaborator.",
     buildmatch: "You are on BuildMatch — pick Construction or Home services on step 1.",
-    friend: "You are in the Personal line: a friend, warm intro, or network context.",
+    friend: "You are in the Network line: warm intros and people context.",
     founder: "You are likely a solo founder looking for accountability without coaching fluff.",
   };
 
@@ -366,11 +367,11 @@ function previewLaneDetail(lead, copy) {
     const hints = {
       client: "Likely SourceA client work — finish the steps to confirm.",
       investor: "Likely Noetfield strategic review — finish the steps to confirm.",
-      builder: "Likely Forge / collaborator review — finish the steps to confirm.",
+      builder: "Likely Forge — collaborator review. Finish the steps to confirm.",
       buildmatch: lead.project_type
         ? `Likely BuildMatch — ${BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type}.`
         : "Likely BuildMatch — pick Construction or Home services first.",
-      friend: "Likely Personal — finish the steps to confirm.",
+      friend: "Likely Personal — network intro. Finish the steps to confirm.",
     };
     return hints[lead.identity] || `Likely ${copy.title} — finish the steps to confirm.`;
   }
