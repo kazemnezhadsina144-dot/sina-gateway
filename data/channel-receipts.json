@@ -13,5 +13,6 @@
   "gateway_link": "https://sina-gateway-production.up.railway.app/?utm_campaign=founder-audit&utm_source=linkedin",
   "list_target": 25,
   "list_ready": 0,
-  "notes": "Log each send: increment sent, track replies. Stop at 100 sends with zero L1 → rewrite offer."
+  "notes": "Log each send: increment sent, track replies. Stop at 100 sends with zero L1 → rewrite offer.",
+  "last_send_at": "2026-07-06T04:49:16.310Z"
 }

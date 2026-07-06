@@ -1,5 +1,7 @@
 # Deploy
 
+**Ownership:** Personal project (`kazemnezhadsina144-dot/sina-gateway`) — not under Noetfield-Systems org.
+
 ## Railway (production)
 
 **Live URL:** https://sina-gateway-production.up.railway.app
