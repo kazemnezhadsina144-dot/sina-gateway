@@ -31,7 +31,9 @@
     "validate:utm": "node scripts/validate-utm.js",
     "sync:heartbeat": "node scripts/sync-heartbeat-vars.js",
     "sync:railway": "node scripts/sync-railway-env.js",
-    "cleanup:local": "node scripts/cleanup-local-leads.js"
+    "cleanup:local": "node scripts/cleanup-local-leads.js",
+    "cleanup:private-test": "node scripts/cleanup-private-test-rows.js",
+    "telegram:e2e-upgrade": "node scripts/telegram-e2e-upgrade.js"
   },
   "engines": {
     "node": ">=20"

@@ -2,7 +2,7 @@
 
 **Sina Gateway — ops & business updates**
 
-This channel is for **Sina Gateway**: the main intake hub for client work, investors, construction leads, collabs, and Founder Audit.
+This channel is for **Sina Gateway** only: client work, investors, BuildMatch, collaborators, network intros, and Founder Audit.
 
 **What shows up here:**
 - Urgent new inquiries (product line + confirmation code)
@@ -13,16 +13,13 @@ This channel is for **Sina Gateway**: the main intake hub for client work, inves
 **What this is not:**
 - Live chat (one founder, human schedule)
 - A feed of “all good” every 15 minutes
-- Alerts from other apps (unless misconfigured)
+- Alerts from NOOS, SourceA loops, or Noetfield probes (misconfigured if you see them)
 
 **Submit an inquiry:**  
 https://sina-gateway-production.up.railway.app/
 
 **Founder Audit ($500):**  
 https://sina-gateway-production.up.railway.app/founder-audit
-
-**Client / SourceA work:**  
-https://sina-gateway-production.up.railway.app/for-clients
 
 **Privacy:**  
 https://sina-gateway-production.up.railway.app/privacy.html
