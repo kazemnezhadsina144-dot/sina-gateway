@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node scripts/test-adapters.js",
-    "check": "node --check src/server.js && node --check src/gateway.js && node --check src/turnstile.js && node --check src/notifications.js && node --check public/app.js && node --check scripts/verify-supabase.js && node --check scripts/validate-env.js && node --check scripts/smoke-test.js && node --check scripts/audit-routes.js && node --check scripts/test-notifications.js && node --check scripts/e2e-local-pipeline.js && node --check scripts/readiness-check.js && node --check scripts/test-server-hardening.js && node --check scripts/test-shared-routing.js && node --check scripts/check-schema-drift.js && node --check scripts/chain-health.js && node --check scripts/private-test-runbook.js && node --check scripts/test-turnstile.js && node --check scripts/test-high-priority-capture.js && node --check scripts/validate-d2-list.js && node --check scripts/log-channel-send.js && node --check scripts/sync-heartbeat-vars.js && node --check scripts/sync-railway-env.js && node --check scripts/d3-outbound-preview.js && node --check scripts/founder-audit-status.js && node --check scripts/launch-gate-check.js && node --check scripts/verify-external-monitors.js",
+    "check": "node --check src/server.js && node --check src/gateway.js && node --check src/turnstile.js && node --check src/notifications.js && node --check public/app.js && node --check scripts/verify-supabase.js && node --check scripts/validate-env.js && node --check scripts/smoke-test.js && node --check scripts/audit-routes.js && node --check scripts/test-notifications.js && node --check scripts/e2e-local-pipeline.js && node --check scripts/readiness-check.js && node --check scripts/test-server-hardening.js && node --check scripts/test-shared-routing.js && node --check scripts/check-schema-drift.js && node --check scripts/chain-health.js && node --check scripts/private-test-runbook.js && node --check scripts/test-turnstile.js && node --check scripts/test-high-priority-capture.js && node --check scripts/validate-d2-list.js && node --check scripts/log-channel-send.js && node --check scripts/sync-heartbeat-vars.js && node --check scripts/sync-railway-env.js && node --check scripts/d3-outbound-preview.js && node --check scripts/founder-audit-status.js && node --check scripts/launch-gate-check.js && node --check scripts/verify-external-monitors.js && node --check scripts/validate-utm.js",
     "audit:routes": "node scripts/audit-routes.js",
     "e2e:local": "node scripts/e2e-local-pipeline.js",
     "readiness": "node scripts/readiness-check.js",
@@ -28,6 +28,7 @@
     "d3:status": "node scripts/founder-audit-status.js",
     "launch:gate": "node scripts/launch-gate-check.js",
     "monitors:verify": "node scripts/verify-external-monitors.js",
+    "validate:utm": "node scripts/validate-utm.js",
     "sync:heartbeat": "node scripts/sync-heartbeat-vars.js",
     "sync:railway": "node scripts/sync-railway-env.js",
     "cleanup:local": "node scripts/cleanup-local-leads.js"

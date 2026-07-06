@@ -269,6 +269,12 @@ h1 {
   line-height: 1.45;
 }
 
+.wedge-banner {
+  border-color: rgba(31, 111, 74, 0.35);
+  background: #edf7f0;
+  color: #1f6f4a;
+}
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
@@ -446,6 +452,30 @@ button {
 button.ghost {
   background: transparent;
   color: var(--ink);
+}
+
+a.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  padding: 0 18px;
+  background: var(--ink);
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+a.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 18px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
 }
 
 button:disabled {

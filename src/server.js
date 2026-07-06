@@ -160,6 +160,7 @@ async function handleLead(req, res, requestId) {
         venture_route: saved.venture_route,
         lead_type: saved.lead_type,
         priority_tag: saved.priority_tag,
+        route_reason: saved.route_reason,
         route: routeCopy(saved.venture_route),
       },
     });
@@ -252,7 +253,7 @@ async function readJson(req) {
 async function serveStatic(pathname, res) {
   const safePath = normalize(pathname).replace(/^(\.\.[/\\])+/, "");
   const requested = safePath === "/" ? "/index.html" : safePath;
-  const filePath = join(publicDir, requested);
+  let filePath = join(publicDir, requested);
 
   if (!filePath.startsWith(publicDir)) {
     sendJson(res, 403, { error: "Forbidden" });
@@ -260,11 +261,31 @@ async function serveStatic(pathname, res) {
   }
 
   try {
-    const fileStat = await stat(filePath);
+    let fileStat = await stat(filePath);
+    if (fileStat.isDirectory()) {
+      filePath = join(filePath, "index.html");
+      fileStat = await stat(filePath);
+    }
     if (!fileStat.isFile()) throw new Error("Not a file");
     res.writeHead(200, staticHeaders(filePath));
     createReadStream(filePath).pipe(res);
+    return;
   } catch {
+    if (!requested.includes(".")) {
+      try {
+        const indexPath = join(publicDir, requested, "index.html");
+        if (indexPath.startsWith(publicDir)) {
+          const fileStat = await stat(indexPath);
+          if (fileStat.isFile()) {
+            res.writeHead(200, staticHeaders(indexPath));
+            createReadStream(indexPath).pipe(res);
+            return;
+          }
+        }
+      } catch {
+        // fall through to SPA
+      }
+    }
     res.writeHead(404, staticHeaders(join(publicDir, "index.html")));
     createReadStream(join(publicDir, "index.html")).pipe(res);
   }

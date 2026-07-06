@@ -5,12 +5,15 @@ export function shouldNotifyLead(lead, telegramEnv) {
 }
 
 export function buildNotificationMessage(lead, requestId) {
+  const ref = requestId ? String(requestId).slice(0, 8).toUpperCase() : "";
   return [
     "<b>High-priority Sina Gateway lead</b>",
     `${lead.name || "—"} → ${lead.venture_route || "—"}`,
     lead.contact || "—",
     `priority: ${lead.priority_tag}`,
-    requestId ? `req: ${requestId}` : "",
+    lead.utm_campaign ? `campaign: ${lead.utm_campaign}` : "",
+    lead.route_reason ? `route: ${lead.route_reason}` : "",
+    ref ? `ref: ${ref}` : "",
   ]
     .filter(Boolean)
     .join("\n");
