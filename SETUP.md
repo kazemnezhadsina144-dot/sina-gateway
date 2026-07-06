@@ -40,6 +40,14 @@ If you already created the original table before this upgrade, run:
 
 For a fresh project, run only `supabase/schema.sql`; it already includes the upgraded fields and anon insert grants.
 
+After deploy, apply incremental migrations in order:
+
+```sql
+-- supabase/migrations/20260705_founder_audit_route.sql
+-- supabase/migrations/20260706_anon_insert_grants.sql
+-- supabase/migrations/20260706_capture_metadata.sql
+```
+
 If `npm run verify:supabase` reports `permission denied for table gateway_leads`, run:
 
 ```sql
@@ -112,7 +120,8 @@ NODE_ENV=production
 ALLOWED_ORIGINS=https://your-domain.com
 TURNSTILE_SITE_KEY=your-turnstile-site-key
 TURNSTILE_SECRET_KEY=your-turnstile-secret-key
-NOTIFY_WEBHOOK_URL=https://your-webhook-url
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_ALERT_CHAT_ID=-1004473252322
 ```
 
 See `LAUNCH_CHECKLIST.md` and `NOTIFICATIONS.md`.

@@ -1,6 +1,7 @@
 /**
- * Daily gateway heartbeat — 07:00 Pacific (14:00 UTC during PDT).
+ * Daily gateway heartbeat — manual /run. Cron motor: gateway-ops.
  */
+import { sendTelegramAlert } from "./telegram.js";
 export default {
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(runHeartbeat(env));
@@ -8,12 +9,23 @@ export default {
 
   async fetch(request, env) {
     if (new URL(request.url).pathname === "/run") {
+      if (!authorized(request, env)) {
+        return new Response("unauthorized", { status: 401 });
+      }
       const result = await runHeartbeat(env);
       return Response.json(result, { status: result.verdict === "GREEN" ? 200 : 503 });
     }
     return new Response("gateway-heartbeat ok", { status: 200 });
   },
 };
+
+function authorized(request, env) {
+  const secret = env.CRON_SECRET || "";
+  if (!secret) return true;
+  const url = new URL(request.url);
+  const header = request.headers.get("x-cron-secret") || "";
+  return url.searchParams.get("secret") === secret || header === secret;
+}
 
 async function runHeartbeat(env) {
   const baseUrl = (env.GATEWAY_BASE_URL || "").replace(/\/$/, "");
@@ -53,18 +65,12 @@ async function runHeartbeat(env) {
 
   const payload = verdictPayload({ gateway, commercial, verdict });
 
-  if (env.HEARTBEAT_WEBHOOK_URL) {
-    await fetch(env.HEARTBEAT_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        text: `Sina Gateway heartbeat ${verdict}: infra=${infraRed ? "RED" : "GREEN"} commercial=${commercialRed ? "RED (offers_sent=0)" : "GREEN"}`,
-        ...payload,
-      }),
-    });
-  }
+  const telegram = await sendTelegramAlert(
+    env,
+    `<b>Sina Gateway heartbeat ${verdict}</b>\ninfra: ${infraRed ? "RED" : "GREEN"}\ncommercial: ${commercialRed ? "RED (offers_sent=0)" : "GREEN"}`,
+  );
 
-  return payload;
+  return { ...payload, telegram };
 }
 
 function verdictPayload({ gateway, commercial = defaultCommercial(), verdict = "RED", error = "" }) {

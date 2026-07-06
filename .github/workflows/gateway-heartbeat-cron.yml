@@ -1,0 +1,34 @@
+name: Gateway Heartbeat Cron
+
+# Scheduled runs disabled — main GitHub account Actions quota exhausted.
+# Use Cloudflare gateway-ops worker or external cron (see docs/GATEWAY_247_AUTORUN_SETUP.md).
+on:
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Sync commercial vars to heartbeat worker
+        run: node scripts/sync-heartbeat-vars.js --print-only
+
+      - name: Run daily heartbeat
+        id: heartbeat
+        run: |
+          set -euo pipefail
+          url="https://gateway-heartbeat.sina-kazemnezhad-ca.workers.dev/run"
+          http_code=$(curl -sS -o /tmp/heartbeat.json -w "%{http_code}" "$url")
+          echo "http_code=$http_code"
+          cat /tmp/heartbeat.json
+          echo "verdict=$(jq -r '.verdict' /tmp/heartbeat.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Post heartbeat verdict
+        run: |
+          echo "Daily heartbeat runs via loop-specialist Telegram motor (see docs/GATEWAY_247_AUTORUN_SETUP.md)"
+          cat /tmp/heartbeat.json

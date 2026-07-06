@@ -5,6 +5,8 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, enrichLead, routeCopy, validateLead } from "./gateway.js";
 import { notifyLead } from "./notifications.js";
+import { telegramConfigured } from "./telegram.js";
+import { verifyTurnstileToken } from "./turnstile.js";
 import { loadSinaEnv, resolveSupabaseEnv } from "../scripts/load-sina-env.js";
 
 const root = join(fileURLToPath(new URL("..", import.meta.url)));
@@ -118,7 +120,7 @@ async function handleLead(req, res, requestId) {
     return;
   }
 
-  const enriched = enrichLead(body);
+  const enriched = applyCaptureMetadata(enrichLead(body));
   const errors = validateLead(enriched);
 
   if (errors.length) {
@@ -137,7 +139,7 @@ async function handleLead(req, res, requestId) {
     await notifyLead({
       lead: saved,
       requestId,
-      webhookUrl: process.env.NOTIFY_WEBHOOK_URL,
+      telegram: process.env,
       log: logEvent,
     });
     logEvent("lead_captured", {
@@ -311,7 +313,7 @@ async function readinessPayload() {
     supabaseConfigured: hasSupabase,
     supabaseRef: supabaseRefFromUrl(url),
     supabaseTableReady: null,
-    notificationsConfigured: Boolean(process.env.NOTIFY_WEBHOOK_URL),
+    notificationsConfigured: telegramConfigured(process.env),
     turnstileConfigured: Boolean(process.env.TURNSTILE_SECRET_KEY),
     testMode: process.env.TEST_MODE === "true",
   };
@@ -418,23 +420,39 @@ function isRateLimited(ip) {
 }
 
 async function validateTurnstile(token, ip) {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return "";
-  if (!token) return "Bot check is required";
-
-  const body = new URLSearchParams({
-    secret,
-    response: token,
-    remoteip: ip,
+  return verifyTurnstileToken({
+    token,
+    secret: process.env.TURNSTILE_SECRET_KEY,
+    ip,
   });
+}
 
-  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body,
-  });
-  const result = await response.json();
-  return result.success ? "" : "Bot check failed";
+function applyCaptureMetadata(lead) {
+  const testMode = process.env.TEST_MODE === "true";
+  const isTest =
+    testMode ||
+    lead.source === "private-test" ||
+    lead.source === "test" ||
+    String(lead.name || "").startsWith("[PRIVATE-TEST]");
+
+  const base = {
+    ...lead,
+    source: testMode ? "test" : lead.source,
+  };
+
+  // Enable after Step 3: supabase/migrations/20260706_capture_metadata.sql applied.
+  if (process.env.CAPTURE_METADATA_ENABLED !== "true") {
+    return base;
+  }
+
+  return {
+    ...base,
+    is_test: isTest,
+    app_version: appVersion,
+    environment: process.env.NODE_ENV || "development",
+    capture_version: "v1",
+    schema_version: "20260706",
+  };
 }
 
 function logEvent(event, payload = {}) {

@@ -16,8 +16,8 @@ if (env.NODE_ENV === "production" && !env.ALLOWED_ORIGINS) {
 if (env.NODE_ENV === "production" && !env.TURNSTILE_SECRET_KEY) {
   issues.push("Production should set TURNSTILE_SECRET_KEY.");
 }
-if (!env.NOTIFY_WEBHOOK_URL) {
-  issues.push("NOTIFY_WEBHOOK_URL is missing; high-priority notifications are disabled.");
+if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_ALERT_CHAT_ID) {
+  issues.push("TELEGRAM_BOT_TOKEN or TELEGRAM_ALERT_CHAT_ID missing; high-priority Telegram alerts disabled.");
 }
 
 if (issues.length) {

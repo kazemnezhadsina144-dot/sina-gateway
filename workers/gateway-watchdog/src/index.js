@@ -1,7 +1,7 @@
 /**
- * Cloudflare Watchdog — gateway chain health cron.
- * Schedule: every 15 minutes. Alerts on failure via WATCHDOG_WEBHOOK_URL.
+ * Cloudflare gateway-ops — 24/7 watchdog + heartbeat cron.
  */
+import { sendTelegramAlert } from "./telegram.js";
 export default {
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(runWatchdog(env));
@@ -9,12 +9,23 @@ export default {
 
   async fetch(request, env) {
     if (new URL(request.url).pathname === "/run") {
+      if (!authorized(request, env)) {
+        return new Response("unauthorized", { status: 401 });
+      }
       const result = await runWatchdog(env);
       return Response.json(result, { status: result.ok ? 200 : 503 });
     }
     return new Response("gateway-watchdog ok", { status: 200 });
   },
 };
+
+function authorized(request, env) {
+  const secret = env.CRON_SECRET || "";
+  if (!secret) return true;
+  const url = new URL(request.url);
+  const header = request.headers.get("x-cron-secret") || "";
+  return url.searchParams.get("secret") === secret || header === secret;
+}
 
 async function runWatchdog(env) {
   const baseUrl = (env.GATEWAY_BASE_URL || "").replace(/\/$/, "");
@@ -29,19 +40,15 @@ async function runWatchdog(env) {
   checks.push(await probeConfig(`${baseUrl}/api/config`));
 
   const ok = checks.every((check) => check.ok);
-  if (!ok && env.WATCHDOG_WEBHOOK_URL) {
-    await fetch(env.WATCHDOG_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        text: `Sina Gateway watchdog RED: ${checks.filter((c) => !c.ok).map((c) => c.name).join(", ")}`,
-        checks,
-        at: new Date().toISOString(),
-      }),
-    });
+  let telegram = { ok: true, skipped: true };
+  if (!ok) {
+    telegram = await sendTelegramAlert(
+      env,
+      `<b>Sina Gateway watchdog RED</b>\n${checks.filter((c) => !c.ok).map((c) => c.name).join(", ")}`,
+    );
   }
 
-  return { ok, checks, at: new Date().toISOString() };
+  return { ok, checks, telegram, at: new Date().toISOString() };
 }
 
 async function probe(url, name) {

@@ -72,7 +72,20 @@ npm run private-test
 4. Confirm test row in Supabase dashboard (anon cannot read it)
 5. Delete test rows via cleanup SQL when done
 
-**Outbound (D3):** `docs/FOUNDER_AUDIT_D3_OUTBOUND_TEMPLATE_LOCKED_v1.md` · track sends in `data/channel-receipts.json`
+**Outbound (D3):** `docs/FOUNDER_AUDIT_D3_OUTBOUND_TEMPLATE_LOCKED_v1.md` · track sends with `npm run channel:send -- --count 1 --mark-sent`
+
+## 10-step upgrade (infra first)
+
+| Step | Command / doc |
+|------|----------------|
+| 1–3 Cron | `.github/workflows/gateway-watchdog-cron.yml`, `gateway-heartbeat-cron.yml` |
+| 2–4 Secrets | `docs/OPS_SECRETS_SETUP.md` |
+| 5 Turnstile | `npm run test:turnstile` + Railway keys |
+| 6 CI / deploy | `.github/workflows/gateway-ci.yml`, `DEPLOY.md` |
+| 7 Metadata | Run `supabase/migrations/20260706_capture_metadata.sql` |
+| 8 D2 list | Fill `data/founder-audit-d2-list.json`, `npm run validate:d2-list` |
+| 9 D3 sends | `npm run channel:send -- --count N --mark-sent` |
+| 10 Launch | `docs/PUBLIC_LAUNCH_GATE_LOCKED_v1.md` |
 
 ## Connect Supabase
 
@@ -112,7 +125,7 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 ## Next Upgrades
 
 - Configure Turnstile before public launch.
-- Configure high-priority notifications with `NOTIFY_WEBHOOK_URL`.
+- Configure high-priority Telegram alerts with `TELEGRAM_BOT_TOKEN` + `TELEGRAM_ALERT_CHAT_ID`.
 - Split contact into email, phone, social, and preferred contact.
 - Add admin read view only after real rows exist.
 

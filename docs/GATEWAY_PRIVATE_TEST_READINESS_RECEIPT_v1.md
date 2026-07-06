@@ -11,12 +11,12 @@ No deployment was performed. No service-role key was requested or used. No admin
 
 ## Git Baseline
 
-- Branch: unavailable, this folder is not a Git repository.
-- Starting HEAD: unavailable, this folder is not a Git repository.
-- Final HEAD: unavailable, this folder is not a Git repository.
-- Dirty count before: unavailable, this folder is not a Git repository.
-- Dirty count after: unavailable, this folder is not a Git repository.
-- Commit: skipped because `.git` is not present.
+- Branch: `main`
+- Starting HEAD for E2E upgrade pass: `1f6ae0ce3134de89629d33af4fe4b1bd812f8451`
+- Final HEAD: unchanged, no commit created in this pass.
+- Dirty count before E2E upgrade pass: `0`
+- Dirty count after E2E upgrade pass: `4`
+- Commit: not created; this pass added local E2E coverage and left changes for review.
 
 ## Files Changed In This Pass
 
@@ -28,23 +28,29 @@ No deployment was performed. No service-role key was requested or used. No admin
 - `scripts/verify-supabase.js`
 - `scripts/smoke-test.js`
 - `scripts/test-notifications.js`
+- `scripts/e2e-local-pipeline.js`
+- `README.md`
 - `docs/GATEWAY_PRIVATE_TEST_READINESS_RECEIPT_v1.md`
 
 ## Command Results
 
 | Command | Status | Notes |
 | :-- | :-- | :-- |
-| `git branch --show-current` | SKIPPED_NOT_GIT_REPO | `.git` is not present. |
-| `git rev-parse HEAD` | SKIPPED_NOT_GIT_REPO | `.git` is not present. |
-| `git status --short` | SKIPPED_NOT_GIT_REPO | `.git` is not present. |
+| `git branch --show-current` | PASS | `main`. |
+| `git rev-parse HEAD` | PASS | `1f6ae0ce3134de89629d33af4fe4b1bd812f8451`. |
+| `git status --short` | PASS_WITH_CHANGES | E2E upgrade changed `README.md`, `docs/GATEWAY_PRIVATE_TEST_READINESS_RECEIPT_v1.md`, `package.json`, and added `scripts/e2e-local-pipeline.js`. |
 | `npm test` | PASS | Gateway routing and validation tests passed. |
 | `npm run validate:env` | PASS_WITH_WARNINGS | `NOTIFY_WEBHOOK_URL` is missing, so live notifications are disabled. |
 | `npm run check` | PASS | Syntax checks passed for server, gateway, notifications, frontend, and scripts. |
 | `npm run audit:routes` | PASS | All route combinations produced valid routes/confidence. |
+| `npm run test:shared-routing` | PASS | Browser-consumable routing definitions match backend routing outcomes. |
+| `npm run check:schema` | PASS | Server lead payload fields are represented in `supabase/schema.sql`. |
 | `npm run test:notifications` | PASS | Dry-run payload and no-op behavior passed. |
+| `npm run e2e:local` | PASS | Non-network intake -> enrichment -> validation -> local persistence shape -> notification dry-run passed. |
+| `npm run readiness` | PASS_WITH_SKIPS | Core checks pass; localhost and Supabase live checks may be skipped in restricted environments. |
 | `npm run smoke` | SKIPPED_LOCALHOST_UNAVAILABLE | Sandbox blocked localhost HTTP with `EPERM`. Server start itself succeeded. |
 | `npm run verify:supabase` | SKIPPED_NETWORK_UNAVAILABLE | Sandbox DNS/network could not reach Supabase host: `ENOTFOUND`. |
-| `git diff --check` | SKIPPED_NOT_GIT_REPO | `.git` is not present. |
+| `git diff --check` | PASS | No whitespace/conflict-marker errors. |
 
 ## Supabase Status
 
