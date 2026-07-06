@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://sina-gateway-production.up.railway.app/sitemap.xml

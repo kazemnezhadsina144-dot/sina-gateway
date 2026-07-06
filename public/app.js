@@ -1,3 +1,21 @@
+const CAMPAIGNS = {
+  "founder-audit": {
+    headline: "Founder Audit intake — solo technical founders.",
+    lede: "A 5-day audit of how you actually run your company — decisions, commitments, offer, and pipeline.",
+    banner: "Founder Audit lane — blunt accountability for solo AI founders.",
+  },
+  sourcea: {
+    headline: "SourceA intake — governed AI execution.",
+    lede: "Route agentic work, workflows, and operational pressure into a control-plane review lane.",
+    banner: "SourceA lane — execution with governance, not chat chaos.",
+  },
+  buildmatch: {
+    headline: "BuildMatch intake — Vancouver construction signals.",
+    lede: "Early access for construction and home-services opportunities in the Vancouver area.",
+    banner: "BuildMatch lane — local construction and trades leads.",
+  },
+};
+
 let ROUTES = {
   SourceA: {
     title: "SourceA",
@@ -112,18 +130,29 @@ boot();
 async function boot() {
   runtimeConfig = await loadConfig();
   if (runtimeConfig.routes) ROUTES = runtimeConfig.routes;
-  applyCampaignHeadline();
+  applyCampaignWedge();
   renderRuntimeMode();
   renderTurnstile();
   goTo(0);
   updateMirror();
 }
 
-function applyCampaignHeadline() {
+function applyCampaignWedge() {
   const params = new URLSearchParams(window.location.search);
+  const campaign = (params.get("utm_campaign") || "").toLowerCase();
+  const wedge = CAMPAIGNS[campaign];
+  if (!wedge) return;
+
   const title = document.querySelector("#page-title");
-  if (!title || params.get("utm_campaign") !== "founder-audit") return;
-  title.textContent = "Founder Audit intake — solo technical founders.";
+  const lede = document.querySelector(".hero .lede");
+  if (title) title.textContent = wedge.headline;
+  if (lede) lede.textContent = wedge.lede;
+
+  if (modeBanner && wedge.banner) {
+    modeBanner.hidden = false;
+    modeBanner.classList.add("wedge-banner");
+    modeBanner.textContent = wedge.banner;
+  }
 }
 
 function goTo(index) {
@@ -230,7 +259,12 @@ function mirrorLine(identity) {
   };
 
   const params = new URLSearchParams(window.location.search);
-  if (params.get("utm_campaign") === "founder-audit") {
+  const campaign = (params.get("utm_campaign") || "").toLowerCase();
+  if (CAMPAIGNS[campaign]) {
+    return CAMPAIGNS[campaign].lede;
+  }
+
+  if (campaign === "founder-audit") {
     return "You are in the Founder Audit lane: a 5-day audit of how you actually run your company.";
   }
 
@@ -262,10 +296,26 @@ function showSuccess(result) {
 
   node.querySelector("h2").textContent = `Routed to ${lead.route.title}`;
   node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
+  const reasonEl = node.querySelector(".success-reason");
+  if (lead.route_reason) {
+    reasonEl.textContent = `Why this lane: ${lead.route_reason}`;
+  } else {
+    reasonEl.hidden = true;
+  }
   node.querySelector(".success-ref").textContent = `Reference ${ref} — keep this if you follow up.`;
+  node.querySelector(".success-review").textContent =
+    "Review window: operator follow-up within 48 hours on business days.";
   node.querySelector(".success-next").textContent = `Next: ${lead.route.nextStep}`;
 
   form.replaceChildren(node);
+  form.querySelector("#copy-ref-button")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(ref);
+      form.querySelector("#copy-ref-button").textContent = "Copied";
+    } catch {
+      form.querySelector("#copy-ref-button").textContent = ref;
+    }
+  });
   form.querySelector("#send-another-button")?.addEventListener("click", () => window.location.reload());
 
   routePreview.textContent = lead.route.title;
@@ -302,6 +352,7 @@ async function loadConfig() {
 
 function renderRuntimeMode() {
   if (!modeBanner) return;
+  if (modeBanner.classList.contains("wedge-banner")) return;
 
   if (runtimeConfig.captureMode === "local") {
     modeBanner.hidden = false;
