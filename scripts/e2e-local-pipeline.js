@@ -66,27 +66,28 @@ try {
   assert.equal(notificationPayload.lead.venture_route, "TrustField");
 
   let notificationSent = false;
+  const telegramEnv = { TELEGRAM_BOT_TOKEN: "test-token", TELEGRAM_ALERT_CHAT_ID: "12345" };
   const notification = await notifyLead({
     lead,
     requestId: "request_e2e",
-    webhookUrl: "https://example.com/webhook",
+    telegram: telegramEnv,
     fetchImpl: async (_url, options) => {
       notificationSent = true;
       const body = JSON.parse(options.body);
-      assert.equal(body.lead.id, "lead_e2e");
-      assert.equal(body.lead.priority_tag, "high");
-      assert.equal(body.lead.raw_notes, input.raw_notes);
-      return { ok: true, status: 200 };
+      assert.match(body.text, /High-priority Sina Gateway lead/);
+      assert.equal(body.chat_id, "12345");
+      return { ok: true, json: async () => ({ ok: true, result: { message_id: 1 } }) };
     },
   });
 
   assert.equal(notificationSent, true);
-  assert.deepEqual(notification, { sent: true });
+  assert.equal(notification.sent, true);
+  assert.equal(notification.channel, "telegram");
 
   const skippedNotification = await notifyLead({
     lead: { ...lead, priority_tag: "medium" },
     requestId: "request_e2e_skip",
-    webhookUrl: "https://example.com/webhook",
+    telegram: telegramEnv,
     fetchImpl: async () => {
       throw new Error("medium priority should not send");
     },

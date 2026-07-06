@@ -353,5 +353,11 @@ function deriveTags(lead, venture_route, priority_tag) {
   if (lead.secondary_route) tags.add(`secondary:${lead.secondary_route}`);
   if (lead.route_confidence) tags.add(`route_confidence:${lead.route_confidence}`);
 
+  const acgPilotIntent = ["hire", "invest", "partner"].includes(lead.intent);
+  if (lead.source === "acg_pilot_v1" || (acgPilotIntent && priority_tag === "high")) {
+    tags.add("source:acg_pilot_v1");
+    tags.add("offer:tier1_ai_spend_leak_audit");
+  }
+
   return [...tags];
 }

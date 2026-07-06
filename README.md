@@ -1,5 +1,7 @@
 # Sina Gateway
 
+**Personal founder project** — not Noetfield Systems Inc. Repo: `kazemnezhadsina144-dot/sina-gateway`.
+
 Sina Gateway is a working v1 of the locked blueprint: **Mirror -> Route -> Capture -> Tag**.
 
 It is intentionally small:

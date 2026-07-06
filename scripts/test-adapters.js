@@ -88,6 +88,18 @@ const cases = [
     },
     expected: { venture_route: "FounderAudit", route_rule_id: "notes_founder_signal", priority_tag: "medium" },
   },
+  {
+    name: "high hire intent tags ACG Tier 1 pilot cohort",
+    input: {
+      identity: "client",
+      intent: "hire",
+      value: "project",
+      urgency: "now",
+      name: "Pilot Lead",
+      contact: "pilot@example.com",
+    },
+    expected: { venture_route: "SourceA", priority_tag: "high", acg_tag: "source:acg_pilot_v1" },
+  },
 ];
 
 for (const testCase of cases) {
@@ -95,6 +107,10 @@ for (const testCase of cases) {
   assert.deepEqual(validateLead(lead), [], testCase.name);
 
   for (const [key, value] of Object.entries(testCase.expected)) {
+    if (key === "acg_tag") {
+      assert.ok(lead.tags.includes(value), `${testCase.name}: missing tag ${value}`);
+      continue;
+    }
     assert.equal(lead[key], value, `${testCase.name}: ${key}`);
   }
 }
