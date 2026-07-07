@@ -1,6 +1,7 @@
 const STEP_LABELS = ["Who you are", "Goal", "Value", "Timeline", "Contact"];
 const DRAFT_KEY = "sina_gateway_draft_v1";
 const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
+const INTRO_REF_KEY = "sg_intro_ref_v1";
 
 const VALUE_VISIBILITY = {
   client: ["deal", "project", "lead", "risk"],
@@ -8,6 +9,15 @@ const VALUE_VISIBILITY = {
   builder: ["project", "talent", "deal", "lead"],
   buildmatch: ["project", "deal", "lead"],
   friend: ["lead", "project"],
+};
+
+const LANE_THANKS = {
+  SourceA: "Queued for SourceA — governed execution review within 48 business hours.",
+  Noetfield: "Sorted to Noetfield — strategic and partnership review within 48 business hours.",
+  TrustField: "Routed to TrustField — trust and compliance review within 48 business hours.",
+  Forge: "Sorted to Forge — builder and collaboration review within 48 business hours.",
+  Personal: "Saved as a network intro — warm context only, no marketing blast.",
+  FounderAudit: "Founder Audit signal received — blunt operating-system review within 48 business hours.",
 };
 
 const CAMPAIGNS = {
@@ -204,6 +214,7 @@ form.addEventListener("submit", async (event) => {
 boot();
 
 async function boot() {
+  captureIntroRefFromUrl();
   runtimeConfig = await loadConfig();
   if (runtimeConfig.routes) ROUTES = runtimeConfig.routes;
   if (runtimeConfig.buildmatchIndustries) {
@@ -601,7 +612,7 @@ function payload() {
     turnstileToken: turnstileToken(),
     source: "online",
     page_path: window.location.pathname,
-    referrer: document.referrer,
+    referrer: introReferrer(),
     utm_source: params.get("utm_source") || "",
     utm_medium: params.get("utm_medium") || "",
     utm_campaign: params.get("utm_campaign") || "",
@@ -835,6 +846,8 @@ function showSuccess(result) {
     ? `Inquiry received — BuildMatch (${lead.route.industry})`
     : `Inquiry received — ${lead.route.title}`;
   node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
+  const thanksEl = node.querySelector(".success-thanks");
+  if (thanksEl) thanksEl.textContent = laneThankYou(lead);
   const reasonEl = node.querySelector(".success-reason");
   if (lead.route_reason) {
     reasonEl.textContent = `Why this product line: ${lead.route_reason}`;
@@ -855,7 +868,13 @@ function showSuccess(result) {
   });
 
   const copyBtn = form.querySelector("#copy-ref-button");
+  const shareBtn = form.querySelector("#share-ref-button");
   const copyToast = form.querySelector("#copy-toast");
+  const shareUrl = `${window.location.origin}/?ref=${encodeURIComponent(ref)}`;
+  const telegramLink = form.querySelector("#telegram-link");
+  if (telegramLink) {
+    telegramLink.href = `https://t.me/Gateway_A?start=ref_${encodeURIComponent(ref)}`;
+  }
   copyBtn?.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(ref);
@@ -868,6 +887,20 @@ function showSuccess(result) {
       }
     } catch {
       copyBtn.textContent = ref;
+    }
+  });
+  shareBtn?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      shareBtn.textContent = "Intro link copied";
+      shareBtn.classList.add("is-copied");
+      if (copyToast) {
+        copyToast.hidden = false;
+        copyToast.textContent = "Intro link copied — no personal details in the URL.";
+        copyToast.classList.add("is-visible");
+      }
+    } catch {
+      shareBtn.textContent = shareUrl;
     }
   });
   form.querySelector("#send-another-button")?.addEventListener("click", () => window.location.reload());
@@ -927,6 +960,37 @@ function formatReference(leadId, requestId) {
   const raw = String(leadId || requestId || "");
   if (!raw) return "—";
   return raw.slice(0, 8).toUpperCase();
+}
+
+function normalizeIntroRef(value) {
+  const clean = String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 8);
+  return clean || "";
+}
+
+function captureIntroRefFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = normalizeIntroRef(params.get("ref"));
+  if (ref) sessionStorage.setItem(INTRO_REF_KEY, ref);
+  return ref;
+}
+
+function introReferrer() {
+  const ref = sessionStorage.getItem(INTRO_REF_KEY) || captureIntroRefFromUrl();
+  if (ref) return `ref:${ref}`;
+  return document.referrer || "";
+}
+
+function laneThankYou(lead) {
+  const routeTitle = lead.route?.title || lead.venture_route || "";
+  if (routeTitle === "BuildMatch") {
+    const industry = lead.route?.industry || BUILDMATCH_INDUSTRIES[lead.project_type]?.label || "platform";
+    return `Queued for BuildMatch — ${industry} review within 48 business hours.`;
+  }
+  return LANE_THANKS[routeTitle] || "Inquiry saved — Sina reviews within 48 business hours.";
 }
 
 function setBusy(isBusy) {

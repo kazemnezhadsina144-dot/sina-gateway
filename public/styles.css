@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
   --ink: #151716;
-  --muted: #5c6560;
+  --muted: #5c6560; /* WCAG AA 5.61:1 on --paper (#f7f7f2) */
   --line: #d8ded9;
   --paper: #f7f7f2;
   --panel: #ffffff;
@@ -567,6 +567,17 @@ h1 {
   font-weight: 700;
 }
 
+.success-route {
+  margin-top: 0;
+}
+
+.success-thanks {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
 .success-ref {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
@@ -1111,6 +1122,33 @@ button.ghost.is-submitting::after {
   .copy-toast.is-visible {
     animation: none;
     transition: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --ink: #000000;
+    --muted: #3f4a45;
+    --line: #8a948d;
+    --paper: #ffffff;
+    --panel: #ffffff;
+  }
+
+  .ghost,
+  .text-link,
+  .site-nav a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .identity-card.is-selected .card-face,
+  .option-grid label.is-selected > span {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .progress-fill {
+    background: var(--ink);
   }
 }
 

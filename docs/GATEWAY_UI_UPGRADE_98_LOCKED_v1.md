@@ -20,10 +20,11 @@
 | **D** | 73–82* | `1c5c8ab` | Wedge landings: Founder Audit, SourceA, BuildMatch |
 | **E** | 91–95*, 96–98 | `1f0a4ab` | Perf/cache, OG diagram, funnel events API |
 | **F** | 91 | `7c4e1a4` | Lighthouse LCP pass: defer Turnstile, gzip static, critical CSS |
+| **F** | 69, 71, 87, 89 | *(pending)* | Contrast audit, high-contrast mode, intro share link, lane thank-you |
 
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
-**Score:** **79 shipped** · **10 anti (hold)** · **9 deferred** · **0 partial**
+**Score:** **83 shipped** · **10 anti (hold)** · **5 deferred** · **1 partial**
 
 **Founder ops:** `npm run funnel:readout` — weekly step drop-off from `data/funnel-events.jsonl`
 
@@ -144,9 +145,9 @@
 66. ✅ `NEXT` **Mobile preview tab** — Form | Preview toggle ≤820px.
 67. ✅ `NEXT` **Screen reader step announcements** — `#step-announcer` `aria-live`.
 68. ✅ `NEXT` **Legend + fieldset audit** — every step has `legend`; nested BuildMatch OK.
-69. ⏸ `NEXT` **Contrast pass** — `#5c6560` on `#f7f7f2` not formally audited; spot-check OK.
+69. ✅ `NEXT` **Contrast pass** — `#5c6560` on `#f7f7f2` = **5.61:1** (WCAG AA); `prefers-contrast: more` darkens tokens.
 70. ⏸ `LATER` **Full keyboard wizard path** — card grids done; Tab path doc not written.
-71. ⏸ `LATER` **High-contrast mode** — `prefers-contrast: more` overrides not added.
+71. ✅ `LATER` **High-contrast mode** — `prefers-contrast: more` overrides for ink, muted, borders, selection rings.
 72. 🚫 `ANTI` **No gesture-only interactions** — keyboard path exists on cards; verified.
 
 ---
@@ -172,9 +173,9 @@
 84. ✅ `NOW` **Trust strip at submit** — Live capture · 48h review · Privacy above Turnstile.
 85. ✅ `NEXT` **Post-submit timeline** — `.success-timeline` (code → review → follow-up).
 86. ✅ `NEXT` **Copy confirmation code toast** — `aria-live` + `is-copied` button state.
-87. ⏸ `NEXT` **Share link on success** — `?ref=` intro link not wired.
-88. ◐ `NEXT` **Telegram deep link** — `@Gateway_A` on success; bot `?start=` not wired (no bot SKU).
-89. ⏸ `LATER` **Lane-specific thank-you line** — generic success copy only.
+87. ✅ `NEXT` **Share link on success** — “Copy intro link” → `/?ref=CODE` (no PII); `ref:` stored in `referrer` on submit.
+88. ◐ `NEXT` **Telegram deep link** — success links `t.me/Gateway_A?start=ref_CODE`; bot handler not wired (no bot SKU).
+89. ✅ `LATER` **Lane-specific thank-you line** — `.success-thanks` per product line on confirmation screen.
 90. 🚫 `ANTI` **No “We emailed you”** — verified.
 
 ---
@@ -224,16 +225,13 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | Priority | Item | Action |
 |----------|------|--------|
 | FOUNDER | 61 | Accent refresh decision if brand evolves |
-| NEXT | 69 | Formal contrast audit (`#5c6560` on paper) |
-| NEXT | 87 | Success `?ref=` share link (no PII) |
-| NEXT | 88 | Telegram bot deep link when bot SKU exists |
+| NEXT | 88 | Telegram bot `?start=ref_` handler when bot SKU exists |
 | LATER | 7 | Dark ops theme with contrast audit |
 | LATER | 27 | 3-step mobile collapse (intent + value merge) |
 | LATER | 29 | Abandon recovery after email wired |
 | LATER | 60 | Subtle grain background |
-| LATER | 70–71 | Keyboard path doc + `prefers-contrast` |
+| LATER | 70 | Keyboard wizard Tab path doc |
 | LATER | 79–81 | Investor / Forge / TrustField wedge pages |
-| LATER | 89 | Lane-specific thank-you lines |
 | LATER | 95 | AVIF/WebP hero when illustration exists |
 
 **Not planned:** items marked 🚫 ANTI — permanent hold.
