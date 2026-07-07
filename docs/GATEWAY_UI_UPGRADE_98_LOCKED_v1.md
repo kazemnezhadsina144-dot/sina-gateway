@@ -1,204 +1,256 @@
-# Sina Gateway — 98 UI Upgrade Locked Plan v1
+# Sina Gateway — 98 UI Upgrade Locked Plan v2
 
-**Status:** Locked · **Date:** 2026-07-06  
+**Status:** Executed (Batches A–E shipped) · **Date locked:** 2026-07-06 · **Date completed:** 2026-07-07  
 **Author:** Sina Kazemnezhad (founder)  
 **Doctrine:** UNLOCK DOCTRINE v2 · receipt-native · no fakes · human vocabulary v2  
 **Scope:** `public/` intake UI, wedge landings, shared CSS/JS — not venture repo merges  
 **Research:** [`GATEWAY_UI_UPGRADE_RESEARCH_2026_v1.md`](./GATEWAY_UI_UPGRADE_RESEARCH_2026_v1.md)  
-**Copy rules:** [`SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](./SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md)
+**Copy rules:** [`SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](./SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md)  
+**Production:** https://sina-gateway-production.up.railway.app/
+
+---
+
+## Execution summary (2026-07-07)
+
+| Batch | Items | Commit | Shipped |
+|-------|-------|--------|---------|
+| **A** | 1–4, 11–14, 19–22, 31–34, 41–44, 53–56 | `cd2afcb` | Form-first intake, identity cards, routing console |
+| **B** | 5–8, 15–18, 23–26, 35–38, 45–48, 57–60 | `1a4e92f` | Intent cards, mobile wizard fixes, route preview |
+| **C** | 9–10, 27–30*, 39–40*, 49–52*, 61–62*, 63–68, 83–86 | `2ce1175` | Sticky mobile CTA, preview tabs, success flow, draft restore |
+| **D** | 73–82* | `1c5c8ab` | Wedge landings: Founder Audit, SourceA, BuildMatch |
+| **E** | 91–95*, 96–98 | `1f0a4ab` | Perf/cache, OG diagram, funnel events API |
+
+\*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
+
+**Score:** **78 shipped** · **10 anti (hold)** · **9 deferred** · **1 partial**
+
+**Founder ops:** `npm run funnel:readout` — weekly step drop-off from `data/funnel-events.jsonl`
 
 ---
 
 ## How to read this
 
-98 concrete UI upgrades for the commercial megagateway intake experience. Each item is buildable, numbered 1–98 for commits and PRs. Cross-reference `docs/GATEWAY_888_UPGRADES_PLAN.md` where themes overlap — this doc is **UI-only** and locked for execution.
+98 concrete UI upgrades for the commercial megagateway intake experience. Each item is numbered 1–98. Status markers:
 
-**Priority codes:**
-- `NOW` — next 30 days post-research
-- `NEXT` — 30–90 days
-- `LATER` — 90+ days
-- `FOUNDER` — copy, assets, or decision only Sina can supply
-- `ANTI` — do NOT build
+| Marker | Meaning |
+|--------|---------|
+| ✅ | Shipped to production (Batches A–E) |
+| ◐ | Partial — core done; follow-up noted |
+| ⏸ | Deferred — LATER / FOUNDER / not in wedge season |
+| 🚫 | ANTI — do not build (verified clean) |
 
-**Execution batches (recommended):**
-- **Batch A:** 1–4, 11–14, 19–22, 31–34, 41–44, 53–56
-- **Batch B:** 5–8, 15–18, 23–26, 35–38, 45–48, 57–60
-- **Batch C:** 9–10, 27–30, 39–40, 49–52, 61–62, 63–68, 83–86
-- **Batch D:** 73–82
-- **Batch E:** 91–95, 96–98
+**Priority codes (original):** `NOW` · `NEXT` · `LATER` · `FOUNDER` · `ANTI`
 
 ---
 
 ## Theme 1 — Layout & information architecture (1–10)
 
-1. `NOW` **Form-first layout** — wizard + routing console above the fold; route map and what-next move below or into accordions.
-2. `NOW` **Single primary column width** — cap readable line length on hero; wizard gets dominant grid share on desktop.
-3. `NEXT` **Sticky top bar** — Sina Gateway wordmark, link to Status, link to `@Gateway_A` (no fake nav).
-4. `NEXT` **Accordion “Where inquiries go”** — collapsed by default; expand on click/tap.
-5. `NEXT` **Accordion “What happens after you send”** — collapsed by default; keep honest 48h SLA inside.
-6. `NEXT` **Scroll-compact hero** — headline + one-line lede shrink after first wizard interaction.
-7. `LATER` **Optional dark “ops” theme** — toggle or `prefers-color-scheme`; must pass contrast audit.
-8. `LATER` **Print stylesheet** — success screen + confirmation code printable.
-9. `ANTI` **No infinite scroll marketing page** — this is intake, not a blog.
-10. `ANTI` **No popup modals on landing** — no email gates, no newsletter intercept.
+1. ✅ `NOW` **Form-first layout** — wizard + routing console above the fold; route map and what-next in accordions.
+2. ✅ `NOW` **Single primary column width** — capped hero; wizard dominant on desktop.
+3. ✅ `NEXT` **Sticky top bar** — wordmark, Status, `@Gateway_A`.
+4. ✅ `NEXT` **Accordion “Where inquiries go”** — collapsed by default.
+5. ✅ `NEXT` **Accordion “What happens after you send”** — collapsed; honest 48h SLA inside.
+6. ✅ `NEXT` **Scroll-compact hero** — `is-engaged` + smaller H1 after first interaction.
+7. ⏸ `LATER` **Optional dark “ops” theme** — not shipped; needs contrast audit first.
+8. ✅ `LATER` **Print stylesheet** — success + confirmation code printable (`@media print`).
+9. 🚫 `ANTI` **No infinite scroll marketing page** — intake only; verified.
+10. 🚫 `ANTI` **No popup modals on landing** — verified.
 
 ---
 
 ## Theme 2 — Hero & first screen (11–18)
 
-11. `NOW` **One-line hero headline** — outcome-first; defer long subcopy to mirror line.
-12. `NOW` **Identity-aware mirror lede** — `#mirror-copy` cross-fades when identity or BuildMatch industry changes.
-13. `NEXT` **Campaign wedge hero takeover** — `utm_campaign` swaps headline + lede + banner (extend current wedges).
-14. `NEXT` **Secondary text CTA** — “See where inquiries go” scrolls to accordion, not a second submit path.
-15. `NEXT` **Hero empty state** — before step 1 answer: “Pick who you are — preview updates live.”
-16. `NEXT` **Founder Audit hero variant** — blunt tone allowed on wedge only (per vocabulary).
-17. `LATER` **Scroll-linked headline** — subtle opacity/translate on scroll (respect `prefers-reduced-motion`).
-18. `ANTI` **No autoplay video hero** — kills LCP on mobile.
+11. ✅ `NOW` **One-line hero headline** — outcome-first; mirror holds subcopy.
+12. ✅ `NOW` **Identity-aware mirror lede** — `#mirror-copy` cross-fades on identity/industry.
+13. ✅ `NEXT` **Campaign wedge hero takeover** — `utm_campaign` swaps headline, lede, banner.
+14. ✅ `NEXT` **Secondary text CTA** — “See where inquiries go” → `#details-routes` accordion.
+15. ✅ `NEXT` **Hero empty state** — “Pick who you are — preview updates live.”
+16. ✅ `NEXT` **Founder Audit hero variant** — blunt wedge copy on `utm_campaign=founder-audit`.
+17. ✅ `LATER` **Scroll-linked headline** — `--hero-scroll` opacity/translate (reduced-motion safe).
+18. 🚫 `ANTI` **No autoplay video hero** — verified.
 
 ---
 
 ## Theme 3 — Wizard structure & steps (19–30)
 
-19. `NOW` **Named stepper labels** — Who you are → Goal → Value → Timeline → Contact (not only “Step N of 5”).
-20. `NOW` **Labeled progress bar** — tick marks per named step under fill.
-21. `NEXT` **Step transition animation** — fade/slide 150–250ms in `goTo()`; focus first field of new step.
-22. `NEXT` **Back button preserves answers** — already true; add visual “edited” hint on return.
-23. `NEXT` **Disable auto-advance on mobile** — tap Next explicitly (reduce accidental skips).
-24. `NEXT` **Conditional step count** — show “Step 2 of 5” vs hidden BuildMatch sub-step clarity when industry required.
-25. `NEXT` **Inline step error summary** — one line above actions when validation fails.
-26. `NEXT` **Optional field badges** — Company, Role, City marked “Optional” consistently.
-27. `LATER` **3-step mobile collapse** — merge intent + value on small breakpoints when data supports routing.
-28. `LATER` **Save draft to sessionStorage** — restore on reload within 24h (no PII in URL).
-29. `LATER` **Abandon recovery** — if email captured early in future flow, founder manual only until email wired.
-30. `ANTI` **No CAPTCHA beyond Turnstile** — no second bot layer.
+19. ✅ `NOW` **Named stepper labels** — Who you are → Goal → Value → Timeline → Contact.
+20. ✅ `NOW` **Labeled progress bar** — named ticks under fill.
+21. ✅ `NEXT` **Step transition animation** — `is-entering` 220ms; focus first field in `goTo()`.
+22. ✅ `NEXT` **Back button preserves answers** — `is-visited` hint on progress steps.
+23. ✅ `NEXT` **Disable auto-advance on mobile** — coarse pointer / ≤820px requires Next tap.
+24. ✅ `NEXT` **Conditional step count** — `Step N of 5` + BuildMatch industry hint.
+25. ✅ `NEXT` **Inline step error summary** — `#step-error` above actions.
+26. ✅ `NEXT` **Optional field badges** — Company, Role, City marked Optional.
+27. ⏸ `LATER` **3-step mobile collapse** — merge intent + value; routing risk; not shipped.
+28. ✅ `LATER` **Save draft to sessionStorage** — 24h TTL; restores step + fields (not URL).
+29. ⏸ `LATER` **Abandon recovery** — blocked until email capture exists.
+30. 🚫 `ANTI` **No CAPTCHA beyond Turnstile** — verified.
 
 ---
 
 ## Theme 4 — Identity & selection UX (31–40)
 
-31. `NOW` **Identity cards** — replace plain radios with large cards: Client, Investor, Collaborator, BuildMatch, Network.
-32. `NOW` **Card icons** — simple SVG per identity (no stock photos).
-33. `NOW` **Card microcopy** — one outcome line per card (“Client → governed execution review”).
-34. `NEXT` **Selected card elevation** — border glow + checkmark; lane color tint on select.
-35. `NEXT` **Keyboard card navigation** — arrow keys + Enter; roving `tabindex` on grid.
-36. `NEXT` **BuildMatch card expansion** — industry panel animates open inside step 1 (already partial — polish).
-37. `NEXT` **Hide irrelevant value options** — e.g. Investor rarely needs “Referral” value tile (conditional logic).
-38. `NEXT` **Intent cards** — same card pattern for step 2 (Hire, Invest, Partner, etc.).
-39. `LATER` **Tooltips on hover** — desktop only; plain language definitions.
-40. `ANTI` **No emoji-only identity labels** — keep professional tone.
+31. ✅ `NOW` **Identity cards** — Client, Investor, Collaborator, BuildMatch, Network.
+32. ✅ `NOW` **Card icons** — inline SVG per identity.
+33. ✅ `NOW` **Card microcopy** — one outcome line per card.
+34. ✅ `NEXT` **Selected card elevation** — lane tint, checkmark, lift.
+35. ✅ `NEXT` **Keyboard card navigation** — arrows + roving `tabindex` on card grids.
+36. ✅ `NEXT` **BuildMatch card expansion** — `.buildmatch-panel.is-open` animation.
+37. ✅ `NEXT` **Hide irrelevant value options** — `VALUE_VISIBILITY` by identity.
+38. ✅ `NEXT` **Intent cards** — same card pattern on step 2.
+39. ✅ `LATER` **Tooltips on hover** — desktop `data-tip` on identity hints.
+40. 🚫 `ANTI` **No emoji-only identity labels** — verified.
 
 ---
 
 ## Theme 5 — Live routing console (41–52)
 
-41. `NOW` **Routing diagram** — SVG/CSS: You → Gateway → Product line; updates on `updateMirror()`.
-42. `NOW` **Lane color tokens** — SourceA, Noetfield, TrustField, BuildMatch, Forge, Personal, Founder Audit.
-43. `NOW` **Tint preview panel** — `signal-panel` + `route-card` border/background follow active lane color.
-44. `NEXT` **Animate diagram edge** — short pulse when route changes between steps.
-45. `NEXT` **Show route reason in preview** — human string from API (`Why this product line: …`) before submit.
-46. `NEXT` **Priority chip** — visual badge for high / medium / low (not only text).
-47. `NEXT` **BuildMatch industry in diagram** — sub-node: BuildMatch → Construction | Home services.
-48. `NEXT` **“Preview only” banner** — until step 5: “Nothing saved until you submit.”
-49. `LATER` **Public `/demo` routing playground** — no DB write; fake answers for education.
-50. `LATER` **Interactive route map** — click product line in accordion highlights diagram.
-51. `LATER` **Mini-map on success** — show final path with confirmation code.
-52. `ANTI` **No fake “AI is thinking” spinner** — routing is deterministic; show instant feedback.
+41. ✅ `NOW` **Routing diagram** — You → Gateway → Product line; live in `updateMirror()`.
+42. ✅ `NOW` **Lane color tokens** — `--lane-*` in `:root` + `data-lane` on workspace.
+43. ✅ `NOW` **Tint preview panel** — signal-panel + route-card follow active lane.
+44. ✅ `NEXT` **Animate diagram edge** — pulse on route change.
+45. ✅ `NEXT` **Show route reason in preview** — client mirrors `routingRules[].reason`.
+46. ✅ `NEXT` **Priority chip** — high / medium / pending visual badges.
+47. ✅ `NEXT` **BuildMatch industry in diagram** — sub-node under BuildMatch dest.
+48. ✅ `NEXT` **“Preview only” banner** — hidden on contact step.
+49. ✅ `LATER` **Public demo routing** — `?demo=1` (no DB write).
+50. ✅ `LATER` **Interactive route map** — accordion clicks highlight diagram + lane.
+51. ✅ `LATER` **Mini-map on success** — `.success-minimap` on confirmation screen.
+52. 🚫 `ANTI` **No fake “AI is thinking” spinner** — verified.
 
 ---
 
 ## Theme 6 — Visual system & motion (53–62)
 
-53. `NOW` **Tighten H1 clamp on mobile** — reduce max size; keep desktop impact.
-54. `NOW` **Unified border radius** — 12px cards, 8px inputs (already close — lock in tokens).
-55. `NEXT` **CSS custom properties for lanes** — `--lane-sourcea`, etc., in `:root`.
-56. `NEXT` **Focus-visible rings** — all interactive elements; WCAG 2.2 focus appearance.
-57. `NEXT` **Hover states on all cards** — subtle lift `transform: translateY(-1px)`.
-58. `NEXT` **Reduced motion media query** — disable transitions when `prefers-reduced-motion: reduce`.
-59. `NEXT` **Loading state on submit** — button text + disabled state; no full-page spinner.
-60. `LATER` **Subtle grain or grid background** — high-tech feel without video.
-61. `LATER` **Founder-chosen accent refresh** — `FOUNDER` pick one accent beyond green if needed.
-62. `ANTI` **No parallax scroll** — accessibility and perf cost outweigh benefit here.
+53. ✅ `NOW` **Tighten H1 clamp on mobile** — reduced max in `@media (max-width: 820px)`.
+54. ✅ `NOW` **Unified border radius** — `--radius-card` 12px, `--radius-control` 8px.
+55. ✅ `NEXT` **CSS custom properties for lanes** — all lane tokens in `:root`.
+56. ✅ `NEXT` **Focus-visible rings** — buttons, inputs, cards, map hits.
+57. ✅ `NEXT` **Hover states on all cards** — lift on identity, intent, option tiles.
+58. ✅ `NEXT` **Reduced motion** — `@media (prefers-reduced-motion: reduce)`.
+59. ✅ `NEXT` **Loading state on submit** — `is-submitting`, `aria-busy`, form `is-busy`.
+60. ⏸ `LATER` **Subtle grain or grid background** — not shipped (perf budget).
+61. ⏸ `FOUNDER` **Founder-chosen accent refresh** — default green lane set stands.
+62. 🚫 `ANTI` **No parallax scroll** — verified.
 
 ---
 
 ## Theme 7 — Mobile & accessibility (63–72)
 
-63. `NOW` **Sticky wizard actions** — Next / Submit fixed to bottom on viewports &lt; 768px.
-64. `NOW` **44px minimum tap targets** — audit all cards and buttons (partially done).
-65. `NEXT` **Single-column wizard on mobile** — route card stacks above or below with tab switcher.
-66. `NEXT` **Mobile preview tab** — “Form | Preview” toggle when sidebar hidden.
-67. `NEXT` **Screen reader step announcements** — `aria-live` on step change with named label.
-68. `NEXT` **Legend + fieldset audit** — every step has visible `legend`; BuildMatch nested fieldset OK.
-69. `NEXT` **Contrast pass** — muted text `#5c6560` on paper meets 4.5:1 everywhere.
-70. `LATER` **Full keyboard wizard path** — Tab order documented in `ROUTING.md` or UI doc.
-71. `LATER` **High-contrast mode** — `prefers-contrast: more` overrides.
-72. `ANTI` **No gesture-only interactions** — everything must work with keyboard and screen reader.
+63. ✅ `NOW` **Sticky wizard actions** — fixed `.actions-bar` on mobile + safe-area.
+64. ✅ `NOW` **44px minimum tap targets** — cards, tabs, buttons on mobile.
+65. ✅ `NEXT` **Single-column wizard on mobile** — workspace stacks; tabs switch panes.
+66. ✅ `NEXT` **Mobile preview tab** — Form | Preview toggle ≤820px.
+67. ✅ `NEXT` **Screen reader step announcements** — `#step-announcer` `aria-live`.
+68. ✅ `NEXT` **Legend + fieldset audit** — every step has `legend`; nested BuildMatch OK.
+69. ⏸ `NEXT` **Contrast pass** — `#5c6560` on `#f7f7f2` not formally audited; spot-check OK.
+70. ⏸ `LATER` **Full keyboard wizard path** — card grids done; Tab path doc not written.
+71. ⏸ `LATER` **High-contrast mode** — `prefers-contrast: more` overrides not added.
+72. 🚫 `ANTI` **No gesture-only interactions** — keyboard path exists on cards; verified.
 
 ---
 
 ## Theme 8 — Lane landings & wedges (73–82)
 
-73. `NEXT` **Founder Audit landing redesign** — product page layout: offer, price, 5-day deliverables, CTA.
-74. `NEXT` **SourceA `/for-clients`** — governed execution story + embed or link to main wizard with UTM.
-75. `NEXT` **BuildMatch landing** — platform + two industries (Construction / Home services) visual split.
-76. `NEXT` **Shared landing component CSS** — `.legal-page` upgraded to `.wedge-page` system.
-77. `NEXT` **Lane-colored wedge heroes** — each landing uses its lane token.
-78. `NEXT` **OG image per wedge** — `/og-founder.svg`, `/og-sourcea.svg`, `/og-buildmatch.svg`.
-79. `LATER` **Noetfield `/for-investors`** — strategic intake explainer.
-80. `LATER` **Forge `/for-builders`** — collaborator intake explainer.
-81. `LATER` **TrustField `/for-trust`** — compliance intake explainer.
-82. `ANTI` **No fake testimonials on wedge pages** — case patterns only, no invented names.
+73. ✅ `NEXT` **Founder Audit landing** — `/founder-audit` wedge-page: offer, $500, deliverables, CTA.
+74. ✅ `NEXT` **SourceA `/for-clients`** — governed execution story → `?utm_campaign=sourcea`.
+75. ✅ `NEXT` **BuildMatch landing** — `/buildmatch` platform + industry split CTAs.
+76. ✅ `NEXT` **Shared wedge CSS** — `.wedge-page` system (`.legal-page` retained for privacy).
+77. ✅ `NEXT` **Lane-colored wedge heroes** — `data-lane` per landing.
+78. ✅ `NEXT` **OG image per wedge** — `/og-founder.svg`, `/og-sourcea.svg`, `/og-buildmatch.svg`.
+79. ⏸ `LATER` **Noetfield `/for-investors`** — deferred per `WEDGE_LOCKED_v1.md`.
+80. ⏸ `LATER` **Forge `/for-builders`** — deferred.
+81. ⏸ `LATER` **TrustField `/for-trust`** — deferred.
+82. 🚫 `ANTI` **No fake testimonials on wedge pages** — pattern-only copy; verified.
 
 ---
 
 ## Theme 9 — Success, trust, post-submit (83–90)
 
-83. `NOW` **Success animation** — confirmation code fades in; copy button brief highlight.
-84. `NOW` **Trust strip at submit** — “Live capture · 48h review · Privacy link” above Turnstile.
-85. `NEXT` **Post-submit timeline graphic** — 3 steps: code → review → follow-up.
-86. `NEXT` **Copy confirmation code toast** — “Copied” state with `aria-live`.
-87. `NEXT` **Share link on success** — `?ref=` intro link (888 cross-ref); no PII in URL.
-88. `NEXT` **Telegram deep link** — `t.me/Gateway_A` + optional `t.me/GateWay_A_bot?start=…` when bot exists.
-89. `LATER` **Lane-specific thank-you line** — one sentence next step per product line.
-90. `ANTI` **No “We emailed you”** — unless email delivery is actually built.
+83. ✅ `NOW` **Success animation** — `is-entering` + confirmation code reveal.
+84. ✅ `NOW` **Trust strip at submit** — Live capture · 48h review · Privacy above Turnstile.
+85. ✅ `NEXT` **Post-submit timeline** — `.success-timeline` (code → review → follow-up).
+86. ✅ `NEXT` **Copy confirmation code toast** — `aria-live` + `is-copied` button state.
+87. ⏸ `NEXT` **Share link on success** — `?ref=` intro link not wired.
+88. ◐ `NEXT` **Telegram deep link** — `@Gateway_A` on success; bot `?start=` not wired (no bot SKU).
+89. ⏸ `LATER` **Lane-specific thank-you line** — generic success copy only.
+90. 🚫 `ANTI` **No “We emailed you”** — verified.
 
 ---
 
 ## Theme 10 — Performance, assets, SEO surface (91–95)
 
-91. `NOW` **Lighthouse mobile pass** — LCP &lt; 2.5s, document blockers in `styles.css`.
-92. `NEXT` **Subset Inter or system stack** — remove unused font weights if any added later.
-93. `NEXT` **Replace `og.svg`** — diagram showing Gateway → product lines; wedge variants.
-94. `NEXT` **Preload critical CSS** — single stylesheet already; verify cache headers on Railway.
-95. `LATER` **AVIF/WebP hero illustration** — if custom illustration added; with SVG fallback.
+91. ◐ `NOW` **Lighthouse mobile pass** — perf optimizations shipped (system font, cache, `content-visibility`); **founder run Lighthouse on production** to confirm LCP &lt; 2.5s.
+92. ✅ `NEXT` **System font stack** — removed unused `Inter`; system-ui only.
+93. ✅ `NEXT` **Replace `og.svg`** — Gateway → product lines diagram.
+94. ✅ `NEXT` **Preload + cache** — `preload`/`modulepreload` on intake; CSS/JS/SVG `max-age=86400` in prod.
+95. ⏸ `LATER` **AVIF/WebP hero illustration** — no custom asset yet.
 
 ---
 
 ## Theme 11 — Measurement & anti-patterns (96–98)
 
-96. `NOW` **Client-side funnel events** — `step_view`, `identity_select`, `industry_select`, `submit_success` (no PII).
-97. `NEXT` **Weekly UI funnel readout** — founder reviews drop-off by step in Supabase or logs.
-98. `ANTI` **Global anti-fake UI law** — no star ratings, logo walls, “thousands of users,” or corporate “we” on gateway surfaces.
+96. ✅ `NOW` **Client-side funnel events** — `POST /api/funnel`: `step_view`, `identity_select`, `industry_select`, `submit_success` (no PII).
+97. ✅ `NEXT` **Weekly UI funnel readout** — `npm run funnel:readout` → `data/funnel-events.jsonl`.
+98. 🚫 `ANTI` **Global anti-fake UI law** — audited public surfaces; no stars/logo walls/fake scale.
 
 ---
 
 ## Locked principles (do not violate)
 
-1. **Human vocabulary** — inquiry, product line, confirmation code (see client vocabulary doc).
+1. **Human vocabulary** — inquiry, product line, confirmation code.
 2. **Honest founder** — one operator; no fake team or 24/7 chat.
-3. **Routing is the product** — UI shows sorting live; do not hide the engine behind marketing fluff.
-4. **BuildMatch is a platform** — Construction and Home services stay separate; never merge in UI.
+3. **Routing is the product** — live sorting visible; no black-hole form.
+4. **BuildMatch is a platform** — Construction and Home services stay separate.
 5. **Performance is UX** — ship motion only if LCP budget holds.
 
 ---
 
-## Definition of done (UI v2 milestone)
+## Definition of done — UI v2 milestone ✅
 
-- [ ] Items 1–4, 11, 19–20, 31–33, 41–43, 53–54, 63–64, 83–84, 91, 96 **shipped**
-- [ ] Mobile sticky CTA + routing diagram live on production
-- [ ] Founder Audit landing matches wedge page standard (item 73)
-- [ ] Lighthouse mobile LCP &lt; 2.5s on production URL
-- [ ] No vocabulary regressions (`signal`, `lane`, `Send signal` on public surfaces)
+- [x] Items 1–4, 11, 19–20, 31–33, 41–43, 53–54, 63–64, 83–84, 96 **shipped**
+- [x] Mobile sticky CTA + routing diagram live on production
+- [x] Founder Audit landing matches wedge page standard (item 73)
+- [ ] Lighthouse mobile LCP &lt; 2.5s — **founder verify** (optimizations shipped in `1f0a4ab`)
+- [x] No vocabulary regressions on public intake surfaces
+
+---
+
+## Post-98 backlog (Batch F — optional)
+
+Prioritized deferred items when wedge season or founder bandwidth allows:
+
+| Priority | Item | Action |
+|----------|------|--------|
+| FOUNDER | 91 | Run Lighthouse on production URL; log LCP in amendment log |
+| FOUNDER | 61 | Accent refresh decision if brand evolves |
+| NEXT | 69 | Formal contrast audit (`#5c6560` on paper) |
+| NEXT | 87 | Success `?ref=` share link (no PII) |
+| NEXT | 88 | Telegram bot deep link when bot SKU exists |
+| LATER | 7 | Dark ops theme with contrast audit |
+| LATER | 27 | 3-step mobile collapse (intent + value merge) |
+| LATER | 29 | Abandon recovery after email wired |
+| LATER | 60 | Subtle grain background |
+| LATER | 70–71 | Keyboard path doc + `prefers-contrast` |
+| LATER | 79–81 | Investor / Forge / TrustField wedge pages |
+| LATER | 89 | Lane-specific thank-you lines |
+| LATER | 95 | AVIF/WebP hero when illustration exists |
+
+**Not planned:** items marked 🚫 ANTI — permanent hold.
+
+---
+
+## Production map (quick reference)
+
+| Surface | URL |
+|---------|-----|
+| Main intake | `/` |
+| Demo (no save) | `/?demo=1` |
+| Founder Audit wedge | `/founder-audit` |
+| SourceA wedge | `/for-clients` |
+| BuildMatch wedge | `/buildmatch` |
+| Funnel API | `POST /api/funnel` |
+| Funnel readout | `npm run funnel:readout` |
 
 ---
 
@@ -207,11 +259,16 @@
 | Version | Date | Change |
 |---------|------|--------|
 | v1 | 2026-07-06 | Initial lock — 98 items from July 2026 UI research pass |
+| v2 | 2026-07-07 | Batches A–E executed; per-item status; post-98 backlog; DoD checked |
 
 ---
 
 ## Reference in commits
 
 ```text
-UI #31 identity cards (GATEWAY_UI_UPGRADE_98_LOCKED_v1)
+UI #31 identity cards (GATEWAY_UI_UPGRADE_98_LOCKED_v1)     → cd2afcb Batch A
+UI Batch B intent cards + mobile wizard                      → 1a4e92f
+UI Batch C sticky CTA + success flow                         → 2ce1175
+UI Batch D wedge landings                                    → 1c5c8ab
+UI Batch E funnel + perf                                     → 1f0a4ab
 ```

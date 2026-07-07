@@ -126,7 +126,7 @@ See `SETUP.md` for the full secure setup and anon read-denial test.
 - [`docs/ROUTING_MESH_LAWS_LOCKED_v1.md`](docs/ROUTING_MESH_LAWS_LOCKED_v1.md) — venture mesh handoff
 - [`docs/SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md`](docs/SINA_GATEWAY_TERMINOLOGY_LOCKED_v1.md) — operator vocabulary
 - [`docs/SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md`](docs/SINA_GATEWAY_CLIENT_VOCABULARY_LOCKED_v1.md) — public copy rules
-- [`docs/GATEWAY_UI_UPGRADE_98_LOCKED_v1.md`](docs/GATEWAY_UI_UPGRADE_98_LOCKED_v1.md) — 98-item UI upgrade plan (locked)
+- [`docs/GATEWAY_UI_UPGRADE_98_LOCKED_v1.md`](docs/GATEWAY_UI_UPGRADE_98_LOCKED_v1.md) — 98-item UI upgrade plan (v2 executed — Batches A–E shipped)
 - [`docs/GATEWAY_UI_UPGRADE_RESEARCH_2026_v1.md`](docs/GATEWAY_UI_UPGRADE_RESEARCH_2026_v1.md) — July 2026 UI research reference
 - `docs/UNLOCK_DOCTRINE_LOCKED_v2.md`
 - `docs/FOUNDER_GATEWAY_BLUEPRINT_LOCKED_v1.md`
