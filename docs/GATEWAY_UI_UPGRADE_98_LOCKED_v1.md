@@ -22,7 +22,7 @@
 | **F** | 91 | `7c4e1a4` | Lighthouse LCP pass: defer Turnstile, gzip static, critical CSS |
 | **F** | 69, 71, 87, 89 | `eb409af` | Contrast audit, high-contrast mode, intro share link, lane thank-you |
 
-| **G** | 79–80, 888 #10–12, #37, #41 | *(pending)* | Investor/builder wedges, referrer DB, UTM chain, status API |
+| **G** | 79–80, 888 #10–12, #37, #41 | `3e3d7b2` | Investor/builder wedges, referrer DB, UTM chain, status API |
 
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
@@ -265,7 +265,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | v2 | 2026-07-07 | Batches A–E executed; per-item status; post-98 backlog; DoD checked |
 | v2.1 | 2026-07-07 | Batch F Lighthouse: prod mobile LCP 1.0 s (was 5.5 s); item 91 closed (`7c4e1a4`) |
 | v2.2 | 2026-07-07 | Batch F: intro share link, lane thank-you, contrast + high-contrast (`eb409af`) |
-| v2.3 | 2026-07-07 | Phase 2 Batch G: investor/builder wedges, referrer + UTM columns, status API |
+| v2.3 | 2026-07-07 | Phase 2 Batch G: investor/builder wedges, referrer + UTM columns, status API (`3e3d7b2`) |
 
 ---
 
@@ -279,5 +279,5 @@ UI Batch D wedge landings                                    → 1c5c8ab
 UI Batch E funnel + perf                                     → 1f0a4ab
 UI Batch F Lighthouse LCP pass                               → 7c4e1a4
 UI Batch F share link + lane thank-you                       → eb409af
-UI Phase 2 Batch G wedges + referrer + UTM                   → (this commit)
+UI Phase 2 Batch G wedges + referrer + UTM                   → 3e3d7b2
 ```
