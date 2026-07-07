@@ -20,7 +20,7 @@
 | **D** | 73–82* | `1c5c8ab` | Wedge landings: Founder Audit, SourceA, BuildMatch |
 | **E** | 91–95*, 96–98 | `1f0a4ab` | Perf/cache, OG diagram, funnel events API |
 | **F** | 91 | `7c4e1a4` | Lighthouse LCP pass: defer Turnstile, gzip static, critical CSS |
-| **F** | 69, 71, 87, 89 | *(pending)* | Contrast audit, high-contrast mode, intro share link, lane thank-you |
+| **F** | 69, 71, 87, 89 | `eb409af` | Contrast audit, high-contrast mode, intro share link, lane thank-you |
 
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
@@ -259,6 +259,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | v1 | 2026-07-06 | Initial lock — 98 items from July 2026 UI research pass |
 | v2 | 2026-07-07 | Batches A–E executed; per-item status; post-98 backlog; DoD checked |
 | v2.1 | 2026-07-07 | Batch F Lighthouse: prod mobile LCP 1.0 s (was 5.5 s); item 91 closed (`7c4e1a4`) |
+| v2.2 | 2026-07-07 | Batch F: intro share link, lane thank-you, contrast + high-contrast (`eb409af`) |
 
 ---
 
@@ -271,4 +272,5 @@ UI Batch C sticky CTA + success flow                         → 2ce1175
 UI Batch D wedge landings                                    → 1c5c8ab
 UI Batch E funnel + perf                                     → 1f0a4ab
 UI Batch F Lighthouse LCP pass                               → 7c4e1a4
+UI Batch F share link + lane thank-you                       → eb409af
 ```
