@@ -4,7 +4,10 @@ const checks = [
   ["/health", 200],
   ["/ready", 200],
   ["/api/config", 200],
+  ["/api/status", 200],
   ["/", 200],
+  ["/for-investors", 200],
+  ["/for-builders", 200],
   ["/robots.txt", 200],
 ];
 

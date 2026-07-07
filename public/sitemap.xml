@@ -13,6 +13,12 @@
     <loc>https://sina-gateway-production.up.railway.app/buildmatch</loc>
   </url>
   <url>
+    <loc>https://sina-gateway-production.up.railway.app/for-investors</loc>
+  </url>
+  <url>
+    <loc>https://sina-gateway-production.up.railway.app/for-builders</loc>
+  </url>
+  <url>
     <loc>https://sina-gateway-production.up.railway.app/privacy.html</loc>
   </url>
 </urlset>

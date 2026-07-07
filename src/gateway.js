@@ -122,6 +122,11 @@ export const ROUTING_RULES = ROUTING_RULE_DEFINITIONS.map((definition) => ({
   when: (lead) => ruleMatches(definition.match, lead),
 }));
 
+export function parseReferredBy(referrer = "") {
+  const match = String(referrer).trim().match(/^ref:([A-Za-z0-9]{1,8})$/);
+  return match ? match[1].toUpperCase() : "";
+}
+
 export function normalizeLead(input = {}) {
   let identity = clean(input.identity);
   let project_type = cleanText(input.project_type, 120);
@@ -164,9 +169,12 @@ export function normalizeLead(input = {}) {
     raw_notes: cleanText(input.raw_notes, 1000),
     page_path: cleanText(input.page_path || "/", 240),
     referrer: cleanText(input.referrer, 500),
+    referred_by: parseReferredBy(input.referrer),
     utm_source: cleanText(input.utm_source, 120),
     utm_medium: cleanText(input.utm_medium, 120),
     utm_campaign: cleanText(input.utm_campaign, 120),
+    utm_content: cleanText(input.utm_content, 120),
+    utm_term: cleanText(input.utm_term, 120),
     session_id: cleanText(input.session_id, 120),
     visitor_id: cleanText(input.visitor_id, 120),
     submission_id: cleanText(input.submission_id, 120),
@@ -242,7 +250,7 @@ export function enrichLead(input) {
     app_version: cleanText(input.app_version, 40),
     environment: cleanText(input.environment, 40),
     capture_version: cleanText(input.capture_version || "v1", 20),
-    schema_version: cleanText(input.schema_version || "20260706", 20),
+    schema_version: cleanText(input.schema_version || "20260707", 20),
   };
 }
 

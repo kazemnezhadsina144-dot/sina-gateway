@@ -157,3 +157,22 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 8 notify test | **Done** — `test:notify-capture` PASS |
 | 9 merge | **Done** — main on Railway |
 | 10 launch | **Done** — public indexing enabled 2026-07-06 · `npm run launch:gate` |
+
+---
+
+## Phase 2 snapshot (2026-07-07)
+
+| Step | Status | Check |
+|------|--------|-------|
+| 1 Monitors | **Founder** — `npm run monitors:verify` PASS · create 2 monitors in UptimeRobot UI from `data/gateway-external-monitors-v1.json` |
+| 2 D2 list | **Founder** — `0/25` · fill `data/founder-audit-d2-list.json` · `npm run validate:d2-list` |
+| 3 referred_by | **Done** — migration `20260707_referrer_utm.sql` · `ref:CODE` → `referred_by` column |
+| 4 UTM chain | **Done** — `utm_content`, `utm_term` captured · Telegram alert shows campaign + content + intro |
+| 5 Wedges | **Done** — `/for-investors`, `/for-builders` + OG + sitemap |
+| 6 Status | **Done** — `GET /api/status` · `/status.html` public · success shows campaign |
+| 7 D3 outbound | **Founder** — after Step 2: `node scripts/d3-outbound-preview.js --id 1` · `npm run channel:send -- --count 5` |
+| 8 GSC | **Founder** — submit `public/sitemap.xml` in Google Search Console after deploy |
+| 9 Custom domain | **Founder** — choose `gateway.sinakazemnezhad.com` or `sina-gateway.app` · Railway + Turnstile + `ALLOWED_ORIGINS` |
+| 10 Phase 2 gate | **Done** — `chain:health` · `launch:gate` · Lighthouse on production |
+
+**Founder SQL (Step 3–4):** Run `supabase/migrations/20260707_referrer_utm.sql` in Supabase SQL Editor after deploy.

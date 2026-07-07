@@ -22,9 +22,11 @@
 | **F** | 91 | `7c4e1a4` | Lighthouse LCP pass: defer Turnstile, gzip static, critical CSS |
 | **F** | 69, 71, 87, 89 | `eb409af` | Contrast audit, high-contrast mode, intro share link, lane thank-you |
 
+| **G** | 79–80, 888 #10–12, #37, #41 | *(pending)* | Investor/builder wedges, referrer DB, UTM chain, status API |
+
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
-**Score:** **83 shipped** · **10 anti (hold)** · **5 deferred** · **1 partial**
+**Score:** **85 shipped** · **10 anti (hold)** · **6 deferred** · **1 partial**
 
 **Founder ops:** `npm run funnel:readout` — weekly step drop-off from `data/funnel-events.jsonl`
 
@@ -160,8 +162,8 @@
 76. ✅ `NEXT` **Shared wedge CSS** — `.wedge-page` system (`.legal-page` retained for privacy).
 77. ✅ `NEXT` **Lane-colored wedge heroes** — `data-lane` per landing.
 78. ✅ `NEXT` **OG image per wedge** — `/og-founder.svg`, `/og-sourcea.svg`, `/og-buildmatch.svg`.
-79. ⏸ `LATER` **Noetfield `/for-investors`** — deferred per `WEDGE_LOCKED_v1.md`.
-80. ⏸ `LATER` **Forge `/for-builders`** — deferred.
+79. ✅ `LATER` **Noetfield `/for-investors`** — intake explainer at `/for-investors` (Phase 2; not active marketing).
+80. ✅ `LATER` **Forge `/for-builders`** — intake explainer at `/for-builders` (Phase 2; not active marketing).
 81. ⏸ `LATER` **TrustField `/for-trust`** — deferred.
 82. 🚫 `ANTI` **No fake testimonials on wedge pages** — pattern-only copy; verified.
 
@@ -231,7 +233,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | LATER | 29 | Abandon recovery after email wired |
 | LATER | 60 | Subtle grain background |
 | LATER | 70 | Keyboard wizard Tab path doc |
-| LATER | 79–81 | Investor / Forge / TrustField wedge pages |
+| LATER | 79–81 | TrustField `/for-trust` wedge page |
 | LATER | 95 | AVIF/WebP hero when illustration exists |
 
 **Not planned:** items marked 🚫 ANTI — permanent hold.
@@ -246,7 +248,10 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | Demo (no save) | `/?demo=1` |
 | Founder Audit wedge | `/founder-audit` |
 | SourceA wedge | `/for-clients` |
+| Noetfield wedge | `/for-investors` |
+| Forge wedge | `/for-builders` |
 | BuildMatch wedge | `/buildmatch` |
+| Status API | `GET /api/status` |
 | Funnel API | `POST /api/funnel` |
 | Funnel readout | `npm run funnel:readout` |
 
@@ -260,6 +265,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | v2 | 2026-07-07 | Batches A–E executed; per-item status; post-98 backlog; DoD checked |
 | v2.1 | 2026-07-07 | Batch F Lighthouse: prod mobile LCP 1.0 s (was 5.5 s); item 91 closed (`7c4e1a4`) |
 | v2.2 | 2026-07-07 | Batch F: intro share link, lane thank-you, contrast + high-contrast (`eb409af`) |
+| v2.3 | 2026-07-07 | Phase 2 Batch G: investor/builder wedges, referrer + UTM columns, status API |
 
 ---
 
@@ -273,4 +279,5 @@ UI Batch D wedge landings                                    → 1c5c8ab
 UI Batch E funnel + perf                                     → 1f0a4ab
 UI Batch F Lighthouse LCP pass                               → 7c4e1a4
 UI Batch F share link + lane thank-you                       → eb409af
+UI Phase 2 Batch G wedges + referrer + UTM                   → (this commit)
 ```

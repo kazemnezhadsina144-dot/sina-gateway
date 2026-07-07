@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Status — Sina Gateway</title>
-    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Live operational status for Sina Gateway capture, notifications, and outbound motion counters."
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
@@ -28,10 +31,24 @@
         return `<div class="status-row ${cls}"><span>${label}</span><strong>${value}</strong></div>`;
       }
 
+      function formatCheckedAt(value) {
+        if (!value) return "—";
+        try {
+          return new Date(value).toLocaleString();
+        } catch {
+          return value;
+        }
+      }
+
       try {
-        const [healthRes, readyRes] = await Promise.all([fetch("/health"), fetch("/ready")]);
+        const [healthRes, readyRes, statusRes] = await Promise.all([
+          fetch("/health"),
+          fetch("/ready"),
+          fetch("/api/status"),
+        ]);
         const health = await healthRes.json();
         const ready = await readyRes.json();
+        const status = statusRes.ok ? await statusRes.json() : {};
         const overall = healthRes.ok && readyRes.ok && ready.ok !== false;
 
         panel.innerHTML = `
@@ -42,6 +59,10 @@
           ${row("Turnstile", ready.turnstileConfigured ? "on" : "off", ready.turnstileConfigured ? true : null)}
           ${row("Notifications", ready.notificationsConfigured ? "on" : "off", ready.notificationsConfigured)}
           ${row("Version", ready.version || health.version || "—", null)}
+          ${row("Status checked", formatCheckedAt(status.checkedAt), null)}
+          ${row("Outbound sends logged", String(status.offersSent ?? "—"), null)}
+          ${row("Replies logged", String(status.replies ?? "—"), null)}
+          ${row("Active campaign", status.campaign || "—", null)}
         `;
       } catch {
         panel.innerHTML = `<p class="status-verdict status-fail">Unreachable</p>`;

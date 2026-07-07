@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-const ALLOWED_CAMPAIGNS = ["founder-audit", "sourcea", "buildmatch"];
+const ALLOWED_CAMPAIGNS = ["founder-audit", "sourcea", "buildmatch", "noetfield", "forge"];
 const ALLOWED_SOURCES = ["linkedin", "landing", "intro", "telegram", "private-test-runbook"];
 
 const samples = [

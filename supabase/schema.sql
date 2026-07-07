@@ -49,6 +49,9 @@ create table if not exists public.gateway_leads (
   utm_source text,
   utm_medium text,
   utm_campaign text,
+  utm_content text,
+  utm_term text,
+  referred_by text,
   session_id text,
   visitor_id text,
   submission_id text,
@@ -56,7 +59,7 @@ create table if not exists public.gateway_leads (
   app_version text,
   environment text,
   capture_version text default 'v1',
-  schema_version text default '20260706'
+  schema_version text default '20260707'
 );
 
 alter table public.gateway_leads enable row level security;
@@ -80,6 +83,7 @@ create index if not exists gateway_leads_contact_idx on public.gateway_leads (co
 create index if not exists gateway_leads_company_idx on public.gateway_leads (company);
 create index if not exists gateway_leads_tags_idx on public.gateway_leads using gin (tags);
 create index if not exists gateway_leads_is_test_idx on public.gateway_leads (is_test) where is_test = true;
+create index if not exists gateway_leads_referred_by_idx on public.gateway_leads (referred_by) where referred_by is not null;
 
 -- Table privileges (required in addition to RLS — Supabase SQL editor does not always grant anon)
 grant usage on schema public to anon;

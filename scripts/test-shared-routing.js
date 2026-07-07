@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { OPTIONS, ROUTING_RULE_DEFINITIONS, enrichLead, ruleMatches } from "../src/gateway.js";
+import { OPTIONS, ROUTING_RULE_DEFINITIONS, enrichLead, parseReferredBy, ruleMatches } from "../src/gateway.js";
 
 for (const identity of OPTIONS.identity) {
   for (const intent of OPTIONS.intent) {
@@ -24,5 +24,23 @@ for (const identity of OPTIONS.identity) {
     }
   }
 }
+
+assert.equal(parseReferredBy("ref:abc12def"), "ABC12DEF");
+assert.equal(parseReferredBy("https://example.com"), "");
+const referred = enrichLead({
+  identity: "client",
+  intent: "hire",
+  value: "project",
+  urgency: "now",
+  name: "Intro Test",
+  contact: "intro@example.com",
+  referrer: "ref:INTRO01",
+  utm_campaign: "sourcea",
+  utm_content: "hero-a",
+  utm_term: "governed-ai",
+});
+assert.equal(referred.referred_by, "INTRO01");
+assert.equal(referred.utm_content, "hero-a");
+assert.equal(referred.utm_term, "governed-ai");
 
 console.log("Shared routing tests passed.");

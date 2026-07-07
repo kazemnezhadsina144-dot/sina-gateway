@@ -36,6 +36,16 @@ const CAMPAIGNS = {
     lede: "BuildMatch covers Construction and Home services as separate industries — pick yours on step 1.",
     banner: "BuildMatch — Vancouver platform (Construction or Home services).",
   },
+  noetfield: {
+    headline: "Noetfield intake — strategic and partnership review.",
+    lede: "Send capital, venture, and partnership inquiries for strategic sorting — not generic pitch spam.",
+    banner: "Noetfield — investor and strategic partnership lane.",
+  },
+  forge: {
+    headline: "Forge intake — builder and collaborator review.",
+    lede: "Share what you build, ship, or want to collaborate on — sorted to Forge for builder review.",
+    banner: "Forge — collaborators and builders lane.",
+  },
 };
 
 const BUILDMATCH_INDUSTRIES = {
@@ -203,7 +213,8 @@ form.addEventListener("submit", async (event) => {
       throw new Error(`${detail}${ref}`);
     }
 
-    showSuccess(result);
+    const submitted = payload();
+    showSuccess({ ...result, submittedMeta: submitted });
   } catch (error) {
     statusEl.textContent = `Could not save inquiry yet: ${error.message}`;
   } finally {
@@ -616,6 +627,8 @@ function payload() {
     utm_source: params.get("utm_source") || "",
     utm_medium: params.get("utm_medium") || "",
     utm_campaign: params.get("utm_campaign") || "",
+    utm_content: params.get("utm_content") || "",
+    utm_term: params.get("utm_term") || "",
     session_id: sessionId(),
     visitor_id: visitorId(),
   };
@@ -855,7 +868,11 @@ function showSuccess(result) {
     reasonEl.hidden = true;
   }
   const refEl = node.querySelector(".success-ref");
-  refEl.textContent = `Confirmation code ${ref} — save this if you follow up.`;
+  const meta = result.submittedMeta || {};
+  const campaign = String(meta.utm_campaign || "").trim();
+  refEl.textContent = campaign
+    ? `Confirmation code ${ref} — campaign: ${campaign}. Save this if you follow up.`
+    : `Confirmation code ${ref} — save this if you follow up.`;
   node.querySelector(".success-review").textContent =
     "Sina reviews inquiries within 48 hours on business days.";
   node.querySelector(".success-next").textContent = `Next: ${lead.route.nextStep}`;

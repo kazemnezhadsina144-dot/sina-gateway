@@ -86,6 +86,11 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "GET" && url.pathname === "/api/status") {
+      sendJson(res, 200, await publicStatusPayload());
+      return;
+    }
+
     if (req.method === "GET") {
       await serveStatic(url.pathname, req, res);
       return;
@@ -445,6 +450,9 @@ function databasePayload(lead) {
     "utm_source",
     "utm_medium",
     "utm_campaign",
+    "utm_content",
+    "utm_term",
+    "referred_by",
     "session_id",
     "visitor_id",
     "route_rule_id",
@@ -465,6 +473,29 @@ function databasePayload(lead) {
 
   if (!payload.submission_id) payload.submission_id = payload.id;
   return payload;
+}
+
+async function publicStatusPayload() {
+  const ready = await readinessPayload();
+  let commercial = { sent: 0, replies: 0, L2_payments: 0 };
+  try {
+    commercial = JSON.parse(await readFile(join(dataDir, "channel-receipts.json"), "utf8"));
+  } catch {
+    // optional local receipt file
+  }
+
+  return {
+    ok: ready.ok,
+    version: appVersion,
+    captureMode: ready.captureMode,
+    notificationsConfigured: ready.notificationsConfigured,
+    turnstileConfigured: ready.turnstileConfigured,
+    offersSent: Number(commercial.sent) || 0,
+    replies: Number(commercial.replies) || 0,
+    l2Payments: Number(commercial.L2_payments) || 0,
+    campaign: commercial.campaign || null,
+    checkedAt: new Date().toISOString(),
+  };
 }
 
 async function readinessPayload() {

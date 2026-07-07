@@ -13,6 +13,8 @@ export function buildNotificationMessage(lead, requestId) {
     lead.contact || "—",
     `priority: ${lead.priority_tag}`,
     lead.utm_campaign ? `campaign: ${lead.utm_campaign}` : "",
+    lead.utm_content ? `content: ${lead.utm_content}` : "",
+    lead.referred_by ? `intro: ref:${lead.referred_by}` : "",
     lead.identity === "buildmatch" && lead.project_type
       ? `industry: ${BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type}`
       : "",
