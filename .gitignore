@@ -1,6 +1,7 @@
 .env
 node_modules/
 data/leads.json
+data/funnel-events.jsonl
 .DS_Store
 
 # local secrets / runtime
@@ -9,5 +10,6 @@ data/leads.json
 !.env.example
 node_modules/
 data/leads.json
+data/funnel-events.jsonl
 *.log
 .DS_Store

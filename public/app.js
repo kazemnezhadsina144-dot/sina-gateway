@@ -122,7 +122,7 @@ const demoMode = new URLSearchParams(window.location.search).get("demo") === "1"
 const isMobileWizard = () =>
   window.matchMedia("(max-width: 820px)").matches || window.matchMedia("(pointer: coarse)").matches;
 
-let currentStep = 0;
+let currentStep = -1;
 let heroEngaged = false;
 let lastDiagramDest = "";
 const visitedSteps = new Set();
@@ -133,6 +133,10 @@ form.addEventListener("change", (event) => {
   syncBuildMatchPanel();
   if (event.target.name === "identity") {
     syncValueOptions();
+    trackFunnel("identity_select", { identity: event.target.value });
+  }
+  if (event.target.name === "project_type") {
+    trackFunnel("industry_select", { project_type: event.target.value });
   }
   updateMirror();
   clearStepError();
@@ -490,6 +494,7 @@ function markHeroEngaged() {
 function goTo(index) {
   if (index !== currentStep) visitedSteps.add(currentStep);
 
+  const stepChanged = index !== currentStep;
   currentStep = index;
   markHeroEngaged();
 
@@ -513,7 +518,10 @@ function goTo(index) {
   submitButton.hidden = index !== steps.length - 1;
   if (previewBanner && !demoMode) previewBanner.hidden = index === steps.length - 1;
   clearStepError();
-  announceStep(index);
+  if (stepChanged) {
+    announceStep(index);
+    trackFunnel("step_view", { step: index, step_label: STEP_LABELS[index] });
+  }
   updateMirror();
   saveDraft();
 
@@ -813,6 +821,10 @@ function previewLaneDetail(lead, copy) {
 function showSuccess(result) {
   clearDraft();
   const lead = result.lead;
+  trackFunnel("submit_success", {
+    route: lead.route?.title || lead.venture_route || "",
+    step: currentStep,
+  });
   const template = document.querySelector("#success-template");
   const node = template.content.cloneNode(true);
   const ref = formatReference(lead.id, result.requestId);
@@ -1011,4 +1023,36 @@ function visitorId() {
     localStorage.setItem("sina_gateway_visitor_id", value);
   }
   return value;
+}
+
+function trackFunnel(event, detail = {}) {
+  const params = new URLSearchParams(window.location.search);
+  const payload = {
+    event,
+    timestamp: new Date().toISOString(),
+    session_id: sessionId(),
+    visitor_id: visitorId(),
+    page_path: window.location.pathname,
+    utm_campaign: params.get("utm_campaign") || "",
+    step: currentStep,
+    step_label: STEP_LABELS[currentStep],
+    demo: demoMode,
+    ...detail,
+  };
+
+  const body = JSON.stringify(payload);
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/funnel", new Blob([body], { type: "application/json" }));
+      return;
+    }
+    fetch("/api/funnel", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    // analytics must never block intake
+  }
 }

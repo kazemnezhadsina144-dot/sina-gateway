@@ -16,6 +16,7 @@ const supabaseEnv = () => resolveSupabaseEnv(process.env);
 const publicDir = join(root, "public");
 const dataDir = join(root, "data");
 const dataFile = join(dataDir, "leads.json");
+const funnelFile = join(dataDir, "funnel-events.jsonl");
 const packageJson = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const appVersion = packageJson.version || "0.0.0";
 const port = Number(process.env.PORT || 4173);
@@ -47,6 +48,11 @@ const server = createServer(async (req, res) => {
 
     if (req.method === "POST" && url.pathname === "/api/leads") {
       await handleLead(req, res, requestId);
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/funnel") {
+      await handleFunnel(req, res, requestId);
       return;
     }
 
@@ -94,6 +100,77 @@ const server = createServer(async (req, res) => {
 server.listen(port, () => {
   console.log(`Sina Gateway v${appVersion} running at http://localhost:${port} (${captureMode()} capture)`);
 });
+
+async function handleFunnel(req, res, requestId) {
+  const originError = validateOrigin(req);
+  if (originError) {
+    sendJson(res, 403, { error: originError, requestId });
+    return;
+  }
+
+  const ip = clientIp(req);
+  if (isRateLimited(`${ip}:funnel`, 120)) {
+    sendJson(res, 429, { error: "Too many events", requestId });
+    return;
+  }
+
+  const body = await readJsonBody(req, 4096);
+  const event = sanitizeFunnelEvent(body);
+  if (!event) {
+    sendJson(res, 400, { error: "Invalid funnel event", requestId });
+    return;
+  }
+
+  await appendFunnelEvent({ ...event, requestId, ip_hash: hashValue(ip) });
+  logEvent("funnel_event", { requestId, name: event.event, step: event.step });
+  res.writeHead(204);
+  res.end();
+}
+
+const ALLOWED_FUNNEL_EVENTS = new Set(["step_view", "identity_select", "industry_select", "submit_success"]);
+const BLOCKED_FUNNEL_KEYS = new Set([
+  "name",
+  "contact",
+  "email",
+  "phone",
+  "raw_notes",
+  "company",
+  "role_title",
+  "city",
+  "website",
+  "turnstileToken",
+]);
+
+function sanitizeFunnelEvent(body = {}) {
+  if (!ALLOWED_FUNNEL_EVENTS.has(body.event)) return null;
+
+  const clean = {
+    event: body.event,
+    timestamp: typeof body.timestamp === "string" ? body.timestamp.slice(0, 40) : new Date().toISOString(),
+    session_id: funnelCleanText(body.session_id, 80),
+    visitor_id: funnelCleanText(body.visitor_id, 80),
+    page_path: funnelCleanText(body.page_path, 180),
+    utm_campaign: funnelCleanText(body.utm_campaign, 80),
+    step: Number.isInteger(body.step) ? body.step : undefined,
+    step_label: funnelCleanText(body.step_label, 40),
+    identity: funnelCleanText(body.identity, 40),
+    project_type: funnelCleanText(body.project_type, 40),
+    route: funnelCleanText(body.route, 40),
+    demo: Boolean(body.demo),
+  };
+
+  for (const key of Object.keys(body)) {
+    if (BLOCKED_FUNNEL_KEYS.has(key)) return null;
+  }
+
+  if (!clean.session_id && !clean.visitor_id) return null;
+  return clean;
+}
+
+async function appendFunnelEvent(event) {
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(funnelFile, `${JSON.stringify(event)}\n`, { flag: "a" });
+}
 
 async function handleLead(req, res, requestId) {
   const originError = validateOrigin(req);
@@ -445,9 +522,22 @@ function setSecurityHeaders(res) {
 }
 
 function staticHeaders(filePath) {
+  const ext = extname(filePath);
+  let cacheControl = "no-store";
+
+  if (isProduction) {
+    if (ext === ".html") {
+      cacheControl = "public, max-age=60, must-revalidate";
+    } else if ([".css", ".js", ".svg"].includes(ext)) {
+      cacheControl = "public, max-age=86400, stale-while-revalidate=604800";
+    } else {
+      cacheControl = "public, max-age=300";
+    }
+  }
+
   return {
-    "content-type": contentTypes[extname(filePath)] || "application/octet-stream",
-    "cache-control": isProduction ? "public, max-age=300" : "no-store",
+    "content-type": contentTypes[ext] || "application/octet-stream",
+    "cache-control": cacheControl,
   };
 }
 
@@ -466,7 +556,7 @@ function clientIp(req) {
   return req.socket.remoteAddress || "unknown";
 }
 
-function isRateLimited(ip) {
+function isRateLimited(ip, max = rateLimitMax) {
   const now = Date.now();
   const bucketKey = hashValue(ip);
   const bucket = requestCounts.get(bucketKey) || { count: 0, resetAt: now + rateLimitWindowMs };
@@ -478,7 +568,11 @@ function isRateLimited(ip) {
 
   bucket.count += 1;
   requestCounts.set(bucketKey, bucket);
-  return bucket.count > rateLimitMax;
+  return bucket.count > max;
+}
+
+function funnelCleanText(value, maxLength) {
+  return String(value || "").trim().slice(0, maxLength);
 }
 
 async function validateTurnstile(token, ip) {
