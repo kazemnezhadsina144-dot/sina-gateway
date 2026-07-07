@@ -127,6 +127,7 @@ let heroEngaged = false;
 let lastDiagramDest = "";
 const visitedSteps = new Set();
 let runtimeConfig = { captureMode: "unknown", testMode: false, turnstileSiteKey: "", routingRules: [] };
+let turnstileRendered = false;
 
 form.addEventListener("change", (event) => {
   markHeroEngaged();
@@ -211,7 +212,6 @@ async function boot() {
   applyCampaignWedge();
   renderDemoMode();
   renderRuntimeMode();
-  renderTurnstile();
   wireCardGrids();
   wireHeroScroll();
   wireMobileTabs();
@@ -517,6 +517,7 @@ function goTo(index) {
   nextButton.hidden = index === steps.length - 1;
   submitButton.hidden = index !== steps.length - 1;
   if (previewBanner && !demoMode) previewBanner.hidden = index === steps.length - 1;
+  if (index === steps.length - 1) ensureTurnstile();
   clearStepError();
   if (stepChanged) {
     announceStep(index);
@@ -967,8 +968,9 @@ function renderRuntimeMode() {
   modeBanner.hidden = true;
 }
 
-function renderTurnstile() {
-  if (!runtimeConfig.turnstileSiteKey || !turnstileSlot) return;
+function ensureTurnstile() {
+  if (turnstileRendered || !runtimeConfig.turnstileSiteKey || !turnstileSlot) return;
+  turnstileRendered = true;
 
   const script = document.createElement("script");
   script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
@@ -980,6 +982,10 @@ function renderTurnstile() {
   widget.className = "cf-turnstile";
   widget.dataset.sitekey = runtimeConfig.turnstileSiteKey;
   turnstileSlot.append(widget);
+}
+
+function renderTurnstile() {
+  ensureTurnstile();
 }
 
 function turnstileToken() {

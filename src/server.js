@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
-import { createReadStream, existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { gzip } from "node:zlib";
+import { promisify } from "node:util";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, BUILDMATCH_INDUSTRIES, enrichLead, routeCopy, validateLead } from "./gateway.js";
@@ -29,6 +31,8 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .filter(Boolean);
 const requestCounts = new Map();
 let localSaveQueue = Promise.resolve();
+const gzipAsync = promisify(gzip);
+const compressibleStatic = new Set([".html", ".css", ".js", ".json", ".svg"]);
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -83,7 +87,7 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === "GET") {
-      await serveStatic(url.pathname, res);
+      await serveStatic(url.pathname, req, res);
       return;
     }
 
@@ -328,7 +332,7 @@ async function readJson(req) {
   }
 }
 
-async function serveStatic(pathname, res) {
+async function serveStatic(pathname, req, res) {
   const safePath = normalize(pathname).replace(/^(\.\.[/\\])+/, "");
   const requested = safePath === "/" ? "/index.html" : safePath;
   let filePath = join(publicDir, requested);
@@ -345,8 +349,26 @@ async function serveStatic(pathname, res) {
       fileStat = await stat(filePath);
     }
     if (!fileStat.isFile()) throw new Error("Not a file");
-    res.writeHead(200, staticHeaders(filePath));
-    createReadStream(filePath).pipe(res);
+
+    const body = await readFile(filePath);
+    const headers = staticHeaders(filePath);
+    const acceptEncoding = String(req.headers["accept-encoding"] || "");
+    const ext = extname(filePath);
+
+    if (acceptEncoding.includes("gzip") && compressibleStatic.has(ext) && body.length > 1024) {
+      const compressed = await gzipAsync(body);
+      res.writeHead(200, {
+        ...headers,
+        "content-encoding": "gzip",
+        "content-length": compressed.length,
+        vary: "Accept-Encoding",
+      });
+      res.end(compressed);
+      return;
+    }
+
+    res.writeHead(200, { ...headers, "content-length": body.length });
+    res.end(body);
     return;
   } catch {
     if (!requested.includes(".")) {
@@ -355,8 +377,10 @@ async function serveStatic(pathname, res) {
         if (indexPath.startsWith(publicDir)) {
           const fileStat = await stat(indexPath);
           if (fileStat.isFile()) {
-            res.writeHead(200, staticHeaders(indexPath));
-            createReadStream(indexPath).pipe(res);
+            const body = await readFile(indexPath);
+            const headers = staticHeaders(indexPath);
+            res.writeHead(200, { ...headers, "content-length": body.length });
+            res.end(body);
             return;
           }
         }
@@ -364,8 +388,10 @@ async function serveStatic(pathname, res) {
         // fall through to SPA
       }
     }
-    res.writeHead(404, staticHeaders(join(publicDir, "index.html")));
-    createReadStream(join(publicDir, "index.html")).pipe(res);
+    const fallback = await readFile(join(publicDir, "index.html"));
+    const headers = staticHeaders(join(publicDir, "index.html"));
+    res.writeHead(404, { ...headers, "content-length": fallback.length });
+    res.end(fallback);
   }
 }
 
