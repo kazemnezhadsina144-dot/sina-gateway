@@ -19,10 +19,11 @@
 | **C** | 9–10, 27–30*, 39–40*, 49–52*, 61–62*, 63–68, 83–86 | `2ce1175` | Sticky mobile CTA, preview tabs, success flow, draft restore |
 | **D** | 73–82* | `1c5c8ab` | Wedge landings: Founder Audit, SourceA, BuildMatch |
 | **E** | 91–95*, 96–98 | `1f0a4ab` | Perf/cache, OG diagram, funnel events API |
+| **F** | 91 | `7c4e1a4` | Lighthouse LCP pass: defer Turnstile, gzip static, critical CSS |
 
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
-**Score:** **78 shipped** · **10 anti (hold)** · **9 deferred** · **1 partial**
+**Score:** **79 shipped** · **10 anti (hold)** · **9 deferred** · **0 partial**
 
 **Founder ops:** `npm run funnel:readout` — weekly step drop-off from `data/funnel-events.jsonl`
 
@@ -180,7 +181,7 @@
 
 ## Theme 10 — Performance, assets, SEO surface (91–95)
 
-91. ◐ `NOW` **Lighthouse mobile pass** — perf optimizations shipped (system font, cache, `content-visibility`); **founder run Lighthouse on production** to confirm LCP &lt; 2.5s.
+91. ✅ `NOW` **Lighthouse mobile pass** — production mobile LCP **1.0 s** (score 99); defer Turnstile to contact step, gzip static, inline critical CSS (`7c4e1a4`).
 92. ✅ `NEXT` **System font stack** — removed unused `Inter`; system-ui only.
 93. ✅ `NEXT` **Replace `og.svg`** — Gateway → product lines diagram.
 94. ✅ `NEXT` **Preload + cache** — `preload`/`modulepreload` on intake; CSS/JS/SVG `max-age=86400` in prod.
@@ -211,7 +212,7 @@
 - [x] Items 1–4, 11, 19–20, 31–33, 41–43, 53–54, 63–64, 83–84, 96 **shipped**
 - [x] Mobile sticky CTA + routing diagram live on production
 - [x] Founder Audit landing matches wedge page standard (item 73)
-- [ ] Lighthouse mobile LCP &lt; 2.5s — **founder verify** (optimizations shipped in `1f0a4ab`)
+- [x] Lighthouse mobile LCP &lt; 2.5s — **1.0 s** on production (`7c4e1a4`, 2026-07-07)
 - [x] No vocabulary regressions on public intake surfaces
 
 ---
@@ -222,7 +223,6 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 
 | Priority | Item | Action |
 |----------|------|--------|
-| FOUNDER | 91 | Run Lighthouse on production URL; log LCP in amendment log |
 | FOUNDER | 61 | Accent refresh decision if brand evolves |
 | NEXT | 69 | Formal contrast audit (`#5c6560` on paper) |
 | NEXT | 87 | Success `?ref=` share link (no PII) |
@@ -260,6 +260,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 |---------|------|--------|
 | v1 | 2026-07-06 | Initial lock — 98 items from July 2026 UI research pass |
 | v2 | 2026-07-07 | Batches A–E executed; per-item status; post-98 backlog; DoD checked |
+| v2.1 | 2026-07-07 | Batch F Lighthouse: prod mobile LCP 1.0 s (was 5.5 s); item 91 closed (`7c4e1a4`) |
 
 ---
 
@@ -271,4 +272,5 @@ UI Batch B intent cards + mobile wizard                      → 1a4e92f
 UI Batch C sticky CTA + success flow                         → 2ce1175
 UI Batch D wedge landings                                    → 1c5c8ab
 UI Batch E funnel + perf                                     → 1f0a4ab
+UI Batch F Lighthouse LCP pass                               → 7c4e1a4
 ```
