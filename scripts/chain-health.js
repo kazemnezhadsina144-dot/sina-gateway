@@ -7,6 +7,9 @@ const checks = [
   { name: "health", path: "/health", expectOk: true },
   { name: "ready", path: "/ready", expectOk: true, deep: true },
   { name: "config", path: "/api/config", expectOk: true, expectCaptureMode: "supabase" },
+  { name: "status", path: "/api/status", expectOk: true },
+  { name: "for-trust", path: "/for-trust", expectStatus: 200, html: true },
+  { name: "how-it-works", path: "/how-it-works", expectStatus: 200, html: true },
 ];
 
 const results = [];
@@ -63,13 +66,24 @@ console.log("\nChain health passed.");
 async function runCheck(check) {
   try {
     const response = await fetch(`${baseUrl}${check.path}`);
-    if (response.status !== 200 && check.expectOk) {
+    const expectStatus = check.expectStatus || (check.expectOk ? 200 : 0);
+    if (response.status !== expectStatus) {
       return { ok: false, detail: `HTTP ${response.status}` };
+    }
+
+    if (check.html) {
+      const text = await response.text();
+      if (!text.includes("<html")) return { ok: false, detail: "not html" };
+      return { ok: true, detail: "ok" };
     }
 
     const body = await response.json();
     if (check.expectCaptureMode && body.captureMode !== check.expectCaptureMode) {
       return { ok: false, detail: `captureMode=${body.captureMode}` };
+    }
+
+    if (check.name === "status" && body.captureMode !== "supabase") {
+      return { ok: false, detail: `status captureMode=${body.captureMode}` };
     }
 
     if (check.deep) {

@@ -88,3 +88,45 @@ create index if not exists gateway_leads_referred_by_idx on public.gateway_leads
 -- Table privileges (required in addition to RLS — Supabase SQL editor does not always grant anon)
 grant usage on schema public to anon;
 grant insert on public.gateway_leads to anon;
+
+-- Phase 4 aggregate probes (no PII) — see migrations/20260712_ops_public_probes.sql
+create or replace function public.gateway_lane_counts()
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select coalesce(
+    jsonb_object_agg(venture_route, cnt),
+    '{}'::jsonb
+  )
+  from (
+    select venture_route, count(*)::int as cnt
+    from public.gateway_leads
+    where is_test = false
+    group by venture_route
+  ) s;
+$$;
+
+create or replace function public.gateway_last_signal()
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'at', created_at,
+    'route', venture_route
+  )
+  from public.gateway_leads
+  where is_test = false
+  order by created_at desc
+  limit 1;
+$$;
+
+revoke all on function public.gateway_lane_counts() from public;
+revoke all on function public.gateway_last_signal() from public;
+grant execute on function public.gateway_lane_counts() to anon, authenticated, service_role;
+grant execute on function public.gateway_last_signal() to anon, authenticated, service_role;

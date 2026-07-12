@@ -156,9 +156,34 @@ async function recordLastSignal(lead) {
 }
 
 async function readLastSignalAt() {
+  const fromDb = await readLastSignalFromSupabase();
+  if (fromDb) return fromDb;
+
   try {
     const payload = JSON.parse(await readFile(lastSignalFile, "utf8"));
     return payload.at || null;
+  } catch {
+    return null;
+  }
+}
+
+async function readLastSignalFromSupabase() {
+  const { url, anonKey } = supabaseEnv();
+  if (!url || !anonKey) return null;
+
+  try {
+    const response = await fetch(`${url}/rest/v1/rpc/gateway_last_signal`, {
+      method: "POST",
+      headers: {
+        apikey: anonKey,
+        authorization: `Bearer ${anonKey}`,
+        "content-type": "application/json",
+      },
+      body: "{}",
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.at || null;
   } catch {
     return null;
   }

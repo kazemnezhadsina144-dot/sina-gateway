@@ -46,6 +46,29 @@ function loadServiceRole() {
 
 async function supabaseLaneCounts() {
   const url = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const anonKey =
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.GATEWAY_SUPABASE_ANON_KEY ||
+    "";
+  if (url && anonKey) {
+    const response = await fetch(`${url}/rest/v1/rpc/gateway_lane_counts`, {
+      method: "POST",
+      headers: {
+        apikey: anonKey,
+        authorization: `Bearer ${anonKey}`,
+        "content-type": "application/json",
+      },
+      body: "{}",
+    });
+    if (response.ok) {
+      try {
+        return await response.json();
+      } catch {
+        // fall through to service role
+      }
+    }
+  }
+
   const serviceKey = loadServiceRole();
   if (!url || !serviceKey) return null;
 

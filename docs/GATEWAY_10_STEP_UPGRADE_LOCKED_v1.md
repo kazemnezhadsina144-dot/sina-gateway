@@ -195,3 +195,17 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 10 Phase 3 gate | **Done** — `launch:gate` 11 pass / 1 founder / 0 fail (`795a362`) · Lighthouse LCP 1.0s · docs v2.4 |
 
 **Agent deploy note:** Set `TELEGRAM_WEBHOOK_SECRET` on Railway, then `PUBLIC_BASE_URL=https://sina-gateway-production.up.railway.app npm run telegram:set-webhook`.
+
+---
+
+## Phase 4 snapshot (2026-07-12) — agent only
+
+| Step | Status | Check |
+|------|--------|-------|
+| 1 Ops RPC migration | **Done** — `20260712_ops_public_probes.sql` · `gateway_lane_counts` + `gateway_last_signal` |
+| 2 lastSignalAt probe | **Done** — `/api/status` reads `gateway_last_signal` RPC (anon, no PII) |
+| 3 Chain health | **Done** — `/for-trust`, `/how-it-works`, `/api/status` in `chain:health` |
+| 4 Ops RPC verify | **Done** — `npm run verify:ops-rpc` in `launch:gate` |
+| 5 Deploy | **Done** — `npm run apply:supabase-migration` + Railway push |
+
+**Founder runway (unchanged):** UptimeRobot dashboard · D2 list 25/25 · D3 outbound · custom domain · GSC.

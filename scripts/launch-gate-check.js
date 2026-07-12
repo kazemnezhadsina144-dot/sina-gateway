@@ -16,6 +16,7 @@ async function main() {
   checks.push(run("monitors:verify"));
   checks.push(run("verify:supabase"));
   checks.push(run("verify:migration"));
+  checks.push(run("verify:ops-rpc"));
   checks.push(run("private-test"));
   checks.push(d2ListCheck());
   checks.push(fileCheck("index-public", "public/index.html", (t) => !/noindex/i.test(t)));
