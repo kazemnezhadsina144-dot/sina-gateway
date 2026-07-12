@@ -206,6 +206,6 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 2 lastSignalAt probe | **Done** — `/api/status` reads `gateway_last_signal` RPC (anon, no PII) |
 | 3 Chain health | **Done** — `/for-trust`, `/how-it-works`, `/api/status` in `chain:health` |
 | 4 Ops RPC verify | **Done** — `npm run verify:ops-rpc` in `launch:gate` |
-| 5 Deploy | **Done** — `npm run apply:supabase-migration` + Railway push |
+| 5 Deploy | **Done** — `npm run apply:supabase-migration` + Railway `3c3db07` · Telegram webhook registered |
 
 **Founder runway (unchanged):** UptimeRobot dashboard · D2 list 25/25 · D3 outbound · custom domain · GSC.
