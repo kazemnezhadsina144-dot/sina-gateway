@@ -192,6 +192,6 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 7 TrustField wedge | **Done** — `/for-trust` + `og-trustfield.svg` + sitemap + `trustfield` campaign |
 | 8 Ops weekly | **Done** — `npm run ops:weekly` · `lastSignalAt` on `GET /api/status` |
 | 9 Routing explainer | **Done** — `/how-it-works` · Founder Audit signal path · sitemap |
-| 10 Phase 3 gate | **Done** — `launch:gate` 0 fail · Lighthouse LCP &lt; 2.5s · docs v2.4 |
+| 10 Phase 3 gate | **Done** — `launch:gate` 11 pass / 1 founder / 0 fail (`795a362`) · Lighthouse LCP 1.0s · docs v2.4 |
 
 **Agent deploy note:** Set `TELEGRAM_WEBHOOK_SECRET` on Railway, then `PUBLIC_BASE_URL=https://sina-gateway-production.up.railway.app npm run telegram:set-webhook`.
