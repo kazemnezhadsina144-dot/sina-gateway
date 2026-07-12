@@ -175,4 +175,4 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 9 Custom domain | **Founder** — choose `gateway.sinakazemnezhad.com` or `sina-gateway.app` · Railway + Turnstile + `ALLOWED_ORIGINS` |
 | 10 Phase 2 gate | **Done** — `chain:health` PASS · Lighthouse LCP 1.0s · `launch:gate` 10 pass / 1 founder / 1 fail (`private-test` browser-capture) |
 
-**Founder SQL (Step 3–4):** Run `supabase/migrations/20260707_referrer_utm.sql` in Supabase SQL Editor after deploy.
+**Founder SQL (Step 3–4):** Run `npm run apply:supabase-migration` (or paste `supabase/migrations/20260707_referrer_utm.sql` in SQL Editor). Applied 2026-07-11 via `apply:supabase-migration`.

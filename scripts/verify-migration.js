@@ -10,23 +10,30 @@ if (!url || !anonKey) {
   process.exit(1);
 }
 
+const stamp = Date.now();
 const lead = {
   identity: "client",
   intent: "hire",
   value: "project",
   urgency: "now",
   name: "Migration Verify",
-  contact: `migration-verify-${Date.now()}@example.com`,
+  contact: `migration-verify-${stamp}@example.com`,
   venture_route: "SourceA",
   lead_type: "client",
   priority_tag: "low",
   source: "migration-verify",
-  raw_notes: "is_test column probe — safe to delete",
+  raw_notes: "phase 2 column probe — safe to delete",
   is_test: true,
   app_version: "1.0.0",
   environment: "verify",
   capture_version: "v1",
-  schema_version: "20260706",
+  schema_version: "20260707",
+  referred_by: "INTRO01",
+  utm_source: "verify",
+  utm_medium: "script",
+  utm_campaign: "sourcea",
+  utm_content: "hero-a",
+  utm_term: "governed-ai",
 };
 
 const response = await fetch(`${url}/rest/v1/gateway_leads`, {
@@ -43,7 +50,8 @@ const response = await fetch(`${url}/rest/v1/gateway_leads`, {
 if (!response.ok) {
   const detail = await response.text();
   if (detail.includes("is_test") || detail.includes("PGRST204") || detail.includes("column")) {
-    console.error("MIGRATION_MISSING: Run supabase/migrations/20260706_capture_metadata.sql in Supabase SQL Editor.");
+    console.error("MIGRATION_MISSING: Run supabase/migrations in order, latest 20260707_referrer_utm.sql");
+    console.error("  npm run apply:supabase-migration");
     console.error(detail.slice(0, 300));
     process.exit(1);
   }
@@ -51,4 +59,4 @@ if (!response.ok) {
   process.exit(1);
 }
 
-console.log("MIGRATION OK: is_test + capture metadata columns accept inserts.");
+console.log("MIGRATION OK: capture metadata + referred_by + utm_content/utm_term columns accept inserts.");
