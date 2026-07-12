@@ -176,3 +176,22 @@ See `docs/GATEWAY_247_AUTORUN_SETUP.md` for how gateway piggybacks external moto
 | 10 Phase 2 gate | **Done** — `chain:health` PASS · Lighthouse LCP 1.0s · `launch:gate` 10 pass / 1 founder / 1 fail (`private-test` browser-capture) |
 
 **Founder SQL (Step 3–4):** Run `npm run apply:supabase-migration` (or paste `supabase/migrations/20260707_referrer_utm.sql` in SQL Editor). Applied 2026-07-11 via `apply:supabase-migration`.
+
+---
+
+## Phase 3 snapshot (2026-07-11)
+
+| Step | Status | Check |
+|------|--------|-------|
+| 1 Monitors | **FOUNDER** — `npm run monitors:verify` PASS · arm 2 monitors in UptimeRobot UI from `data/gateway-external-monitors-v1.json` |
+| 2 D2 list | **FOUNDER** — `0/25` · fill `data/founder-audit-d2-list.json` per `docs/FOUNDER_AUDIT_D2_LIST_CRITERIA_LOCKED_v1.md` |
+| 3 D3 outbound | **FOUNDER** — blocked on Step 2 · `npm run channel:send -- --count 5` · `npm run sync:heartbeat` |
+| 4 Custom domain | **FOUNDER** — defer or choose `gateway.sinakazemnezhad.com` vs `sina-gateway.app` · Railway + Turnstile + `ALLOWED_ORIGINS` |
+| 5 GSC | **FOUNDER** — submit `public/sitemap.xml` in Google Search Console (includes `/for-trust`, `/how-it-works`) |
+| 6 Telegram bot | **Done** — `POST /api/telegram/webhook` · `/start`, `/status`, `/lanes`, `/privacy` · `npm run telegram:set-webhook` after deploy |
+| 7 TrustField wedge | **Done** — `/for-trust` + `og-trustfield.svg` + sitemap + `trustfield` campaign |
+| 8 Ops weekly | **Done** — `npm run ops:weekly` · `lastSignalAt` on `GET /api/status` |
+| 9 Routing explainer | **Done** — `/how-it-works` · Founder Audit signal path · sitemap |
+| 10 Phase 3 gate | **Done** — `launch:gate` 0 fail · Lighthouse LCP &lt; 2.5s · docs v2.4 |
+
+**Agent deploy note:** Set `TELEGRAM_WEBHOOK_SECRET` on Railway, then `PUBLIC_BASE_URL=https://sina-gateway-production.up.railway.app npm run telegram:set-webhook`.

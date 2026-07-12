@@ -8,6 +8,8 @@ const checks = [
   ["/", 200],
   ["/for-investors", 200],
   ["/for-builders", 200],
+  ["/for-trust", 200],
+  ["/how-it-works", 200],
   ["/robots.txt", 200],
 ];
 

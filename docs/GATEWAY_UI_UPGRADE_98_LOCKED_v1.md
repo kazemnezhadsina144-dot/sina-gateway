@@ -23,10 +23,11 @@
 | **F** | 69, 71, 87, 89 | `eb409af` | Contrast audit, high-contrast mode, intro share link, lane thank-you |
 
 | **G** | 79–80, 888 #10–12, #37, #41 | `3e3d7b2` | Investor/builder wedges, referrer DB, UTM chain, status API |
+| **H** | 81, 88, 888 #21, #41, #111 | Phase 3 | TrustField wedge, Telegram bot webhook, how-it-works, ops weekly, lastSignalAt |
 
 \*Batch includes ANTI/LATER items marked **DEFERRED** below — not built by design.
 
-**Score:** **85 shipped** · **10 anti (hold)** · **6 deferred** · **1 partial**
+**Score:** **87 shipped** · **10 anti (hold)** · **5 deferred** · **0 partial**
 
 **Founder ops:** `npm run funnel:readout` — weekly step drop-off from `data/funnel-events.jsonl`
 
@@ -164,7 +165,7 @@
 78. ✅ `NEXT` **OG image per wedge** — `/og-founder.svg`, `/og-sourcea.svg`, `/og-buildmatch.svg`.
 79. ✅ `LATER` **Noetfield `/for-investors`** — intake explainer at `/for-investors` (Phase 2; not active marketing).
 80. ✅ `LATER` **Forge `/for-builders`** — intake explainer at `/for-builders` (Phase 2; not active marketing).
-81. ⏸ `LATER` **TrustField `/for-trust`** — deferred.
+81. ✅ `LATER` **TrustField `/for-trust`** — intake explainer at `/for-trust` (Phase 3).
 82. 🚫 `ANTI` **No fake testimonials on wedge pages** — pattern-only copy; verified.
 
 ---
@@ -176,7 +177,7 @@
 85. ✅ `NEXT` **Post-submit timeline** — `.success-timeline` (code → review → follow-up).
 86. ✅ `NEXT` **Copy confirmation code toast** — `aria-live` + `is-copied` button state.
 87. ✅ `NEXT` **Share link on success** — “Copy intro link” → `/?ref=CODE` (no PII); `ref:` stored in `referrer` on submit.
-88. ◐ `NEXT` **Telegram deep link** — success links `t.me/Gateway_A?start=ref_CODE`; bot handler not wired (no bot SKU).
+88. ✅ `NEXT` **Telegram deep link + bot** — success links `t.me/Gateway_A?start=ref_CODE`; webhook handler `/api/telegram/webhook` (Phase 3).
 89. ✅ `LATER` **Lane-specific thank-you line** — `.success-thanks` per product line on confirmation screen.
 90. 🚫 `ANTI` **No “We emailed you”** — verified.
 
@@ -227,13 +228,13 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | Priority | Item | Action |
 |----------|------|--------|
 | FOUNDER | 61 | Accent refresh decision if brand evolves |
-| NEXT | 88 | Telegram bot `?start=ref_` handler when bot SKU exists |
+| NEXT | 88 | ~~Telegram bot `?start=ref_` handler when bot SKU exists~~ → **shipped Phase 3** |
 | LATER | 7 | Dark ops theme with contrast audit |
 | LATER | 27 | 3-step mobile collapse (intent + value merge) |
 | LATER | 29 | Abandon recovery after email wired |
 | LATER | 60 | Subtle grain background |
 | LATER | 70 | Keyboard wizard Tab path doc |
-| LATER | 79–81 | TrustField `/for-trust` wedge page |
+| LATER | 79–81 | ~~TrustField `/for-trust` wedge page~~ → **#81 shipped Phase 3** |
 | LATER | 95 | AVIF/WebP hero when illustration exists |
 
 **Not planned:** items marked 🚫 ANTI — permanent hold.
@@ -250,8 +251,12 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | SourceA wedge | `/for-clients` |
 | Noetfield wedge | `/for-investors` |
 | Forge wedge | `/for-builders` |
+| TrustField wedge | `/for-trust` |
+| How it works | `/how-it-works` |
 | BuildMatch wedge | `/buildmatch` |
 | Status API | `GET /api/status` |
+| Telegram webhook | `POST /api/telegram/webhook` |
+| Ops weekly | `npm run ops:weekly` |
 | Funnel API | `POST /api/funnel` |
 | Funnel readout | `npm run funnel:readout` |
 
@@ -266,6 +271,7 @@ Prioritized deferred items when wedge season or founder bandwidth allows:
 | v2.1 | 2026-07-07 | Batch F Lighthouse: prod mobile LCP 1.0 s (was 5.5 s); item 91 closed (`7c4e1a4`) |
 | v2.2 | 2026-07-07 | Batch F: intro share link, lane thank-you, contrast + high-contrast (`eb409af`) |
 | v2.3 | 2026-07-07 | Phase 2 Batch G: investor/builder wedges, referrer + UTM columns, status API (`3e3d7b2`) |
+| v2.4 | 2026-07-11 | Phase 3: TrustField wedge (#81), Telegram bot webhook (#88), how-it-works, ops weekly, lastSignalAt |
 
 ---
 
@@ -280,4 +286,5 @@ UI Batch E funnel + perf                                     → 1f0a4ab
 UI Batch F Lighthouse LCP pass                               → 7c4e1a4
 UI Batch F share link + lane thank-you                       → eb409af
 UI Phase 2 Batch G wedges + referrer + UTM                   → 3e3d7b2
+UI Phase 3 TrustField + Telegram bot + explainer               → ed81774
 ```

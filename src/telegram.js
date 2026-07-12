@@ -41,3 +41,32 @@ export async function sendTelegramAlert(env, text, { fetchImpl = fetch } = {}) {
     error: body.ok ? null : JSON.stringify(body).slice(0, 200),
   };
 }
+
+export async function sendTelegramMessage(env, chatId, text, { fetchImpl = fetch } = {}) {
+  const token = env.TELEGRAM_BOT_TOKEN || "";
+  if (!token || !chatId) {
+    return { ok: false, skipped: true, reason: "telegram_not_configured" };
+  }
+  const resp = await fetchImpl(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: String(text).slice(0, 3900),
+      parse_mode: "HTML",
+      disable_web_page_preview: false,
+    }),
+  });
+  let body = {};
+  try {
+    body = await resp.json();
+  } catch {
+    body = {};
+  }
+  return {
+    ok: Boolean(body.ok),
+    message_id: body.result?.message_id || null,
+    status: resp.status,
+    error: body.ok ? null : JSON.stringify(body).slice(0, 200),
+  };
+}

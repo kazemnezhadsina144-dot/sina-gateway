@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { OPTIONS, ROUTES, ROUTING_RULE_DEFINITIONS, BUILDMATCH_INDUSTRIES, enrichLead, routeCopy, validateLead } from "./gateway.js";
 import { notifyLead } from "./notifications.js";
 import { telegramConfigured } from "./telegram.js";
+import { handleTelegramUpdate, verifyTelegramWebhookSecret } from "./telegram-bot.js";
 import { verifyTurnstileToken } from "./turnstile.js";
 import { loadSinaEnv, resolveSupabaseEnv } from "../scripts/load-sina-env.js";
 
@@ -19,6 +20,7 @@ const publicDir = join(root, "public");
 const dataDir = join(root, "data");
 const dataFile = join(dataDir, "leads.json");
 const funnelFile = join(dataDir, "funnel-events.jsonl");
+const lastSignalFile = join(dataDir, "last-signal-at.json");
 const packageJson = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const appVersion = packageJson.version || "0.0.0";
 const port = Number(process.env.PORT || 4173);
@@ -57,6 +59,11 @@ const server = createServer(async (req, res) => {
 
     if (req.method === "POST" && url.pathname === "/api/funnel") {
       await handleFunnel(req, res, requestId);
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/telegram/webhook") {
+      await handleTelegramWebhook(req, res, requestId);
       return;
     }
 
@@ -109,6 +116,68 @@ const server = createServer(async (req, res) => {
 server.listen(port, () => {
   console.log(`Sina Gateway v${appVersion} running at http://localhost:${port} (${captureMode()} capture)`);
 });
+
+async function handleTelegramWebhook(req, res, requestId) {
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET || "";
+  if (!verifyTelegramWebhookSecret(req, secret)) {
+    sendJson(res, 403, { error: "Invalid webhook secret", requestId });
+    return;
+  }
+
+  if (!telegramConfigured(process.env)) {
+    sendJson(res, 503, { error: "Telegram not configured", requestId });
+    return;
+  }
+
+  const update = await readJson(req);
+  const status = await publicStatusPayload();
+  const result = await handleTelegramUpdate(update, process.env, {
+    baseUrl: publicBaseUrl(req),
+    routes: ROUTES,
+    status,
+  });
+
+  sendJson(res, 200, { ok: true, requestId, ...result });
+}
+
+async function recordLastSignal(lead) {
+  try {
+    await mkdir(dataDir, { recursive: true });
+    await writeFile(
+      lastSignalFile,
+      JSON.stringify({
+        at: lead.created_at || new Date().toISOString(),
+        route: lead.venture_route || null,
+      }),
+    );
+  } catch {
+    // non-blocking
+  }
+}
+
+async function readLastSignalAt() {
+  try {
+    const payload = JSON.parse(await readFile(lastSignalFile, "utf8"));
+    return payload.at || null;
+  } catch {
+    return null;
+  }
+}
+
+function publicBaseUrl(req) {
+  if (process.env.PUBLIC_BASE_URL) {
+    return String(process.env.PUBLIC_BASE_URL).replace(/\/$/, "");
+  }
+  if (allowedOrigins[0]) {
+    return allowedOrigins[0].replace(/\/$/, "");
+  }
+  const host = req?.headers?.host;
+  if (host) {
+    const proto = isProduction ? "https" : "http";
+    return `${proto}://${host}`;
+  }
+  return "https://sina-gateway-production.up.railway.app";
+}
 
 async function handleFunnel(req, res, requestId) {
   const originError = validateOrigin(req);
@@ -238,6 +307,7 @@ async function handleLead(req, res, requestId) {
       priority: saved.priority_tag,
       captureMode: captureMode(),
     });
+    await recordLastSignal(saved);
 
     sendJson(res, 201, {
       ok: true,
@@ -494,6 +564,7 @@ async function publicStatusPayload() {
     replies: Number(commercial.replies) || 0,
     l2Payments: Number(commercial.L2_payments) || 0,
     campaign: commercial.campaign || null,
+    lastSignalAt: await readLastSignalAt(),
     checkedAt: new Date().toISOString(),
   };
 }

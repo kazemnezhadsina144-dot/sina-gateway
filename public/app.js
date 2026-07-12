@@ -46,6 +46,11 @@ const CAMPAIGNS = {
     lede: "Share what you build, ship, or want to collaborate on — sorted to Forge for builder review.",
     banner: "Forge — collaborators and builders lane.",
   },
+  trustfield: {
+    headline: "TrustField intake — trust and compliance review.",
+    lede: "Send trust, governance, and compliance pressure on sensitive systems — sorted to TrustField.",
+    banner: "TrustField — risk and governance lane.",
+  },
 };
 
 const BUILDMATCH_INDUSTRIES = {

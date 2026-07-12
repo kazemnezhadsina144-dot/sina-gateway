@@ -60,6 +60,7 @@
           ${row("Notifications", ready.notificationsConfigured ? "on" : "off", ready.notificationsConfigured)}
           ${row("Version", ready.version || health.version || "—", null)}
           ${row("Status checked", formatCheckedAt(status.checkedAt), null)}
+          ${row("Last signal", formatCheckedAt(status.lastSignalAt), status.lastSignalAt ? true : null)}
           ${row("Outbound sends logged", String(status.offersSent ?? "—"), null)}
           ${row("Replies logged", String(status.replies ?? "—"), null)}
           ${row("Active campaign", status.campaign || "—", null)}
