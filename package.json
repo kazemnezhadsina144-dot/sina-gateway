@@ -17,6 +17,7 @@
     "validate:env": "node scripts/validate-env.js",
     "verify:supabase": "node scripts/verify-supabase.js",
     "verify:migration": "node scripts/verify-migration.js",
+    "verify:ops-rpc": "node scripts/verify-ops-rpc.js",
     "verify:utm-clicks": "node scripts/verify-utm-clicks.js",
     "utm:readout": "node scripts/utm-click-readout.js",
     "apply:supabase-migration": "node scripts/apply-supabase-migration.js",
