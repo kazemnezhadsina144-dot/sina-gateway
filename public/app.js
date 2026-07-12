@@ -53,6 +53,15 @@ const CAMPAIGNS = {
   },
 };
 
+const CAMPAIGN_OG = {
+  "founder-audit": "/og-founder.svg",
+  sourcea: "/og-sourcea.svg",
+  buildmatch: "/og-buildmatch.svg",
+  noetfield: "/og-noetfield.svg",
+  forge: "/og-forge.svg",
+  trustfield: "/og-trustfield.svg",
+};
+
 const BUILDMATCH_INDUSTRIES = {
   construction: {
     label: "Construction",
@@ -237,6 +246,7 @@ async function boot() {
     Object.assign(BUILDMATCH_INDUSTRIES, runtimeConfig.buildmatchIndustries);
   }
   applyCampaignWedge();
+  loadFooterSignal();
   renderDemoMode();
   renderRuntimeMode();
   wireCardGrids();
@@ -255,6 +265,7 @@ async function boot() {
 function applyCampaignWedge() {
   const params = new URLSearchParams(window.location.search);
   const campaign = (params.get("utm_campaign") || "").toLowerCase();
+  const content = (params.get("utm_content") || "").trim();
   const wedge = CAMPAIGNS[campaign];
   if (!wedge) return;
 
@@ -266,7 +277,14 @@ function applyCampaignWedge() {
   if (modeBanner && wedge.banner) {
     modeBanner.hidden = false;
     modeBanner.classList.add("wedge-banner");
-    modeBanner.textContent = wedge.banner;
+    const variant = content ? ` · variant: ${content}` : "";
+    modeBanner.textContent = `${wedge.banner}${variant}`;
+  }
+
+  const ogImage = CAMPAIGN_OG[campaign];
+  if (ogImage) {
+    const ogMeta = document.querySelector('meta[property="og:image"]');
+    if (ogMeta) ogMeta.setAttribute("content", ogImage);
   }
 
   if (campaign === "buildmatch") {
@@ -864,6 +882,12 @@ function showSuccess(result) {
     ? `Inquiry received — BuildMatch (${lead.route.industry})`
     : `Inquiry received — ${lead.route.title}`;
   node.querySelector(".success-route").textContent = `${lead.route.promise} Priority: ${lead.priority_tag}.`;
+  const confidenceEl = node.querySelector(".success-confidence");
+  if (confidenceEl && lead.route_confidence) {
+    confidenceEl.textContent = `Routing confidence: ${lead.route_confidence}.`;
+  } else if (confidenceEl) {
+    confidenceEl.hidden = true;
+  }
   const thanksEl = node.querySelector(".success-thanks");
   if (thanksEl) thanksEl.textContent = laneThankYou(lead);
   const reasonEl = node.querySelector(".success-reason");
@@ -1146,5 +1170,23 @@ function trackFunnel(event, detail = {}) {
     }).catch(() => {});
   } catch {
     // analytics must never block intake
+  }
+}
+
+async function loadFooterSignal() {
+  const el = document.querySelector("#footer-last-signal");
+  if (!el) return;
+  try {
+    const response = await fetch("/api/status");
+    if (!response.ok) return;
+    const status = await response.json();
+    if (!status.lastSignalAt) {
+      el.textContent = "No signals logged yet.";
+      return;
+    }
+    const when = new Date(status.lastSignalAt).toLocaleString();
+    el.textContent = `Last signal: ${when}`;
+  } catch {
+    // non-blocking footer polish
   }
 }

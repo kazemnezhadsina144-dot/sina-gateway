@@ -130,6 +130,12 @@ async function handleTelegramWebhook(req, res, requestId) {
   }
 
   const update = await readJson(req);
+  const chatId = update?.message?.chat?.id;
+  if (chatId && isRateLimited(`telegram:${chatId}`, 30)) {
+    sendJson(res, 429, { error: "Too many bot commands", requestId });
+    return;
+  }
+
   const status = await publicStatusPayload();
   const result = await handleTelegramUpdate(update, process.env, {
     baseUrl: publicBaseUrl(req),
@@ -343,6 +349,7 @@ async function handleLead(req, res, requestId) {
         lead_type: saved.lead_type,
         priority_tag: saved.priority_tag,
         route_reason: saved.route_reason,
+        route_confidence: saved.route_confidence,
         route: routeCopy(saved.venture_route, saved),
       },
     });

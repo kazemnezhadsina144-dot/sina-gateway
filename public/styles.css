@@ -350,6 +350,11 @@ h1 {
   font-weight: 700;
 }
 
+.footer-signal {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .legal-page,
 .wedge-page {
   max-width: min(900px, 100%);

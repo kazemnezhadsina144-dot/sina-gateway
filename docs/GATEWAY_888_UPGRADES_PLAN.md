@@ -1383,3 +1383,29 @@ If the upgrade requires faking something, the upgrade is wrong.
 If the upgrade doesn't serve one real audience, the upgrade is wrong.
 
 **Ship the wedge. Log the receipt. Repeat.**
+
+---
+
+## Agent execution log (2026-07-12)
+
+Batch shipped from this plan (agent-only; founder items unchanged):
+
+| Items | Deliverable |
+|-------|-------------|
+| **#5, #78** | Campaign OG swap + `utm_content` variant in wedge banner (`public/app.js`) |
+| **#10–12, #37** | Full UTM chain in alerts (already partial — completed `utm_term`) |
+| **#21** | `/how-it-works` (Phase 3) |
+| **#22, #85–86, #129** | Charter + submit + lanes guides in `docs/`; `npm run telegram:post-guides` |
+| **#23** | `docs/templates/WEEKLY_VERDICT_TEMPLATE.md` |
+| **#31–32** | Canonical URLs (`privacy`, `status`), sitemap, long-tail meta |
+| **#41** | Footer last signal from `/api/status` |
+| **#43** | `npm run ops:monthly` |
+| **#89–94, #124** | Bot webhook commands (Phase 3) |
+| **#103–107, #337, #576** | `src/telegram-templates.js` — lane tone, priority colors, confidence, contact summary |
+| **#125** | Bot command rate limit per chat |
+| **#156** | Telegram API 429 retry |
+| **#195** | `route_confidence` on success screen |
+| **#468, #469** | `ops-weekly` + `ops-monthly` |
+| **#624** | Cookie disclosure in `privacy.html` |
+
+**Still FOUNDER:** #29 GSC · #50–54 domain · #61–64 D2/D3 · #81–82 channel pin (run scripts) · #814+ reviews.

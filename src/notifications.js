@@ -1,28 +1,17 @@
 import { BUILDMATCH_INDUSTRIES } from "./gateway.js";
 import { sendTelegramAlert, telegramConfigured } from "./telegram.js";
+import { buildLeadAlertMessage } from "./telegram-templates.js";
 
 export function shouldNotifyLead(lead, telegramEnv) {
   return lead.priority_tag === "high" && telegramConfigured(telegramEnv);
 }
 
 export function buildNotificationMessage(lead, requestId) {
-  const ref = requestId ? String(requestId).slice(0, 8).toUpperCase() : "";
-  return [
-    "<b>High-priority Sina Gateway lead</b>",
-    `${lead.name || "—"} → ${lead.venture_route || "—"}`,
-    lead.contact || "—",
-    `priority: ${lead.priority_tag}`,
-    lead.utm_campaign ? `campaign: ${lead.utm_campaign}` : "",
-    lead.utm_content ? `content: ${lead.utm_content}` : "",
-    lead.referred_by ? `intro: ref:${lead.referred_by}` : "",
+  const industryLabel =
     lead.identity === "buildmatch" && lead.project_type
-      ? `industry: ${BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type}`
-      : "",
-    lead.route_reason ? `route: ${lead.route_reason}` : "",
-    ref ? `ref: ${ref}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
+      ? BUILDMATCH_INDUSTRIES[lead.project_type]?.label || lead.project_type
+      : "";
+  return buildLeadAlertMessage(lead, requestId, { industryLabel });
 }
 
 /** @deprecated kept for dry-run tests */

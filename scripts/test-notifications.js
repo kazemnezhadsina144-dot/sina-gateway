@@ -11,6 +11,11 @@ const lead = {
   urgency: "now",
   venture_route: "SourceA",
   priority_tag: "high",
+  route_confidence: "high",
+  route_rule_id: "client_hire",
+  utm_campaign: "sourcea",
+  email: "notify@example.com",
+  preferred_contact: "email",
   raw_notes: "Dry-run payload verification",
 };
 
@@ -42,7 +47,9 @@ assert.equal(result.sent, true);
 assert.equal(result.channel, "telegram");
 const parsed = JSON.parse(sentBody);
 assert.equal(parsed.chat_id, "12345");
-assert.match(parsed.text, /High-priority Sina Gateway lead/);
+assert.match(parsed.text, /SourceA client signal/);
+assert.match(parsed.text, /🔴 HIGH/);
+assert.match(parsed.text, /confidence: high/);
 
 const skipped = await notifyLead({
   lead: { ...lead, priority_tag: "medium" },

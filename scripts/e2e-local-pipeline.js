@@ -74,7 +74,7 @@ try {
     fetchImpl: async (_url, options) => {
       notificationSent = true;
       const body = JSON.parse(options.body);
-      assert.match(body.text, /High-priority Sina Gateway lead/);
+      assert.match(body.text, /TrustField compliance signal/);
       assert.equal(body.chat_id, "12345");
       return { ok: true, json: async () => ({ ok: true, result: { message_id: 1 } }) };
     },

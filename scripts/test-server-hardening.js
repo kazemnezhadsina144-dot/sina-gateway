@@ -10,6 +10,7 @@ assert.match(serverSource, /error\.statusCode \|\| 500/);
 assert.match(serverSource, /error\.publicMessage \|\| "Internal server error"/);
 assert.match(serverSource, /\/api\/funnel/);
 assert.match(serverSource, /\/api\/telegram\/webhook/);
+assert.match(serverSource, /isRateLimited\(`telegram:\$\{chatId\}`/);
 assert.match(serverSource, /lastSignalAt/);
 assert.match(serverSource, /ALLOWED_FUNNEL_EVENTS/);
 assert.match(serverSource, /function isRateLimited\(ip, max = rateLimitMax\)/);
