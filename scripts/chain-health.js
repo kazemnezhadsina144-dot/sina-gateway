@@ -10,6 +10,7 @@ const checks = [
   { name: "status", path: "/api/status", expectOk: true },
   { name: "for-trust", path: "/for-trust", expectStatus: 200, html: true },
   { name: "how-it-works", path: "/how-it-works", expectStatus: 200, html: true },
+  { name: "how-routing-works", path: "/how-routing-works", expectStatus: 200, html: true },
 ];
 
 const results = [];

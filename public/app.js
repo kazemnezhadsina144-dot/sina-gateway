@@ -246,6 +246,7 @@ async function boot() {
     Object.assign(BUILDMATCH_INDUSTRIES, runtimeConfig.buildmatchIndustries);
   }
   applyCampaignWedge();
+  trackUtmLand();
   loadFooterSignal();
   renderDemoMode();
   renderRuntimeMode();
@@ -1188,5 +1189,37 @@ async function loadFooterSignal() {
     el.textContent = `Last signal: ${when}`;
   } catch {
     // non-blocking footer polish
+  }
+}
+
+function trackUtmLand() {
+  if (demoMode) return;
+  const params = new URLSearchParams(window.location.search);
+  const payload = {
+    utm_source: params.get("utm_source") || "",
+    utm_medium: params.get("utm_medium") || "",
+    utm_campaign: params.get("utm_campaign") || "",
+    utm_content: params.get("utm_content") || "",
+    utm_term: params.get("utm_term") || "",
+    page_path: window.location.pathname,
+    session_id: sessionId(),
+    visitor_id: visitorId(),
+  };
+  const hasUtm = Object.entries(payload).some(([key, value]) => key.startsWith("utm_") && String(value).trim());
+  if (!hasUtm) return;
+
+  const key = `utm_tracked_${payload.session_id}`;
+  if (sessionStorage.getItem(key)) return;
+  sessionStorage.setItem(key, "1");
+
+  try {
+    fetch("/api/utm-click", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    // non-blocking
   }
 }

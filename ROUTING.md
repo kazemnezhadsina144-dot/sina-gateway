@@ -55,3 +55,10 @@ For existing tables, run:
 ```
 
 For a fresh project, run only `supabase/schema.sql`.
+
+## Change log
+
+| Date | Change |
+|------|--------|
+| 2026-07-12 | Public `/how-routing-works` page surfaces rule order (#322) |
+| 2026-07-12 | `gateway_utm_clicks` table + `gateway_utm_click_counts` RPC (#77, #287) |

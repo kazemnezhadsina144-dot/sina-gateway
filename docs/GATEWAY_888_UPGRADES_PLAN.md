@@ -1409,3 +1409,12 @@ Batch shipped from this plan (agent-only; founder items unchanged):
 | **#624** | Cookie disclosure in `privacy.html` |
 
 **Still FOUNDER:** #29 GSC · #50–54 domain · #61–64 D2/D3 · #81–82 channel pin (run scripts) · #814+ reviews.
+
+### Batch 2 (2026-07-12)
+
+| Items | Deliverable |
+|-------|-------------|
+| **#77, #287** | `gateway_utm_clicks` table · `POST /api/utm-click` · `npm run utm:readout` |
+| **#113, #409, #83** | `gateway-ops` heartbeat: `lastSignalAt` + lane aggregate + Monday weekly verdict |
+| **#193, #322** | `/how-routing-works` public routing rules page |
+| **status API** | `laneCounts` on `GET /api/status` for ops worker |

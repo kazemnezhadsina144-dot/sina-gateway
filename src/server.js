@@ -67,6 +67,11 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "POST" && url.pathname === "/api/utm-click") {
+      await handleUtmClick(req, res, requestId);
+      return;
+    }
+
     if (req.method === "GET" && url.pathname === "/api/config") {
       sendJson(res, 200, {
         ok: true,
@@ -174,11 +179,16 @@ async function readLastSignalAt() {
 }
 
 async function readLastSignalFromSupabase() {
+  const payload = await readSupabaseRpc("gateway_last_signal");
+  return payload?.at || null;
+}
+
+async function readSupabaseRpc(name) {
   const { url, anonKey } = supabaseEnv();
   if (!url || !anonKey) return null;
 
   try {
-    const response = await fetch(`${url}/rest/v1/rpc/gateway_last_signal`, {
+    const response = await fetch(`${url}/rest/v1/rpc/${name}`, {
       method: "POST",
       headers: {
         apikey: anonKey,
@@ -188,10 +198,80 @@ async function readLastSignalFromSupabase() {
       body: "{}",
     });
     if (!response.ok) return null;
-    const payload = await response.json();
-    return payload?.at || null;
+    return await response.json();
   } catch {
     return null;
+  }
+}
+
+async function handleUtmClick(req, res, requestId) {
+  const originError = validateOrigin(req);
+  if (originError) {
+    sendJson(res, 403, { error: originError, requestId });
+    return;
+  }
+
+  const ip = clientIp(req);
+  if (isRateLimited(`${ip}:utm`, 60)) {
+    sendJson(res, 429, { error: "Too many click events", requestId });
+    return;
+  }
+
+  const body = await readJsonBody(req, 2048);
+  const click = sanitizeUtmClick(body);
+  if (!click) {
+    sendJson(res, 400, { error: "Invalid UTM click", requestId });
+    return;
+  }
+
+  try {
+    await saveUtmClick(click);
+    logEvent("utm_click", { requestId, campaign: click.utm_campaign, source: click.utm_source });
+    res.writeHead(204);
+    res.end();
+  } catch (error) {
+    logEvent("utm_click_failed", { requestId, error: error.message });
+    sendJson(res, 502, { error: "UTM click capture failed", requestId });
+  }
+}
+
+function sanitizeUtmClick(body = {}) {
+  const hasUtm = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].some((key) =>
+    funnelCleanText(body[key], 120),
+  );
+  if (!hasUtm) return null;
+
+  return {
+    utm_source: funnelCleanText(body.utm_source, 120),
+    utm_medium: funnelCleanText(body.utm_medium, 120),
+    utm_campaign: funnelCleanText(body.utm_campaign, 120),
+    utm_content: funnelCleanText(body.utm_content, 120),
+    utm_term: funnelCleanText(body.utm_term, 120),
+    page_path: funnelCleanText(body.page_path, 180) || "/",
+    session_id: funnelCleanText(body.session_id, 80),
+    visitor_id: funnelCleanText(body.visitor_id, 80),
+    is_test: process.env.TEST_MODE === "true" || body.demo === true,
+  };
+}
+
+async function saveUtmClick(click) {
+  const { url, anonKey } = supabaseEnv();
+  if (!url || !anonKey) return;
+
+  const response = await fetch(`${url}/rest/v1/gateway_utm_clicks`, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      authorization: `Bearer ${anonKey}`,
+      "content-type": "application/json",
+      prefer: "return=minimal",
+    },
+    body: JSON.stringify(click),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(detail.slice(0, 200) || "utm_click_insert_failed");
   }
 }
 
@@ -597,6 +677,7 @@ async function publicStatusPayload() {
     l2Payments: Number(commercial.L2_payments) || 0,
     campaign: commercial.campaign || null,
     lastSignalAt: await readLastSignalAt(),
+    laneCounts: (await readSupabaseRpc("gateway_lane_counts")) || {},
     checkedAt: new Date().toISOString(),
   };
 }

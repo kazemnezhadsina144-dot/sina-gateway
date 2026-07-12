@@ -54,6 +54,11 @@ function isHeartbeatWindow() {
   return now.getUTCHours() === 14 && now.getUTCMinutes() < 15;
 }
 
+function isWeeklyVerdictWindow() {
+  const now = new Date();
+  return now.getUTCDay() === 1 && now.getUTCHours() === 14 && now.getUTCMinutes() < 15;
+}
+
 function authorized(request, env) {
   const secret = env.CRON_SECRET || "";
   if (!secret) return true;
@@ -112,27 +117,41 @@ async function runHeartbeat(env, { scheduled }) {
     gateway.ready = "FAIL";
   }
 
+  const status = await probeStatus(baseUrl);
   const commercial = readCommercial(env);
   const infraRed = Object.values(gateway).includes("FAIL");
   const verdict = infraRed ? "RED" : "GREEN";
 
-  const payload = verdictPayload({ gateway, commercial, verdict });
+  const ops = {
+    lastSignalAt: status?.lastSignalAt || null,
+    laneCounts: status?.laneCounts || {},
+  };
+
+  const payload = verdictPayload({ gateway, commercial, verdict, ops });
 
   let telegram = { ok: true, skipped: true };
+  const laneSummary = formatLaneSummary(ops.laneCounts);
+  const lastSignal = formatLastSignal(ops.lastSignalAt);
+
   if (infraRed) {
     telegram = await sendTelegramAlert(
       env,
-      `<b>Sina Gateway heartbeat RED</b>\ninfra: RED\n${JSON.stringify(gateway)}`,
+      `<b>Sina Gateway heartbeat RED</b>\ninfra: RED\nlast signal: ${lastSignal}\n${laneSummary}\n${JSON.stringify(gateway)}`,
     );
   } else if (commercial.armed && commercial.status === "RED") {
     telegram = await sendTelegramAlert(
       env,
-      `<b>Sina Gateway heartbeat commercial RED</b>\noffers_sent: ${commercial.offers_sent}\nreplies: ${commercial.replies}\nL2: ${commercial.L2_receipts}`,
+      `<b>Sina Gateway heartbeat commercial RED</b>\nlast signal: ${lastSignal}\noffers_sent: ${commercial.offers_sent}\nreplies: ${commercial.replies}\nL2: ${commercial.L2_receipts}`,
     );
   } else if (scheduled && commercial.armed) {
     telegram = await sendTelegramAlert(
       env,
-      `<b>Sina Gateway heartbeat GREEN</b>\ninfra: PASS\noffers_sent: ${commercial.offers_sent} · replies: ${commercial.replies} · L2: ${commercial.L2_receipts}`,
+      `<b>Sina Gateway heartbeat GREEN</b>\ninfra: PASS\nlast signal: ${lastSignal}\n${laneSummary}\noffers_sent: ${commercial.offers_sent} · replies: ${commercial.replies} · L2: ${commercial.L2_receipts}`,
+    );
+  } else if (scheduled && isWeeklyVerdictWindow()) {
+    telegram = await sendTelegramAlert(
+      env,
+      `<b>Sina Gateway weekly verdict</b>\ninfra: PASS\ncapture: ${gateway.capture_mode}\nlast signal: ${lastSignal}\n${laneSummary}`,
     );
   }
 
@@ -166,6 +185,31 @@ function readCommercial(env) {
     L2_receipts,
     pipeline_by_level: {},
   };
+}
+
+async function probeStatus(baseUrl) {
+  try {
+    const response = await fetch(`${baseUrl}/api/status`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function formatLaneSummary(counts = {}) {
+  const entries = Object.entries(counts);
+  if (!entries.length) return "lanes: —";
+  return entries.map(([lane, count]) => `${lane}: ${count}`).join(" · ");
+}
+
+function formatLastSignal(value) {
+  if (!value) return "—";
+  try {
+    return new Date(value).toISOString().slice(0, 16).replace("T", " ") + "Z";
+  } catch {
+    return String(value);
+  }
 }
 
 async function probe(url, name) {
@@ -206,11 +250,12 @@ async function probeConfig(url) {
   }
 }
 
-function verdictPayload({ gateway, commercial = readCommercial({}), verdict = "RED", error = "" }) {
+function verdictPayload({ gateway, commercial = readCommercial({}), verdict = "RED", error = "", ops = {} }) {
   return {
     at: new Date().toISOString(),
     gateway,
     commercial,
+    ops,
     verdict,
     error,
   };

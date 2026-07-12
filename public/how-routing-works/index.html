@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How routing works — Sina Gateway</title>
+    <meta
+      name="description"
+      content="Public routing rules for Sina Gateway — deterministic sorting to product lines, not learned scoring."
+    />
+    <link rel="canonical" href="https://sina-gateway-production.up.railway.app/how-routing-works" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/">Sina Gateway</a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="/how-it-works">How it works</a>
+          <a href="/status.html">Status</a>
+          <a href="https://t.me/Gateway_A" rel="noopener noreferrer">@Gateway_A</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell legal-page">
+      <p class="eyebrow"><a href="/">Sina Gateway</a></p>
+      <h1>How routing works</h1>
+      <p class="lede">
+        Routing is <strong>deterministic</strong> — rule order in code, not learned scoring. Each inquiry stores
+        <code>venture_route</code>, <code>route_rule_id</code>, <code>route_confidence</code>, and
+        <code>route_reason</code>.
+      </p>
+
+      <section class="wedge-panel">
+        <h2>Rule order (first match wins)</h2>
+        <ol class="wedge-steps">
+          <li><code>campaign_founder_audit</code> — UTM <code>founder-audit</code> → <strong>Founder Audit</strong></li>
+          <li><code>path_founder_audit</code> — page path contains <code>founder-audit</code> → <strong>Founder Audit</strong></li>
+          <li><code>notes_founder_signal</code> — notes mention founder audit / solo founder → <strong>Founder Audit</strong></li>
+          <li><code>identity_friend</code> — Network identity → <strong>Personal</strong></li>
+          <li><code>identity_buildmatch</code> — BuildMatch identity → <strong>BuildMatch</strong></li>
+          <li><code>identity_builder</code> — Collaborator → <strong>Forge</strong></li>
+          <li><code>identity_investor</code> — Investor → <strong>Noetfield</strong></li>
+          <li><code>intent_trust</code> — Trust / risk goal → <strong>TrustField</strong></li>
+          <li><code>value_risk</code> — Risk value → <strong>TrustField</strong></li>
+          <li><code>notes_trust_signal</code> — trust / compliance notes → <strong>TrustField</strong></li>
+          <li><code>intent_invest</code> — Invest goal → <strong>Noetfield</strong></li>
+          <li><code>partner_capital</code> — Partner + capital → <strong>Noetfield</strong></li>
+          <li><code>partner_talent</code> — Partner + talent → <strong>Forge</strong></li>
+          <li><code>intent_hire</code> — Hire goal → <strong>SourceA</strong></li>
+          <li><code>execution_value</code> — deal / project / lead value → <strong>SourceA</strong></li>
+          <li><code>default_strategy</code> — fallback → <strong>Noetfield</strong></li>
+        </ol>
+        <p class="wedge-note">Source of truth: <code>ROUTING_RULES</code> in <code>src/gateway.js</code>. Audit: <code>npm run audit:routes</code>.</p>
+      </section>
+
+      <section class="wedge-panel">
+        <h2>What you see on intake</h2>
+        <ul class="wedge-steps">
+          <li>Live routing console updates as you complete the wizard.</li>
+          <li>Confidence is <strong>high</strong>, <strong>medium</strong>, or <strong>low</strong> — shown on the success screen.</li>
+          <li>Confirmation code + product line on submit — not a black-hole form.</li>
+        </ul>
+      </section>
+
+      <section class="wedge-panel">
+        <h2>Lane wedges</h2>
+        <p>
+          <a href="/founder-audit">Founder Audit</a> · <a href="/for-clients">SourceA</a> ·
+          <a href="/for-investors">Noetfield</a> · <a href="/for-builders">Forge</a> ·
+          <a href="/for-trust">TrustField</a> · <a href="/buildmatch">BuildMatch</a>
+        </p>
+      </section>
+
+      <p class="legal-back"><a href="/how-it-works">← How it works</a> · <a href="/">Start intake</a></p>
+    </main>
+  </body>
+</html>

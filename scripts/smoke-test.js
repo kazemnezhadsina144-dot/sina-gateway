@@ -10,6 +10,7 @@ const checks = [
   ["/for-builders", 200],
   ["/for-trust", 200],
   ["/how-it-works", 200],
+  ["/how-routing-works", 200],
   ["/robots.txt", 200],
 ];
 
